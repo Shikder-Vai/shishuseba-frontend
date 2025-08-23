@@ -1,0 +1,121 @@
+[
+  {
+    "id": "1",
+    "name": { "bn": "শাহী মাংসের মশলা", "en": "Shahi Meat Masala" },
+    "category": { "main": "Masala", "sub": ["গরুর মাংস", "মুরগি"] },
+    "price": { "original": 100, "discounted": 79, "discount_percent": 21 },
+    "weights": [
+      { "weight": "100g", "value": 79 },
+      { "weight": "200g", "value": 150 }
+    ],
+    "description": {
+      "bn": "শাহী স্বাদের ঘ্রাণযুক্ত মাংস রান্নার মশলা।",
+      "en": "Aromatic spice mix for royal meat curries."
+    },
+    "ingredients": ["ধনে", "জিরা", "লবঙ্গ", "এলাচ"],
+    "uses": ["গরুর মাংস", "খাসির কোরমা"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  },
+  {
+    "id": "2",
+    "name": { "bn": "বিরিয়ানি মশলা", "en": "Biryani Masala" },
+    "category": { "main": "Masala", "sub": ["চিকেন", "বিফ"] },
+    "price": { "original": 120, "discounted": 95, "discount_percent": 21 },
+    "weights": [
+      { "weight": "100g", "value": 95 },
+      { "weight": "250g", "value": 200 }
+    ],
+    "description": {
+      "bn": "বিরিয়ানিতে সেরা স্বাদ আনবে এই মশলা।",
+      "en": "Perfect blend for flavorful biryani."
+    },
+    "ingredients": ["দারুচিনি", "জায়ফল", "জয়ত্রী", "গোলমরিচ"],
+    "uses": ["চিকেন বিরিয়ানি", "বিফ বিরিয়ানি"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  },
+  {
+    "id": "3",
+    "name": { "bn": "চাট মশলা", "en": "Chaat Masala" },
+    "category": { "main": "Masala", "sub": ["স্ন্যাকস"] },
+    "price": { "original": 80, "discounted": 65, "discount_percent": 19 },
+    "weights": [
+      { "weight": "50g", "value": 65 }
+    ],
+    "description": {
+      "bn": "ফুচকা, চাট কিংবা সালাদে যোগ করুন টক ঝাল মজার স্বাদ।",
+      "en": "Adds tangy, spicy flavor to snacks and salads."
+    },
+    "ingredients": ["আমচুর", "বিট লবণ", "হিং", "লঙ্কা গুঁড়া"],
+    "uses": ["ফুচকা", "চাট", "সালাদ"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  },
+  {
+    "id": "4",
+    "name": { "bn": "মুরগির মশলা", "en": "Chicken Curry Masala" },
+    "category": { "main": "Masala", "sub": ["রান্না"] },
+    "price": { "original": 90, "discounted": 75, "discount_percent": 17 },
+    "weights": [
+      { "weight": "100g", "value": 75 },
+      { "weight": "500g", "value": 350 }
+    ],
+    "description": {
+      "bn": "মুরগির ঝোল অথবা কোরমার জন্য আদর্শ মশলা।",
+      "en": "Perfect mix for chicken curry or korma."
+    },
+    "ingredients": ["হলুদ", "মরিচ", "পেঁয়াজ গুঁড়া", "রসুন গুঁড়া"],
+    "uses": ["মুরগির কোরমা", "চিকেন ঝোল"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  },
+  {
+    "id": "5",
+    "name": { "bn": "তন্দুরি মশলা", "en": "Tandoori Masala" },
+    "category": { "main": "Masala", "sub": ["গ্রিল", "বারবিকিউ"] },
+    "price": { "original": 130, "discounted": 110, "discount_percent": 15 },
+    "weights": [
+      { "weight": "100g", "value": 110 },
+      { "weight": "250g", "value": 210 }
+    ],
+    "description": {
+      "bn": "তন্দুরি চিকেন কিংবা গ্রিল ফিশে ঝাঁজালো স্বাদ দেয়।",
+      "en": "Spicy blend for tandoori chicken and grilled fish."
+    },
+    "ingredients": ["আদা গুঁড়া", "রসুন গুঁড়া", "কাশ্মীরি লাল মরিচ"],
+    "uses": ["তন্দুরি চিকেন", "গ্রিলড ফিশ"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  },
+  {
+    "id": "6",
+    "name": { "bn": "সবজি মশলা", "en": "Sabji Masala" },
+    "category": { "main": "Masala", "sub": ["ভাজি", "ভেজ"] },
+    "price": { "original": 70, "discounted": 60, "discount_percent": 14 },
+    "weights": [
+      { "weight": "100g", "value": 60 },
+      { "weight": "200g", "value": 110 }
+    ],
+    " ": {
+      "bn": "সবজি রান্নার জন্য হালকা সুগন্ধি মশলা।",
+      "en": "Light aromatic blend for vegetable dishes."
+    },
+    "ingredients": ["ধনে গুঁড়া", "জিরা গুঁড়া", "হলুদ", "মেথি"],
+    "uses": ["মিশ্র সবজি", "আলু ভাজি"],
+    "images": [
+      "https://hffoodservice.com/wp-content/uploads/2025/03/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A7%80-%E0%A6%AE%E0%A6%BE%E0%A6%82%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%AE%E0%A6%B6%E0%A6%B2%E0%A6%BE-1-720x720.webp"
+    ],
+    "availability": "in_stock"
+  }
+]

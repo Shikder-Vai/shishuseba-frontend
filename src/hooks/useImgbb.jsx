@@ -1,0 +1,1 @@
+export const imgbbKey = "8a8dd8e0e8448ba1af909492cc1fffd3";
