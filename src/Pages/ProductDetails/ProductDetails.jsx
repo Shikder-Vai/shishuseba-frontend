@@ -18,6 +18,7 @@ import {
   pushAddToCart,
   pushByNow,
 } from "../../services/DataLayerService";
+import RelatedProducts from "../../components/RelatedProducts";
 
 const ProductDetails = () => {
   useScrollToTop();
@@ -473,6 +474,9 @@ const ProductDetails = () => {
               </div>
             </div>
           )}
+        </div>
+        <div className="pb-5 mb-2">
+          <RelatedProducts category={item.category} currentProductId={id} />
         </div>
       </div>
     </div>

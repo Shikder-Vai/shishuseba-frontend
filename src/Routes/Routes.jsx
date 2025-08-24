@@ -22,6 +22,7 @@ import Category from "../Dashboard/Category/Category";
 import ManageAdmin from "../Dashboard/ManageAdmin/ManageAdmin";
 import TrackOrder from "./../Shared/TrackOrder/TrackOrder";
 import DeliveredOrders from "../Dashboard/DeliveredOrders/DeliveredOrders";
+import CategoryPage from "../Pages/DynamicCategoryPage/CategoryPage";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "/products/:category",
         element: <OurProducts></OurProducts>,
+      },
+      {
+        path: "/category/:categoryName",
+        element: <CategoryPage />,
       },
       {
         path: "/checkout",
