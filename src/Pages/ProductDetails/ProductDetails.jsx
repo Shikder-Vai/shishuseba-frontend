@@ -19,6 +19,7 @@ import {
   pushByNow,
 } from "../../services/DataLayerService";
 import RelatedProducts from "../../components/RelatedProducts";
+import BoldColonText from "../../components/TextFormatting";
 
 const ProductDetails = () => {
   useScrollToTop();
@@ -274,7 +275,9 @@ const ProductDetails = () => {
               {item?.details?.map((detail, idx) => (
                 <div key={idx} className="mb-3 flex">
                   <span className="mr-2 text-brand-teal-base">•</span>
-                  <p className="flex-1 text-justify">{detail}</p>
+                  <p className="flex-1 text-justify whitespace-pre-line">
+                    <BoldColonText text={detail} />
+                  </p>
                 </div>
               ))}
             </div>
@@ -433,7 +436,9 @@ const ProductDetails = () => {
                     <h3 className="text-lg font-semibold text-brand-teal-base mb-2">
                       {q.question}
                     </h3>
-                    <p className="text-brand-gray-base text-justify">{q.ans}</p>
+                    <p className="text-brand-gray-base text-justify whitespace-pre-line">
+                      <BoldColonText text={q.ans} />
+                    </p>
                   </div>
                 ))}
               </div>
@@ -465,7 +470,7 @@ const ProductDetails = () => {
                       )}
                     </button>
                     {openIndex === id && (
-                      <div className="px-6 pb-4 text-brand-gray-base text-justify">
+                      <div className="px-6 pb-4 text-brand-gray-base text-justify whitespace-pre-line">
                         {q.ans}
                       </div>
                     )}
