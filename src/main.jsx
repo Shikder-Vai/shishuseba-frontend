@@ -42,6 +42,7 @@ function AuthProvider({ children }) {
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
     }
+    console.log(user);
   };
 
   // Register function

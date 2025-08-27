@@ -4,5 +4,10 @@
 
 body {
   @apply bg-brand-cream text-brand-gray-base;
-  font-family: 'Inter', sans-serif; /* Use your brand font */
+  font-family: "Inter", sans-serif; /* Use your brand font */
+}
+@media print {
+  .invoice-page:last-child {
+    page-break-after: auto !important;
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiSearch, FiEye, FiX, FiUser, FiCheck, FiTruck } from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import SectionTitle from "../../components/SectionTitle";
 const statusColors = {
   shipped: "bg-yellow-100 text-yellow-800",
   delivered: "bg-green-100 text-green-800",
-  cancel: "bg-red-100 text-red-800"
+  cancel: "bg-red-100 text-red-800",
 };
 
 const FinalOrder = () => {
@@ -30,7 +30,20 @@ const FinalOrder = () => {
   const formatProcessingTime = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
     let hours = date.getHours();
@@ -42,22 +55,22 @@ const FinalOrder = () => {
 
   const { mutate: updateOrderStatus } = useMutation({
     mutationFn: async ({ id, newStatus }) => {
-      const updateData = { 
+      const updateData = {
         status: newStatus,
         ...(newStatus === "cancel" && {
-          cancelBy: { 
-            ...user, 
-            cancelledTime: formatProcessingTime() 
-          }
+          cancelBy: {
+            ...user,
+            cancelledTime: formatProcessingTime(),
+          },
         }),
         ...(newStatus === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatProcessingTime()
-          }
-        })
+            deliveredTime: formatProcessingTime(),
+          },
+        }),
       };
-      
+
       const res = await axiosPublic.patch(`/order-request/${id}`, updateData);
       return res.data;
     },
@@ -71,7 +84,7 @@ const FinalOrder = () => {
         icon: "success",
         confirmButtonColor: "#018b76",
         background: "#ffffff",
-        backdrop: `rgba(254,239,224,0.4)`
+        backdrop: `rgba(254,239,224,0.4)`,
       });
       setShowDetailModal(false);
     },
@@ -81,7 +94,7 @@ const FinalOrder = () => {
         text: "Failed to update order status",
         icon: "error",
         confirmButtonColor: "#018b76",
-        background: "#ffffff"
+        background: "#ffffff",
       });
     },
   });
@@ -93,17 +106,17 @@ const FinalOrder = () => {
         ...(status === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatProcessingTime()
-          }
+            deliveredTime: formatProcessingTime(),
+          },
         }),
         ...(status === "cancel" && {
           cancelBy: {
             ...user,
-            cancelledTime: formatProcessingTime()
-          }
-        })
+            cancelledTime: formatProcessingTime(),
+          },
+        }),
       };
-      
+
       const updates = selectedOrders.map((id) =>
         axiosPublic.patch(`/order-request/${id}`, updateData)
       );
@@ -112,13 +125,13 @@ const FinalOrder = () => {
     onSuccess: () => {
       const action = selectedOrders.length > 1 ? "orders" : "order";
       const statusText = status === "delivered" ? "delivered" : "cancel";
-      
+
       Swal.fire({
         title: "Success",
         text: `Selected ${action} ${statusText} successfully`,
         icon: "success",
         confirmButtonColor: "#018b76",
-        background: "#ffffff"
+        background: "#ffffff",
       });
       setSelectedOrders([]);
       setSelectAll(false);
@@ -130,7 +143,7 @@ const FinalOrder = () => {
         text: "Bulk update failed",
         icon: "error",
         confirmButtonColor: "#018b76",
-        background: "#ffffff"
+        background: "#ffffff",
       });
     },
   });
@@ -144,14 +157,14 @@ const FinalOrder = () => {
     if (selectAll) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(filteredOrders.map(order => order._id));
+      setSelectedOrders(filteredOrders.map((order) => order._id));
     }
     setSelectAll(!selectAll);
   };
 
   const handleCheckbox = (id) => {
     if (selectedOrders.includes(id)) {
-      setSelectedOrders(selectedOrders.filter(orderId => orderId !== id));
+      setSelectedOrders(selectedOrders.filter((orderId) => orderId !== id));
     } else {
       setSelectedOrders([...selectedOrders, id]);
     }
@@ -159,9 +172,8 @@ const FinalOrder = () => {
 
   if (loadingOrder) return <Loader />;
 
-  const filteredOrders = orders?.filter(order => 
-    order?.user?.mobile?.includes(searchTerm)
-  ) || [];
+  const filteredOrders =
+    orders?.filter((order) => order?.user?.mobile?.includes(searchTerm)) || [];
 
   if (filteredOrders?.length === 0) {
     return (
@@ -170,10 +182,12 @@ const FinalOrder = () => {
           <SectionTitle title="Shipping Orders" />
           <div className="bg-white rounded-xl shadow-soft p-6 text-center">
             <p className="text-brand-gray-base text-lg font-medium">
-              {searchTerm ? "No orders match your search" : "No shipped orders found!"}
+              {searchTerm
+                ? "No orders match your search"
+                : "No shipped orders found!"}
             </p>
             {searchTerm && (
-              <button 
+              <button
                 onClick={() => setSearchTerm("")}
                 className="mt-4 text-brand-teal-base hover:underline"
               >
@@ -222,18 +236,18 @@ const FinalOrder = () => {
             <button
               onClick={() => {
                 Swal.fire({
-                  title: 'Are you sure?',
+                  title: "Are you sure?",
                   text: "You won't be able to revert this!",
-                  icon: 'warning',
+                  icon: "warning",
                   showCancelButton: true,
-                  confirmButtonColor: '#018b76',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'Yes, cancel it!'
+                  confirmButtonColor: "#018b76",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, cancel it!",
                 }).then((result) => {
                   if (result.isConfirmed) {
                     bulkUpdateOrders("cancel");
                   }
-                })
+                });
               }}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
             >
@@ -253,9 +267,9 @@ const FinalOrder = () => {
             <Thead className="bg-brand-teal-base text-white">
               <Tr>
                 <Th className="px-6 py-4 text-left">
-                  <input 
-                    type="checkbox" 
-                    checked={selectAll} 
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
                     onChange={handleSelectAll}
                     className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
                   />
@@ -263,18 +277,29 @@ const FinalOrder = () => {
                 <Th className="px-6 py-4 text-left">SL</Th>
                 <Th className="px-6 py-4 text-left">Order ID</Th>
                 <Th className="px-6 py-4 text-left">Customer</Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">Phone</Th>
-                <Th className="px-6 py-4 text-left hidden lg:table-cell">Items</Th>
+                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                  Phone
+                </Th>
+                <Th className="px-6 py-4 text-left hidden lg:table-cell">
+                  Items
+                </Th>
                 <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">Order Date</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">Shipped By</Th>
+                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                  Order Date
+                </Th>
+                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                  Shipped By
+                </Th>
                 <Th className="px-6 py-4 text-left">Status</Th>
                 <Th className="px-6 py-4 text-left">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
               {filteredOrders.reverse().map((o, i) => (
-                <Tr key={o?._id} className="hover:bg-brand-cream/30 transition-colors">
+                <Tr
+                  key={o?._id}
+                  className="hover:bg-brand-cream/30 transition-colors"
+                >
                   <Td className="px-4 py-3 whitespace-nowrap">
                     <input
                       type="checkbox"
@@ -285,10 +310,15 @@ const FinalOrder = () => {
                   </Td>
                   <Td className="px-4 py-3 whitespace-nowrap">{i + 1}</Td>
                   <Td className="px-4 py-3">
-                    <div className="font-medium text-brand-gray-base">{o?.orderId}</div>
+                    <div className="font-medium text-brand-gray-base">
+                      {o?.orderId}
+                    </div>
                   </Td>
                   <Td className="px-4 py-3">
-                    <div className="font-medium text-brand-gray-base">{o?.user?.name} <br /> {o?.user?.address} {o?.user?.district}</div>
+                    <div className="font-medium text-brand-gray-base">
+                      {o?.user?.name} <br /> {o?.user?.address}{" "}
+                      {o?.user?.district}
+                    </div>
                   </Td>
                   <Td className="px-4 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">
                     {o?.user?.mobile}
@@ -303,15 +333,19 @@ const FinalOrder = () => {
                     {o?.user?.orderDate}
                   </Td>
                   <Td className="px-4 py-3 whitespace-nowrap">
-                      <div className="text-brand-gray-base">
-                        <p className="font-medium">{o?.shippingBy?.name}</p>
-                        <p className="text-xs text-brand-orange-base">
-                          {o?.shippingBy?.shippingTime}
-                        </p>
-                      </div>
-                    </Td>
+                    <div className="text-brand-gray-base">
+                      <p className="font-medium">{o?.shippingBy?.name}</p>
+                      <p className="text-xs text-brand-orange-base">
+                        {o?.shippingBy?.shippingTime}
+                      </p>
+                    </div>
+                  </Td>
                   <Td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[o.status] || "bg-gray-100 text-gray-800"}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        statusColors[o.status] || "bg-gray-100 text-gray-800"
+                      }`}
+                    >
                       {o.status}
                     </span>
                   </Td>
@@ -352,7 +386,7 @@ const FinalOrder = () => {
                 <h2 className="text-xl font-semibold text-brand-teal-base">
                   Order {selectedOrder?.orderId}
                 </h2>
-                <button 
+                <button
                   onClick={() => setShowDetailModal(false)}
                   className="text-brand-gray-base hover:text-brand-orange-base"
                 >
@@ -365,8 +399,14 @@ const FinalOrder = () => {
                 <div className="mb-6 p-4 rounded-lg bg-brand-cream">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-brand-gray-base">Order Status</p>
-                      <p className={`text-lg font-medium ${statusColors[selectedOrder.status]}`}>
+                      <p className="text-sm text-brand-gray-base">
+                        Order Status
+                      </p>
+                      <p
+                        className={`text-lg font-medium ${
+                          statusColors[selectedOrder.status]
+                        }`}
+                      >
                         {selectedOrder.status}
                       </p>
                     </div>
@@ -375,7 +415,10 @@ const FinalOrder = () => {
                         className="border border-brand-gray-light px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
                         defaultValue={selectedOrder?.status}
                         onChange={(e) => {
-                          updateOrderStatus({ id: selectedOrder?._id, newStatus: e.target.value });
+                          updateOrderStatus({
+                            id: selectedOrder?._id,
+                            newStatus: e.target.value,
+                          });
                         }}
                       >
                         <option value="shipped">Shipped</option>
@@ -393,12 +436,30 @@ const FinalOrder = () => {
                       <div className="p-2 rounded-full bg-brand-teal-100 text-brand-teal-base">
                         <FiUser size={18} />
                       </div>
-                      <h3 className="text-lg font-medium text-brand-teal-base">Customer Information</h3>
+                      <h3 className="text-lg font-medium text-brand-teal-base">
+                        Customer Information
+                      </h3>
                     </div>
                     <div className="space-y-2 pl-11">
-                      <p><span className="font-medium text-brand-gray-base">Name:</span> {selectedOrder.user?.name}</p>
-                      <p><span className="font-medium text-brand-gray-base">Phone:</span> {selectedOrder.user?.mobile}</p>
-                      <p><span className="font-medium text-brand-gray-base">Address:</span> {selectedOrder.user?.address}, {selectedOrder.user?.district}</p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Name:
+                        </span>{" "}
+                        {selectedOrder.user?.name}
+                      </p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Phone:
+                        </span>{" "}
+                        {selectedOrder.user?.mobile}
+                      </p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Address:
+                        </span>{" "}
+                        {selectedOrder.user?.address},{" "}
+                        {selectedOrder.user?.district}
+                      </p>
                     </div>
                   </div>
 
@@ -408,11 +469,24 @@ const FinalOrder = () => {
                       <div className="p-2 rounded-full bg-brand-teal-100 text-brand-teal-base">
                         <FiTruck size={18} />
                       </div>
-                      <h3 className="text-lg font-medium text-brand-teal-base">Shipping Info</h3>
+                      <h3 className="text-lg font-medium text-brand-teal-base">
+                        Shipping Info
+                      </h3>
                     </div>
                     <div className="space-y-2 pl-11">
-                      <p><span className="font-medium text-brand-gray-base">Shipping By:</span> {selectedOrder.shippingBy?.name || 'Not specified'}</p>
-                      <p><span className="font-medium text-brand-gray-base">Shipping Time:</span> {selectedOrder.shippingBy?.shippingTime || 'Not specified'}</p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Shipping By:
+                        </span>{" "}
+                        {selectedOrder.shippingBy?.name || "Not specified"}
+                      </p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Shipping Time:
+                        </span>{" "}
+                        {selectedOrder.shippingBy?.shippingTime ||
+                          "Not specified"}
+                      </p>
                     </div>
                   </div>
 
@@ -422,11 +496,24 @@ const FinalOrder = () => {
                       <div className="p-2 rounded-full bg-brand-teal-100 text-brand-teal-base">
                         <FiCheck size={18} />
                       </div>
-                      <h3 className="text-lg font-medium text-brand-teal-base">Approval Info</h3>
+                      <h3 className="text-lg font-medium text-brand-teal-base">
+                        Approval Info
+                      </h3>
                     </div>
                     <div className="space-y-2 pl-11">
-                      <p><span className="font-medium text-brand-gray-base">Approved By:</span> {selectedOrder.approvedBy?.name || 'Not specified'}</p>
-                      <p><span className="font-medium text-brand-gray-base">Approval Time:</span> {selectedOrder.approvedBy?.approvedTime || 'Not specified'}</p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Approved By:
+                        </span>{" "}
+                        {selectedOrder.approvedBy?.name || "Not specified"}
+                      </p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Approval Time:
+                        </span>{" "}
+                        {selectedOrder.approvedBy?.approvedTime ||
+                          "Not specified"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -439,15 +526,20 @@ const FinalOrder = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-brand-gray-base mb-1">Shipping Cost</p>
+                      <p className="text-sm font-medium text-brand-gray-base mb-1">
+                        Shipping Cost
+                      </p>
                       <p className="bg-white p-3 rounded border border-brand-gray-light">
                         {selectedOrder.shippingCost} BDT
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-brand-gray-base mb-1">Delivery Address</p>
+                      <p className="text-sm font-medium text-brand-gray-base mb-1">
+                        Delivery Address
+                      </p>
                       <p className="bg-white p-3 rounded border border-brand-gray-light">
-                        {selectedOrder.user?.address}, {selectedOrder.user?.district}
+                        {selectedOrder.user?.address},{" "}
+                        {selectedOrder.user?.district}
                       </p>
                     </div>
                   </div>
@@ -455,16 +547,28 @@ const FinalOrder = () => {
 
                 {/* Order Items */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-medium text-brand-teal-base mb-3">Order Items</h3>
+                  <h3 className="text-lg font-medium text-brand-teal-base mb-3">
+                    Order Items
+                  </h3>
                   <div className="border border-brand-gray-light rounded-lg overflow-hidden">
                     <table className="min-w-full divide-y divide-brand-gray-light">
                       <thead className="bg-brand-gray-light">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">Product</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">SKU</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">Price</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">Qty</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">Total</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">
+                            Product
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">
+                            SKU
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">
+                            Price
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">
+                            Qty
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-brand-gray-base uppercase tracking-wider">
+                            Total
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-brand-gray-light">
@@ -472,24 +576,35 @@ const FinalOrder = () => {
                           <tr key={item._id}>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <img 
-                                  src={item.image} 
-                                  alt={item.name} 
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
                                   className="w-10 h-10 object-cover rounded"
                                   onError={(e) => {
-                                    e.target.onerror = null; 
-                                    e.target.src = "https://via.placeholder.com/40";
+                                    e.target.onerror = null;
+                                    e.target.src =
+                                      "https://via.placeholder.com/40";
                                   }}
                                 />
                                 <div>
-                                  <p className="font-medium text-brand-gray-base">{item.name}</p>
-                                  <p className="text-xs text-brand-gray-base">{item.weight}</p>
+                                  <p className="font-medium text-brand-gray-base">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-xs text-brand-gray-base">
+                                    {item.weight}
+                                  </p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-brand-gray-base">{item.sku}</td>
-                            <td className="px-4 py-3 text-brand-gray-base">{item.price} BDT</td>
-                            <td className="px-4 py-3 text-brand-gray-base">{item.quantity}</td>
+                            <td className="px-4 py-3 text-brand-gray-base">
+                              {item.sku}
+                            </td>
+                            <td className="px-4 py-3 text-brand-gray-base">
+                              {item.price} BDT
+                            </td>
+                            <td className="px-4 py-3 text-brand-gray-base">
+                              {item.quantity}
+                            </td>
                             <td className="px-4 py-3 font-medium text-brand-gray-base">
                               {item.price * item.quantity} BDT
                             </td>
@@ -502,19 +617,29 @@ const FinalOrder = () => {
 
                 {/* Order Summary */}
                 <div className="bg-brand-cream p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-brand-teal-base mb-3">Order Summary</h3>
+                  <h3 className="text-lg font-medium text-brand-teal-base mb-3">
+                    Order Summary
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-brand-gray-base">Subtotal:</span>
-                      <span className="font-medium">{selectedOrder.subtotal} BDT</span>
+                      <span className="font-medium">
+                        {selectedOrder.subtotal} BDT
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-brand-gray-base">Shipping:</span>
-                      <span className="font-medium">{selectedOrder.shippingCost} BDT</span>
+                      <span className="font-medium">
+                        {selectedOrder.shippingCost} BDT
+                      </span>
                     </div>
                     <div className="pt-3 border-t border-brand-gray-light flex justify-between">
-                      <span className="text-brand-gray-base font-semibold">Total:</span>
-                      <span className="font-bold text-brand-teal-base">{selectedOrder.total} BDT</span>
+                      <span className="text-brand-gray-base font-semibold">
+                        Total:
+                      </span>
+                      <span className="font-bold text-brand-teal-base">
+                        {selectedOrder.total} BDT
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -522,8 +647,12 @@ const FinalOrder = () => {
                 {/* Admin Notes */}
                 {selectedOrder.admin_note && (
                   <div className="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                    <h3 className="text-lg font-medium text-yellow-800 mb-2">Admin Notes</h3>
-                    <p className="text-yellow-700">{selectedOrder.admin_note}</p>
+                    <h3 className="text-lg font-medium text-yellow-800 mb-2">
+                      Admin Notes
+                    </h3>
+                    <p className="text-yellow-700">
+                      {selectedOrder.admin_note}
+                    </p>
                   </div>
                 )}
               </div>

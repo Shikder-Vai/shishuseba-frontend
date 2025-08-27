@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
@@ -10,6 +11,7 @@ import {
   FiCalendar,
   FiX,
   FiTruck,
+  FiPrinter,
 } from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
@@ -21,6 +23,7 @@ import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import axios from "axios";
 import SectionTitle from "../../components/SectionTitle";
+import PrintModal from "../../components/PrintModal";
 
 const statusColors = {
   processing: "bg-blue-100 text-blue-600",
@@ -39,6 +42,25 @@ const ProcessingOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [ordersToPrint, setOrdersToPrint] = useState([]);
+
+  const handlePrint = () => {
+    const selectedOrdersData = orders.filter((order) =>
+      selectedOrders.includes(order._id)
+    );
+
+    if (selectedOrdersData.length === 0) {
+      Swal.fire(
+        "No Orders Selected",
+        "Please select one or more orders to print.",
+        "info"
+      );
+      return;
+    }
+    setOrdersToPrint(selectedOrdersData);
+    setIsPrintModalOpen(true);
+  };
 
   const formatProcessingTime = () => {
     const date = new Date();
@@ -291,6 +313,12 @@ const ProcessingOrder = () => {
             >
               <FiCheck />
               Mark as Shipment
+            </button>
+            <button
+              onClick={handlePrint}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+            >
+              <FiPrinter /> Print Invoices
             </button>
             <button
               onClick={() => bulkUpdateOrders("cancel")}
@@ -813,6 +841,14 @@ const ProcessingOrder = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* V V V PASTE THE NEW MODAL CODE HERE V V V */}
+      {isPrintModalOpen && (
+        <PrintModal
+          orders={ordersToPrint}
+          onClose={() => setIsPrintModalOpen(false)}
+        />
+      )}
+      {/* ^ ^ ^ PASTE THE NEW MODAL CODE HERE ^ ^ ^ */}
     </div>
   );
 };
