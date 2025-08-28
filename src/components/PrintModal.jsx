@@ -13,7 +13,7 @@ const PrintModal = ({ orders, onClose }) => {
   });
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-start p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start p-4 overflow-y-auto">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8 relative">
         <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white z-10">
           <h3 className="text-xl font-semibold">

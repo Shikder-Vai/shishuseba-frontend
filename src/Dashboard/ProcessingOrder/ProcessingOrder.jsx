@@ -44,6 +44,53 @@ const ProcessingOrder = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [ordersToPrint, setOrdersToPrint] = useState([]);
+  const [dateFilter, setDateFilter] = useState("all");
+
+  //...inside the ProcessingOrder component
+
+  const filteredOrders =
+    orders
+      ?.filter((order) => {
+        // Step 1: Filter by the selected date
+        if (dateFilter === "all") {
+          return true;
+        }
+
+        const orderDate = new Date(order.processBy?.processingTime);
+        const today = new Date();
+
+        if (dateFilter === "today") {
+          return (
+            orderDate.getDate() === today.getDate() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        if (dateFilter === "yesterday") {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return (
+            orderDate.getDate() === yesterday.getDate() &&
+            orderDate.getMonth() === yesterday.getMonth() &&
+            orderDate.getFullYear() === yesterday.getFullYear()
+          );
+        }
+
+        return true;
+      })
+      .filter((order) => {
+        // Step 2: Filter the result by your search term
+        return order?.user?.mobile?.includes(searchTerm);
+      })
+      .sort((a, b) => {
+        // Step 3: Sort the final list by date
+        const timeA = new Date(a.processBy?.processingTime);
+        const timeB = new Date(b.processBy?.processingTime);
+        return timeB - timeA;
+      }) || [];
+
+  //...the rest of your component...
 
   const handlePrint = () => {
     const selectedOrdersData = orders.filter((order) =>
@@ -211,21 +258,6 @@ const ProcessingOrder = () => {
 
   if (loadingOrder) return <Loader />;
 
-  const filteredOrders =
-    orders
-      ?.filter((order) => order?.user?.mobile?.includes(searchTerm))
-      ?.sort((a, b) => {
-        // Convert approvedTime strings to Date objects for comparison
-        const timeA = new Date(a.processBy?.processingTime);
-        const timeB = new Date(b.processBy?.processingTime);
-
-        // Sort in descending order (newest first)
-        return timeB - timeA;
-
-        // For ascending order (oldest first), use:
-        // return timeA - timeB;
-      }) || [];
-
   const mobileCount = {};
   orders?.forEach((o) => {
     const phone = o?.user?.mobile;
@@ -296,6 +328,39 @@ const ProcessingOrder = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        {/* Add the filter buttons here */}
+        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light">
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "all"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "today"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setDateFilter("yesterday")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "yesterday"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Yesterday
+          </button>
         </div>
 
         {selectedOrders.length > 0 && (

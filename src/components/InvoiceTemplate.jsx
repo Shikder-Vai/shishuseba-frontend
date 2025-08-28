@@ -19,8 +19,8 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
       paddingBottom: "10px",
       marginBottom: "20px",
     },
-    invoiceColumn: { width: "48%" },
-    billedToColumn: { width: "48%", textAlign: "right" },
+    invoiceColumn: { width: "65%" },
+    billedToColumn: { width: "35%" },
     table: {
       width: "100%",
       borderCollapse: "collapse",
