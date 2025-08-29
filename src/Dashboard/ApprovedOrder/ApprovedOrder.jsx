@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
@@ -35,6 +36,7 @@ const ApprovedOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [dateFilter, setDateFilter] = useState("all");
 
   const formatProcessingTime = () => {
     const date = new Date();
@@ -138,18 +140,46 @@ const ApprovedOrder = () => {
 
   const filteredOrders =
     orders
-      ?.filter((order) => order?.user?.mobile?.includes(searchTerm))
-      ?.sort((a, b) => {
-        // Convert approvedTime strings to Date objects for comparison
+      ?.filter((order) => {
+        // Step 1: Filter by the selected date
+        if (dateFilter === "all") {
+          return true;
+        }
+
+        const orderDate = new Date(order.approvedBy?.approvedTime);
+        const today = new Date();
+
+        if (dateFilter === "today") {
+          return (
+            orderDate.getDate() === today.getDate() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        if (dateFilter === "yesterday") {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return (
+            orderDate.getDate() === yesterday.getDate() &&
+            orderDate.getMonth() === yesterday.getMonth() &&
+            orderDate.getFullYear() === yesterday.getFullYear()
+          );
+        }
+
+        return true;
+      })
+      .filter((order) => {
+        // Step 2: Filter the result by your search term
+        return order?.user?.mobile?.includes(searchTerm);
+      })
+      .sort((a, b) => {
+        // Step 3: Sort the final list by date
         const timeA = new Date(a.approvedBy?.approvedTime);
         const timeB = new Date(b.approvedBy?.approvedTime);
-
-        // Sort in descending order (newest first)
         return timeB - timeA;
-
-        // For ascending order (oldest first), use:
-        // return timeA - timeB;
       }) || [];
+
   const mobileCount = {};
   orders?.forEach((o) => {
     const phone = o?.user?.mobile;
@@ -221,6 +251,40 @@ const ApprovedOrder = () => {
           />
         </div>
 
+        {/* Add the filter buttons here */}
+        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light">
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "all"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "today"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setDateFilter("yesterday")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "yesterday"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Yesterday
+          </button>
+        </div>
+
         {selectedOrders.length > 0 && (
           <motion.div
             className="flex items-center gap-4 bg-brand-cream p-3 rounded-lg shadow-soft"
@@ -272,7 +336,7 @@ const ApprovedOrder = () => {
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
-              {filteredOrders.map((o, i) => {
+              {filteredOrders.map((o) => {
                 const isDuplicate = mobileCount[o?.user?.mobile] > 1;
                 return (
                   <>

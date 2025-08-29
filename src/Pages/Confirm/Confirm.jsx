@@ -8,12 +8,12 @@ const Confirm = () => {
   return (
     <div className="min-h-screen bg-brand-cream flex items-center justify-center p-6">
       <div className="max-w-2xl w-full bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light">
-        <div className="bg-brand-teal-base p-6">
+        <div className="bg-brand-teal-base items-center text-center p-6">
           <h1 className="text-2xl font-bold text-white">Order Confirmation</h1>
         </div>
 
         <div className="p-8 space-y-6">
-          <div className="space-y-2">
+          <div className="space-y-2 items-center text-center">
             <svg
               className="w-16 h-16 mx-auto text-brand-teal-100"
               fill="none"

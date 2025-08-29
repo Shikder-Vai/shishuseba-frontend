@@ -111,7 +111,7 @@ const ProductCard = ({ product }) => {
 
             {/* Display first detail if exists */}
             {details?.length > 0 && (
-              <div className="flex items-start gap-2 text-sm text-brand-gray-base">
+              <div className="flex items-start h-full gap-2 text-sm text-brand-gray-base">
                 {/* <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-teal-500" /> */}
                 <p>
                   {details[0].length > 60
@@ -120,20 +120,19 @@ const ProductCard = ({ product }) => {
                 </p>
               </div>
             )}
-
-            <div className="flex items-center justify-between pt-2">
-              <p className="text-brand-teal-base text-lg font-bold">
-                {variants[0].price} Tk
-              </p>
-              <p className="flex items-center gap-1 text-sm text-brand-gray-base">
-                <Scale className="w-4 h-4 text-brand-teal-400" />
-                {variants[0]?.weight}
-              </p>
-            </div>
           </div>
         </Link>
 
         <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between  mx-2">
+            <p className="text-brand-teal-base text-lg font-bold">
+              {variants[0].price} Tk
+            </p>
+            <p className="flex items-center gap-1 text-sm text-brand-gray-base">
+              <Scale className="w-4 h-4 text-brand-teal-400" />
+              {variants[0]?.weight}
+            </p>
+          </div>
           <motion.button
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.01 }}

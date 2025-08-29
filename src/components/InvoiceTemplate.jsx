@@ -4,8 +4,7 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
   const styles = {
     page: {
       width: "210mm",
-      padding: "20mm",
-      minHeight: "265mm",
+      padding: "10mm",
       margin: "10mm auto",
       border: "1px #D3D3D3 solid",
       borderRadius: "5px",
@@ -55,7 +54,7 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
             <strong>Address:</strong> Savar, Dhaka, Bangladesh
           </p>
           <p>
-            <strong>Order ID:</strong> {order.orderId}
+            <strong>ConsignmentID:</strong> {order?.consignment_id}
           </p>
           <p>
             <strong>Date:</strong> {order.user?.orderDate}
@@ -63,11 +62,18 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
         </div>
         <div style={styles.billedToColumn}>
           <h4 className="font-bold">Billed To:</h4>
-          <p>{order.user?.name}</p>
           <p>
+            <strong>Name: </strong>
+            {order.user?.name}
+          </p>
+          <p>
+            <strong>Address: </strong>
             {order.user?.address}, {order.user?.district}
           </p>
-          <p>{order.user?.mobile}</p>
+          <p>
+            <strong>Mob: </strong>
+            {order.user?.mobile}
+          </p>
         </div>
       </div>
 
@@ -102,6 +108,11 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
         <h4>
           <strong>Total: {order.total?.toFixed(2)} BDT</strong>
         </h4>
+      </div>
+      <div className="text-center">
+        <h2 className="text-xl font-semibold text-brand-gray-base">
+          🤍Thank you for your order!
+        </h2>
       </div>
     </div>
   );

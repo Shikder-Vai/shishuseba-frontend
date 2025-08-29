@@ -1,6 +1,15 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch, FiEye, FiX, FiUser, FiCheck, FiTruck } from "react-icons/fi";
+import {
+  FiSearch,
+  FiEye,
+  FiX,
+  FiUser,
+  FiCheck,
+  FiTruck,
+  FiPrinter,
+} from "react-icons/fi";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useOrderRequest from "../../hooks/useOrderRequest";
@@ -10,6 +19,7 @@ import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
+import PrintModal from "../../components/PrintModal";
 
 const statusColors = {
   shipped: "bg-yellow-100 text-yellow-800",
@@ -26,6 +36,9 @@ const FinalOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [ordersToPrint, setOrdersToPrint] = useState([]);
+  const [dateFilter, setDateFilter] = useState("all");
 
   const formatProcessingTime = () => {
     const date = new Date();
@@ -172,8 +185,64 @@ const FinalOrder = () => {
 
   if (loadingOrder) return <Loader />;
 
+  const handlePrint = () => {
+    const selectedOrdersData = orders.filter((order) =>
+      selectedOrders.includes(order._id)
+    );
+
+    if (selectedOrdersData.length === 0) {
+      Swal.fire(
+        "No Orders Selected",
+        "Please select one or more orders to print.",
+        "info"
+      );
+      return;
+    }
+    setOrdersToPrint(selectedOrdersData);
+    setIsPrintModalOpen(true);
+  };
+
   const filteredOrders =
-    orders?.filter((order) => order?.user?.mobile?.includes(searchTerm)) || [];
+    orders
+      ?.filter((order) => {
+        // Step 1: Filter by the selected date
+        if (dateFilter === "all") {
+          return true;
+        }
+
+        const orderDate = new Date(order.shippingBy?.shippingTime);
+        const today = new Date();
+
+        if (dateFilter === "today") {
+          return (
+            orderDate.getDate() === today.getDate() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        if (dateFilter === "yesterday") {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return (
+            orderDate.getDate() === yesterday.getDate() &&
+            orderDate.getMonth() === yesterday.getMonth() &&
+            orderDate.getFullYear() === yesterday.getFullYear()
+          );
+        }
+
+        return true;
+      })
+      .filter((order) => {
+        // Step 2: Filter the result by your search term
+        return order?.user?.mobile?.includes(searchTerm);
+      })
+      .sort((a, b) => {
+        // Step 3: Sort the final list by date
+        const timeA = new Date(a.shippingBy?.shippingTime);
+        const timeB = new Date(b.shippingBy?.shippingTime);
+        return timeB - timeA;
+      }) || [];
 
   if (filteredOrders?.length === 0) {
     return (
@@ -217,6 +286,39 @@ const FinalOrder = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        {/* Add the filter buttons here */}
+        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light">
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "all"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "today"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setDateFilter("yesterday")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "yesterday"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Yesterday
+          </button>
+        </div>
 
         {selectedOrders.length > 0 && (
           <motion.div
@@ -231,7 +333,13 @@ const FinalOrder = () => {
               onClick={() => bulkUpdateOrders("delivered")}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
             >
-              <FiCheck /> Mark as Delivered
+              <FiCheck /> Delivered
+            </button>
+            <button
+              onClick={handlePrint}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+            >
+              <FiPrinter /> Print
             </button>
             <button
               onClick={() => {
@@ -251,7 +359,7 @@ const FinalOrder = () => {
               }}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
             >
-              <FiX /> Cancel Orders
+              <FiX /> Canceled
             </button>
           </motion.div>
         )}
@@ -660,6 +768,14 @@ const FinalOrder = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/*  MODAL CODE HERE */}
+      {isPrintModalOpen && (
+        <PrintModal
+          orders={ordersToPrint}
+          onClose={() => setIsPrintModalOpen(false)}
+        />
+      )}
+      {/* MODAL CODE End */}
     </div>
   );
 };

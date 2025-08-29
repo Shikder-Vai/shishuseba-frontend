@@ -233,14 +233,13 @@ const Cart = () => {
                 <span className="font-medium">{subtotal}৳</span>
               </div>
 
-              {/* --- MODIFIED: Shipping Section with Conditional Logic --- */}
               <div className="py-4 border-b border-gray-100">
                 <h4 className="text-sm font-medium text-gray-900 mb-3">
                   Shipping Method
                 </h4>
                 <div className="space-y-3">
                   {subtotal >= 1000 ? (
-                    // If subtotal > 1000, show Free Delivery
+                    //  show Free Delivery
                     <label className="flex items-center justify-between p-3 border border-brand-teal-base rounded-lg bg-teal-50 cursor-not-allowed">
                       <div className="flex items-center space-x-3">
                         <input

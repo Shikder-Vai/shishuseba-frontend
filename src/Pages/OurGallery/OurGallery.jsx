@@ -3,13 +3,20 @@ import ReactPlayer from "react-player";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { Loader2 } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import SectionTitle from "../../components/SectionTitle";
 
 const OurGallery = () => {
   const axiosPublic = useAxiosPublic();
+  // const currentOrigin =
+  //   typeof window !== "undefined" ? window.location.origin : "";
 
-  const { data: videos = [], isLoading, isError } = useQuery({
+  const {
+    data: videos = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["youtubeVideos"],
     queryFn: async () => {
       const response = await axiosPublic.get("/youtube");

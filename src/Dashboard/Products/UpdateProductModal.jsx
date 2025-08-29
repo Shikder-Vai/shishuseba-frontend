@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useCategories from "../../hooks/useCategories";
@@ -23,7 +24,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
   const [detailInput, setDetailInput] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [variants, setVariants] = useState([{ weight: '', price: '' }]);
+  const [variants, setVariants] = useState([{ weight: "", price: "" }]);
 
   useEffect(() => {
     if (product) {
@@ -33,7 +34,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
         questions: product.questions || [],
         dropdownQuestions: product.dropdownQuestions || [],
       });
-      setVariants(product.variants || [{ weight: '', price: '' }]);
+      setVariants(product.variants || [{ weight: "", price: "" }]);
     }
   }, [product]);
 
@@ -52,6 +53,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
         setFormData((prev) => ({ ...prev, image: data.data.url }));
         toast.success("Image uploaded successfully");
       }
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Failed to upload image");
     } finally {
@@ -108,7 +110,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
   };
 
   const handleAddVariant = () => {
-    setVariants([...variants, { weight: '', price: '' }]);
+    setVariants([...variants, { weight: "", price: "" }]);
   };
 
   const handleVariantChange = (index, field, value) => {
@@ -173,7 +175,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
     e.preventDefault();
     const payload = {
       ...formData,
-      variants: variants.filter(v => v.weight && v.price),
+      variants: variants.filter((v) => v.weight && v.price),
     };
     updateProduct(payload);
   };
@@ -386,7 +388,9 @@ const UpdateProductModal = ({ onClose, productId }) => {
                         type="text"
                         placeholder="e.g., 500g, 1L"
                         value={variant.weight}
-                        onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
+                        onChange={(e) =>
+                          handleVariantChange(index, "weight", e.target.value)
+                        }
                         className="w-full p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
                       />
                     </div>
@@ -399,7 +403,9 @@ const UpdateProductModal = ({ onClose, productId }) => {
                         type="number"
                         placeholder="0.00"
                         value={variant.price}
-                        onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                        onChange={(e) =>
+                          handleVariantChange(index, "price", e.target.value)
+                        }
                         className="w-full p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
                         min="0"
                         step="0.01"
@@ -410,7 +416,11 @@ const UpdateProductModal = ({ onClose, productId }) => {
                       type="button"
                       onClick={() => handleRemoveVariant(index)}
                       disabled={variants.length <= 1}
-                      className={`p-3 text-red-500 hover:text-red-700 rounded-lg ${variants.length <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`p-3 text-red-500 hover:text-red-700 rounded-lg ${
+                        variants.length <= 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     >
                       <Trash2 size={16} />
                     </button>
