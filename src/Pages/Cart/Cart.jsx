@@ -22,6 +22,17 @@ const Cart = () => {
     0
   );
 
+  // --- NEW: useEffect to automatically set shipping cost based on subtotal ---
+  useEffect(() => {
+    if (subtotal > 1000) {
+      setShippingCost("0"); // Set shipping to 0 for free delivery
+    } else {
+      // Reset to a default when subtotal is no longer eligible for free shipping
+      // You can keep the user's previous selection if you prefer more complex logic
+      setShippingCost("80");
+    }
+  }, [subtotal]); // This effect runs whenever the subtotal changes
+
   // Calculate total when subtotal or shipping changes
   useEffect(() => {
     setTotal(subtotal + parseFloat(shippingCost));
@@ -222,56 +233,66 @@ const Cart = () => {
                 <span className="font-medium">{subtotal}৳</span>
               </div>
 
-              {/* Shipping */}
+              {/* --- MODIFIED: Shipping Section with Conditional Logic --- */}
               <div className="py-4 border-b border-gray-100">
                 <h4 className="text-sm font-medium text-gray-900 mb-3">
                   Shipping Method
                 </h4>
                 <div className="space-y-3">
-                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="radio"
-                        name="shipping"
-                        value="80"
-                        checked={shippingCost === "80"}
-                        onChange={handleShippingChange}
-                        className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
-                      />
-                      <span>Inside Dhaka</span>
-                    </div>
-                    <span className="text-brand-gray-base">80৳</span>
-                  </label>
-                  {/* <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <input 
-                        type="radio" 
-                        name="shipping" 
-                        value="100" 
-                        checked={shippingCost === "100"}
-                        onChange={handleShippingChange}
-                        className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
-                      />
-                      <span>Around Dhaka</span>
-                    </div>
-                    <span className="text-brand-gray-base">100৳</span>
-                  </label> */}
-                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="radio"
-                        name="shipping"
-                        value="100"
-                        checked={shippingCost === "100"}
-                        onChange={handleShippingChange}
-                        className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
-                      />
-                      <span>Outside Dhaka</span>
-                    </div>
-                    <span className="text-brand-gray-base">100৳</span>
-                  </label>
+                  {subtotal >= 1000 ? (
+                    // If subtotal > 1000, show Free Delivery
+                    <label className="flex items-center justify-between p-3 border border-brand-teal-base rounded-lg bg-teal-50 cursor-not-allowed">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="shipping"
+                          value="0"
+                          checked={true}
+                          disabled={true}
+                          className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                        />
+                        <span className="font-semibold text-brand-teal-base">
+                          Free Delivery
+                        </span>
+                      </div>
+                      <span className="text-brand-gray-base">0৳</span>
+                    </label>
+                  ) : (
+                    // Otherwise, show standard options
+                    <>
+                      <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="radio"
+                            name="shipping"
+                            value="80"
+                            checked={shippingCost === "80"}
+                            onChange={handleShippingChange}
+                            className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                          />
+                          <span>Inside Dhaka</span>
+                        </div>
+                        <span className="text-brand-gray-base">80৳</span>
+                      </label>
+                      <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="radio"
+                            name="shipping"
+                            value="100"
+                            checked={shippingCost === "100"}
+                            onChange={handleShippingChange}
+                            className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                          />
+                          <span>Outside Dhaka</span>
+                        </div>
+                        <span className="text-brand-gray-base">100৳</span>
+                      </label>
+                    </>
+                  )}
                 </div>
               </div>
+              {/* --- END OF MODIFIED SECTION --- */}
 
               {/* Total */}
               <div className="flex justify-between py-4 mb-6">
