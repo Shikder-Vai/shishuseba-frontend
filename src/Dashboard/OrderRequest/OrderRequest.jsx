@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
@@ -191,7 +192,9 @@ const OrderRequest = () => {
   if (loadingOrder || loadingProduct) return <Loader />;
 
   const filteredOrders =
-    orders?.filter((order) => order?.user?.mobile?.includes(searchTerm)).reverse() || [];
+    orders
+      ?.filter((order) => order?.user?.mobile?.includes(searchTerm))
+      .reverse() || [];
 
   const mobileCount = {};
   orders.forEach((o) => {

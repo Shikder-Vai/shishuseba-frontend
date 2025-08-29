@@ -197,16 +197,14 @@ const ProcessingOrder = () => {
         note: order?.admin_note || "N/A",
       }));
 
-      console.log("📦 Steadfast Shipments:", shipments);
-
       // First hit Steadfast API
       const steadfastRes = await axios.post(
         "https://portal.packzy.com/api/v1/create_order/bulk-order",
         shipments,
         {
           headers: {
-            "Api-Key": "nbjktthwzlfbtnskca2rlx5pltfsao9a",
-            "Secret-Key": "p2fqqtnuhubfnapvypto1qym",
+            "Api-Key": "thuhxy5ezmtxeso364otexfymr9ekdkh",
+            "Secret-Key": "bk5i0dckqfkebpmg35ugxzln",
             "Content-Type": "application/json",
           },
           withCredentials: false,
@@ -221,12 +219,29 @@ const ProcessingOrder = () => {
       }
 
       // Only if Steadfast API is successful, update our database
-      const updates = selectedOrders.map((id) =>
-        axiosPublic.patch(`/order-request/${id}`, {
+      // ---  STARTS  ---
+
+      // 1. Create a map for easy lookup of shipment data by invoice ID
+      const shipmentDataMap = new Map();
+      steadfastRes.data.data.forEach((shipment) => {
+        shipmentDataMap.set(shipment.invoice, shipment);
+      });
+
+      const updates = selectedOrdersData.map((order) => {
+        const shipmentDetails = shipmentDataMap.get(order.orderId);
+
+        const payload = {
           status: newStatus,
           shippingBy: { ...user, shippingTime: updateTime },
-        })
-      );
+          consignment_id: shipmentDetails?.consignment_id || null,
+          tracking_code: shipmentDetails?.tracking_code || null,
+        };
+
+        // Send the update request for this specific order
+        return axiosPublic.patch(`/order-request/${order._id}`, payload);
+      });
+
+      // ---  ENDS  ---
 
       return Promise.all(updates);
     },
@@ -377,19 +392,19 @@ const ProcessingOrder = () => {
               className="bg-brand-teal-base hover:bg-brand-teal-300 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
             >
               <FiCheck />
-              Mark as Shipment
+              Shipment
             </button>
             <button
               onClick={handlePrint}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
             >
-              <FiPrinter /> Print Invoices
+              <FiPrinter /> Print
             </button>
             <button
               onClick={() => bulkUpdateOrders("cancel")}
               className="bg-brand-orange-base hover:bg-brand-orange-light text-white px-4 py-2 rounded-lg shadow-soft-orange transition-colors flex items-center gap-2"
             >
-              <FiX /> Cancel Orders
+              <FiX /> Cancel
             </button>
           </motion.div>
         )}
@@ -906,14 +921,14 @@ const ProcessingOrder = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* V V V PASTE THE NEW MODAL CODE HERE V V V */}
+      {/*  MODAL CODE HERE */}
       {isPrintModalOpen && (
         <PrintModal
           orders={ordersToPrint}
           onClose={() => setIsPrintModalOpen(false)}
         />
       )}
-      {/* ^ ^ ^ PASTE THE NEW MODAL CODE HERE ^ ^ ^ */}
+      {/* MODAL CODE End */}
     </div>
   );
 };
