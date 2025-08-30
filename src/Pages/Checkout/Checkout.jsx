@@ -148,9 +148,7 @@ const Checkout = () => {
 
         localStorage.clear();
         window.dispatchEvent(new Event("cart-updated"));
-        navigate("/order-success", {
-          state: { orderId: newOrder.orderId },
-        });
+        navigate("/order-success", { state: newOrder });
         Swal.fire({
           position: "center",
           icon: "success",
