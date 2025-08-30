@@ -18,10 +18,7 @@ import {
   X,
 } from "lucide-react";
 import useScrollToTop from "../../hooks/useScrollToTop";
-import {
-  pushPurchase,
-  pushBeginCheckout,
-} from "../../services/DataLayerService";
+import { pushBeginCheckout } from "../../services/DataLayerService";
 
 const Checkout = () => {
   useScrollToTop();
@@ -131,21 +128,6 @@ const Checkout = () => {
       const res = await axiosPublic.post("/order", newOrder);
 
       if (res?.data?.insertedId) {
-        // --- PREPARE DATA FOR GTM ---
-        const orderDetailsForGTM = {
-          _id: newOrder.orderId,
-          totalPrice: newOrder.total,
-          taxPrice: 0,
-          shippingPrice: newOrder.shippingCost,
-          products: newOrder.items.map((item) => ({
-            productId: item._id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-          })),
-        };
-        pushPurchase(orderDetailsForGTM);
-
         localStorage.clear();
         window.dispatchEvent(new Event("cart-updated"));
         navigate("/order-success", { state: newOrder });

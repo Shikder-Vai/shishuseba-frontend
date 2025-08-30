@@ -1,10 +1,12 @@
 import { useLocation } from "react-router-dom";
 import { User, Phone, MapPin } from "lucide-react";
+import { pushPurchase } from "../../services/DataLayerService";
+import { useEffect, useRef } from "react";
 
 const Confirm = () => {
   const location = useLocation();
+  const hasFiredPurchase = useRef(false);
 
-  // ✨ ADDED '|| {}' TO PREVENT CRASHING WHEN location.state IS NULL
   const {
     orderId,
     items = [],
@@ -14,7 +16,28 @@ const Confirm = () => {
     user = {},
   } = location.state || {};
 
-  // If there's no orderId, it's likely a direct visit. You can optionally show a message.
+  // --- GTM TRACKING: PURCHASE ---
+  useEffect(() => {
+    if (orderId && !hasFiredPurchase.current) {
+      const orderDetailsForGTM = {
+        _id: orderId,
+        totalPrice: total,
+        taxPrice: 0,
+        shippingPrice: shippingCost,
+        products: items.map((item) => ({
+          productId: item._id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        userData: user,
+      };
+
+      pushPurchase(orderDetailsForGTM);
+      hasFiredPurchase.current = true;
+    }
+  }, [orderId, items, total, shippingCost, user]);
+  // if have no order then show empty div
   if (!orderId) {
     return (
       <div className="min-h-screen bg-brand-cream flex items-center justify-center p-6">
@@ -70,74 +93,75 @@ const Confirm = () => {
               Please keep this reference for tracking your order
             </p>
           </div>
-
-          <div className="border border-brand-gray-light rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-brand-gray-base mb-4">
-              Order Details
-            </h3>
-            <div className="space-y-3 text-brand-gray-base">
-              <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-brand-teal-base" />
-                <span>{user.name}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-brand-teal-base" />
-                <span>{user.mobile}</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-brand-teal-base mt-1 flex-shrink-0" />
-                <span>
-                  {user.address}, {user.district}, Bangladesh
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="border border-brand-gray-light rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-brand-gray-base mb-4">
-              Order Summary
-            </h3>
-
-            <div className="space-y-4">
-              {items.map((item) => (
-                <div
-                  key={item.id || item._id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 rounded-md object-cover mr-4"
-                    />
-                    <div>
-                      <p className="font-semibold text-brand-gray-base">
-                        {item.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Quantity: {item.quantity}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="font-semibold text-brand-gray-base">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
+          <div className="shadow-md shadow-gray-200">
+            <div className="border border-brand-gray-light rounded-t-lg p-4">
+              <h3 className="text-lg font-semibold  text-brand-gray-base mb-4">
+                Order Details
+              </h3>
+              <div className="space-y-3 text-brand-gray-base">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-brand-teal-base" />
+                  <span>{user.name}</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 text-brand-teal-base" />
+                  <span>{user.mobile}</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-brand-teal-base mt-1 flex-shrink-0" />
+                  <span>
+                    {user.address}, {user.district}, Bangladesh
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-brand-gray-light space-y-2">
-              <div className="flex justify-between text-brand-gray-base">
-                <p>Subtotal</p>
-                <p>${subtotal.toFixed(2)}</p>
+            <div className="border border-brand-gray-light rounded-b-lg p-4">
+              <h3 className="text-lg font-semibold text-brand-gray-base mb-4">
+                Order Summary
+              </h3>
+
+              <div className="space-y-4">
+                {items.map((item) => (
+                  <div
+                    key={item.id || item._id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 rounded-md object-cover mr-4"
+                      />
+                      <div>
+                        <p className="font-semibold text-brand-gray-base">
+                          {item.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Quantity: {item.quantity}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="font-semibold text-brand-gray-base">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <div className="flex justify-between text-brand-gray-base">
-                <p>Shipping</p>
-                <p>${shippingCost.toFixed(2)}</p>
-              </div>
-              <div className="flex justify-between text-brand-gray-base font-bold text-lg">
-                <p>Total</p>
-                <p>${total.toFixed(2)}</p>
+
+              <div className="mt-6 pt-4 border-t border-brand-gray-light space-y-2">
+                <div className="flex justify-between text-brand-gray-base">
+                  <p>Subtotal</p>
+                  <p>${subtotal.toFixed(2)}</p>
+                </div>
+                <div className="flex justify-between text-brand-gray-base">
+                  <p>Shipping</p>
+                  <p>${shippingCost.toFixed(2)}</p>
+                </div>
+                <div className="flex justify-between text-brand-gray-base font-bold text-lg">
+                  <p>Total</p>
+                  <p>${total.toFixed(2)}</p>
+                </div>
               </div>
             </div>
           </div>

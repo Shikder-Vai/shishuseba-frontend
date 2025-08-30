@@ -1,9 +1,9 @@
 window.dataLayer = window.dataLayer || [];
 
 /**
- * Pushes a standardized event to the dataLayer.
- * @param {string} event - The name of the event (e.g., 'purchase', 'add_to_cart').
- * @param {object} data - The data payload for the event.
+ * Pushes event to the dataLayer.
+ * @param {string} event -
+ * @param {object} data -
  */
 const pushEvent = (event, data) => {
   window.dataLayer.push({
@@ -14,7 +14,7 @@ const pushEvent = (event, data) => {
 
 /**
  * Pushes user login/logout state.
- * @param {object} user - The user object from your app's state.
+ * @param {object} user
  */
 export const pushLogState = (user) => {
   const logStateData = {
@@ -25,7 +25,6 @@ export const pushLogState = (user) => {
       ? {
           firstName: user.firstName,
           lastName: user.lastName,
-          // Add other relevant user details if need
         }
       : undefined,
   };
@@ -45,7 +44,7 @@ export const pushPageView = (pagePath, pageTitle) => {
 
 /**
  * "view item" event for a product detail page.
- * @param {object} product - The product object from your API.
+ * @param {object} product
  */
 export const pushViewItem = (product) => {
   pushEvent("view_item", {
@@ -66,8 +65,8 @@ export const pushViewItem = (product) => {
 
 /**
  * "add to cart" event.
- * @param {object} product - The product being added.
- * @param {number} quantity - The quantity being added.
+ * @param {object} product
+ * @param {number} quantity
  */
 export const pushAddToCart = (product, quantity) => {
   pushEvent("add_to_cart", {
@@ -88,8 +87,8 @@ export const pushAddToCart = (product, quantity) => {
 
 /**
  * "buy now" event.
- * @param {object} product - The product being added.
- * @param {number} quantity - The quantity being added.
+ * @param {object} product
+ * @param {number} quantity
  */
 export const pushByNow = (product, quantity) => {
   pushEvent("buy_now", {
@@ -109,8 +108,8 @@ export const pushByNow = (product, quantity) => {
 };
 
 /**
- * "purchase" event after a successful checkout.
- * @param {object} orderDetails - The final order object from backend.
+ * Pushes a "purchase" event.
+ * @param {object} orderDetails
  */
 export const pushPurchase = (orderDetails) => {
   const items = orderDetails.products.map((item) => ({
@@ -123,17 +122,15 @@ export const pushPurchase = (orderDetails) => {
   pushEvent("purchase", {
     ecommerce: {
       transaction_id: orderDetails._id,
-      affiliation: "ShishuSeba",
       value: orderDetails.totalPrice,
       tax: orderDetails.taxPrice,
       shipping: orderDetails.shippingPrice,
       currency: "BDT",
       items: items,
     },
+    user_data: orderDetails.userData,
   });
 };
-
-// ... (keep your existing functions like pushEvent, pushAddToCart, etc.)
 
 /**
  * Pushes a "view cart" event.
@@ -181,7 +178,7 @@ export const pushBeginCheckout = (cartItems, cartTotal) => {
 
 /**
  * Pushes a "remove from cart" event.
- * @param {object} product - The product being removed.
+ * @param {object} product
  */
 export const pushRemoveFromCart = (product) => {
   pushEvent("remove_from_cart", {
@@ -191,7 +188,7 @@ export const pushRemoveFromCart = (product) => {
           item_id: product._id,
           item_name: product.name,
           price: product.price,
-          quantity: product.quantity, // The quantity that was in the cart
+          quantity: product.quantity,
         },
       ],
     },
