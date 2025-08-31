@@ -54,7 +54,7 @@ const InvoiceTemplate = forwardRef(({ order, isLastInvoice }, ref) => {
             <strong>Address:</strong> Savar, Dhaka, Bangladesh
           </p>
           <p>
-            <strong>ConsignmentID:</strong> {order?.consignment_id}
+            <strong>Consignment ID:</strong> {order?.consignment_id}
           </p>
           <p>
             <strong>Date:</strong> {order.user?.orderDate}

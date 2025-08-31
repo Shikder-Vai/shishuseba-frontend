@@ -143,7 +143,7 @@ const Confirm = () => {
                       </div>
                     </div>
                     <p className="font-semibold text-brand-gray-base">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ৳{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -152,15 +152,15 @@ const Confirm = () => {
               <div className="mt-6 pt-4 border-t border-brand-gray-light space-y-2">
                 <div className="flex justify-between text-brand-gray-base">
                   <p>Subtotal</p>
-                  <p>${subtotal.toFixed(2)}</p>
+                  <p>৳{subtotal.toFixed(2)}</p>
                 </div>
                 <div className="flex justify-between text-brand-gray-base">
                   <p>Shipping</p>
-                  <p>${shippingCost.toFixed(2)}</p>
+                  <p>৳{shippingCost.toFixed(2)}</p>
                 </div>
                 <div className="flex justify-between text-brand-gray-base font-bold text-lg">
                   <p>Total</p>
-                  <p>${total.toFixed(2)}</p>
+                  <p>৳{total.toFixed(2)}</p>
                 </div>
               </div>
             </div>

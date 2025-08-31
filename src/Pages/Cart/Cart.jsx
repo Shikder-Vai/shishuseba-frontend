@@ -22,13 +22,11 @@ const Cart = () => {
     0
   );
 
-  // --- NEW: useEffect to automatically set shipping cost based on subtotal ---
+  // ---  set shipping cost based on subtotal ---
   useEffect(() => {
-    if (subtotal > 1000) {
-      setShippingCost("0"); // Set shipping to 0 for free delivery
+    if (subtotal >= 1000) {
+      setShippingCost("0");
     } else {
-      // Reset to a default when subtotal is no longer eligible for free shipping
-      // You can keep the user's previous selection if you prefer more complex logic
       setShippingCost("80");
     }
   }, [subtotal]); // This effect runs whenever the subtotal changes
