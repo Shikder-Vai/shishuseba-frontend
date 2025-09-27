@@ -13,6 +13,7 @@ import {
   Info,
   Phone,
   Package,
+  Rss, // Added Rss icon
 } from "lucide-react";
 import { useAuth } from "../../main";
 import ProfileDropdown from "../../Dashboard/ProfileDropdown/ProfileDropdown";
@@ -37,6 +38,7 @@ const Navbar = () => {
       to: "/about",
       icon: <Info size={18} className="mr-2" />,
     },
+    { name: "Blog", to: "/blogs", icon: <Rss size={18} className="mr-2" /> }, // Added Blog link
   ];
 
   useEffect(() => {
@@ -206,6 +208,20 @@ const Navbar = () => {
             >
               <Info size={18} className="mr-2" />
               About Us
+            </NavLink>
+
+            <NavLink
+              to="/blogs"
+              className={({ isActive }) =>
+                `flex items-center text-brand-cream hover:text-white px-3 py-1 transition-all duration-200 text-lg rounded-md ${
+                  isActive
+                    ? "bg-brand-teal-300 text-white shadow-md"
+                    : "hover:bg-brand-teal-400"
+                }`
+              }
+            >
+              <Rss size={18} className="mr-2" />
+              Blog
             </NavLink>
 
             <NavLink
@@ -384,6 +400,22 @@ const Navbar = () => {
               <Info size={18} className="mr-2" />
               About Us
             </NavLink>
+
+            <NavLink
+              to="/blogs"
+              onClick={handleLinkClick}
+              className={({ isActive }) =>
+                `flex items-center text-brand-cream hover:text-white py-3 px-4 rounded-lg transition-all ${
+                  isActive
+                    ? "bg-brand-teal-300 text-white shadow-md"
+                    : "hover:bg-brand-teal-400"
+                }`
+              }
+            >
+              <Rss size={18} className="mr-2" />
+              Blog
+            </NavLink>
+
           </div>
 
           {!user && (

@@ -17,7 +17,8 @@ import {
   FiChevronDown,
   FiDatabase,
   FiUsers,
-  FiSend 
+  FiSend,
+  FiFileText
 } from "react-icons/fi";
 
 const dropdownLinks = [
@@ -33,6 +34,7 @@ const dropdownLinks = [
   { to: "/cancel-orders", icon: FiXCircle, label: "Canceled Orders" },
   { to: "/banner", icon: FiImage, label: "Banner Management" },
   { to: "/youtube", icon: FiYoutube, label: "YouTube Videos" },
+  { to: "/manage-blogs", icon: FiFileText, label: "Manage Blogs" },
   // { to: "/settings", icon: FiSettings, label: "Account Settings" },
   // { to: "/help", icon: FiHelpCircle, label: "Help Center" },
 ];

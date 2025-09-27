@@ -23,6 +23,9 @@ import ManageAdmin from "../Dashboard/ManageAdmin/ManageAdmin";
 import TrackOrder from "./../Shared/TrackOrder/TrackOrder";
 import DeliveredOrders from "../Dashboard/DeliveredOrders/DeliveredOrders";
 import CategoryPage from "../Pages/DynamicCategoryPage/CategoryPage";
+import BlogPage from "../Pages/Blog/BlogPage";
+import SingleBlogPost from "../Pages/Blog/SingleBlogPost";
+import ManageBlogs from "../Dashboard/Blog/ManageBlogs";
 
 export const router = createBrowserRouter([
   {
@@ -162,6 +165,22 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <YoutubeContent></YoutubeContent>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/blogs",
+        element: <BlogPage />,
+      },
+      {
+        path: "/blog/:id",
+        element: <SingleBlogPost />,
+      },
+      {
+        path: "/manage-blogs",
+        element: (
+          <PrivateRoute>
+            <ManageBlogs />
           </PrivateRoute>
         ),
       },
