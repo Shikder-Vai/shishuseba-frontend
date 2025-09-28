@@ -31,6 +31,8 @@ const Checkout = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const hasFiredBeginCheckout = useRef(false);
+  const [shippingCost, setShippingCost] = useState("80");
+  const [total, setTotal] = useState(0);
 
   const {
     register,
@@ -39,13 +41,28 @@ const Checkout = () => {
     formState: { errors },
   } = useForm();
 
+  useEffect(() => {
+    if (order) {
+      const subtotal = order.subtotal || 0;
+      const initialShipping = subtotal >= 1000 ? "0" : "80";
+      setShippingCost(initialShipping);
+      setTotal(subtotal + parseFloat(initialShipping));
+    }
+  }, [order]);
+
+  useEffect(() => {
+    if (order) {
+      setTotal(order.subtotal + parseFloat(shippingCost));
+    }
+  }, [shippingCost, order]);
+
   // --- CHECKOUT PAGE VIEW ---
   useEffect(() => {
     if (order?.items?.length > 0 && !hasFiredBeginCheckout.current) {
-      pushBeginCheckout(order.items, order.total);
+      pushBeginCheckout(order.items, total);
       hasFiredBeginCheckout.current = true;
     }
-  }, [order]);
+  }, [order, total]);
   // --- END ---
 
   // Load districts data
@@ -90,6 +107,10 @@ const Checkout = () => {
     setShowDropdown(true);
   };
 
+  const handleShippingChange = (e) => {
+    setShippingCost(e.target.value);
+  };
+
   const handleOrder = async (data) => {
     setIsSubmitting(true);
 
@@ -112,6 +133,8 @@ const Checkout = () => {
         ...order,
         orderId: uniqueId, // Add the unique ID here
         status: "pending",
+        shippingCost: parseFloat(shippingCost),
+        total: total,
         user: {
           ...data,
           orderDate: new Date().toLocaleString("en-GB", {
@@ -384,20 +407,78 @@ const Checkout = () => {
             ))}
           </div>
 
+          {/* Shipping Method */}
+          <div className="py-4 border-t border-gray-100">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">
+              Shipping Method
+            </h4>
+            <div className="space-y-3">
+              {order?.subtotal >= 1000 ? (
+                <label className="flex items-center justify-between p-3 border border-brand-teal-base rounded-lg bg-teal-50 cursor-not-allowed">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="0"
+                      checked={true}
+                      disabled={true}
+                      className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                    />
+                    <span className="font-semibold text-brand-teal-base">
+                      Free Delivery
+                    </span>
+                  </div>
+                  <span className="text-brand-gray-base">0৳</span>
+                </label>
+              ) : (
+                <>
+                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="shipping"
+                        value="80"
+                        checked={shippingCost === "80"}
+                        onChange={handleShippingChange}
+                        className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                      />
+                      <span>Inside Dhaka</span>
+                    </div>
+                    <span className="text-brand-gray-base">80৳</span>
+                  </label>
+                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-brand-teal-base transition-colors cursor-pointer">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="shipping"
+                        value="100"
+                        checked={shippingCost === "100"}
+                        onChange={handleShippingChange}
+                        className="h-4 w-4 text-brand-teal-base focus:ring-brand-teal-base border-gray-300"
+                      />
+                      <span>Outside Dhaka</span>
+                    </div>
+                    <span className="text-brand-gray-base">100৳</span>
+                  </label>
+                </>
+              )}
+            </div>
+          </div>
+
           {/* Order Totals */}
-          <div className="space-y-3 border-t border-gray-200 pt-4">
+          <div className="space-y-3 border-t border-gray-200 pt-4 mt-4">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal</span>
               <span className="font-medium">{order?.subtotal}৳</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Shipping</span>
-              <span className="font-medium">{order?.shippingCost}৳</span>
+              <span className="font-medium">{shippingCost}৳</span>
             </div>
             <div className="flex justify-between border-t border-gray-200 pt-3">
               <span className="text-lg font-semibold">Total</span>
               <span className="text-xl font-bold text-brand-teal-base">
-                {order?.total}৳
+                {total}৳
               </span>
             </div>
           </div>

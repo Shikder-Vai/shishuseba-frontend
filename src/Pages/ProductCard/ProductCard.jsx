@@ -11,19 +11,39 @@ const ProductCard = ({ product }) => {
 
   const handleBuyNow = (item) => {
     const variant = item.variants[0];
-    const price = variant.price;
+    const price = parseFloat(variant.price);
     const weight = variant.weight;
+    const quantity = 1;
+
     const newItem = {
       ...item,
       variant,
       price,
       weight,
       admin_note: "",
-      quantity: 1,
+      quantity: quantity,
     };
-    pushByNow(newItem, 1);
-    localStorage.setItem("cart", JSON.stringify([newItem]));
-    navigate("/cart");
+
+    // GTM event
+    pushByNow(newItem, quantity);
+
+    // Create cart and order objects for checkout
+    const cartItems = [newItem];
+    const subtotal = price * quantity;
+    const shippingCost = subtotal >= 1000 ? 0 : 80; // Same logic as in Cart.jsx
+    const total = subtotal + shippingCost;
+
+    const order = {
+      items: cartItems,
+      subtotal,
+      shippingCost,
+      total,
+    };
+
+    // Set both cart and order for consistency, then navigate
+    // localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem("order", JSON.stringify(order));
+    navigate("/checkout");
   };
 
   const handleAddtoCart = (item) => {
@@ -83,7 +103,7 @@ const ProductCard = ({ product }) => {
         <img
           src={image}
           alt={name}
-          className="w-full h-full transition-transform duration-300 hover:scale-105 object-fill"
+          className="w-full h-full transition-transform duration-300 hover:scale-105 object-contain"
         />
         <Link to={`/product/${product?._id}`}>
           <motion.div
@@ -150,7 +170,7 @@ const ProductCard = ({ product }) => {
             className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all duration-200 shadow-sm"
           >
             <CreditCard className="w-4 h-4" />
-            অর্ডার করুন
+            Buy Now
           </motion.button>
         </div>
       </div>

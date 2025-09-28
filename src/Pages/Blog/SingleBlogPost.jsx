@@ -47,7 +47,7 @@ const SingleBlogPost = () => {
                 <img
                   src={blog.img}
                   alt={blog.title}
-                  className="w-full h-auto max-h-[400px] rounded-xl shadow-md mb-3"
+                  className="w-full h-auto max-h-[400px] rounded-xl shadow-md mb-3 object-fill"
                 />
               </figure>
 
