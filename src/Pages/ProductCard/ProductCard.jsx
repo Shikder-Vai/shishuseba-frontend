@@ -79,11 +79,11 @@ const ProductCard = ({ product }) => {
       className="flex flex-col justify-between w-full max-w-sm min-h-[440px] bg-white rounded-2xl shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300 border border-brand-gray-light"
     >
       {/* Image Block */}
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-52 overflow-hidden ">
         <img
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full transition-transform duration-300 hover:scale-105 object-fill"
         />
         <Link to={`/product/${product?._id}`}>
           <motion.div
@@ -150,7 +150,7 @@ const ProductCard = ({ product }) => {
             className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all duration-200 shadow-sm"
           >
             <CreditCard className="w-4 h-4" />
-            Buy Now
+            অর্ডার করুন
           </motion.button>
         </div>
       </div>

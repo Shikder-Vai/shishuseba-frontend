@@ -343,7 +343,7 @@ const ProductDetails = () => {
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-brand-teal-base text-white font-semibold hover:bg-brand-teal-600 transition-all duration-200 shadow-sm"
               >
                 <CreditCard className="w-5 h-5" />
-                Buy Now
+                অর্ডার করুন
               </button>
             </div>
 
