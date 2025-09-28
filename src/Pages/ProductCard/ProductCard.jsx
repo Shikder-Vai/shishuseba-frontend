@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
     };
 
     // Set both cart and order for consistency, then navigate
-    // localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem("cart", JSON.stringify(cartItems));
     localStorage.setItem("order", JSON.stringify(order));
     navigate("/checkout");
   };
@@ -94,44 +94,28 @@ const ProductCard = ({ product }) => {
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 200, damping: 18 }}
-      className="flex flex-col justify-between w-full max-w-sm min-h-[440px] bg-white rounded-2xl shadow-soft overflow-hidden hover:shadow-lg transition-all duration-300 border border-brand-gray-light"
+      whileHover={{ scale: 1.02, y: -5 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="bg-white rounded-lg shadow-md overflow-hidden group flex flex-col"
     >
-      {/* Image Block */}
-      <div className="relative h-52 overflow-hidden ">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full transition-transform duration-300 hover:scale-105 object-contain"
-        />
-        <Link to={`/product/${product?._id}`}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-            className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 z-10"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              className="px-5 py-2 bg-white text-brand-gray-base font-semibold rounded-full shadow hover:bg-brand-gray-light"
-            >
-              বিস্তারিত দেখুন
-            </motion.button>
-          </motion.div>
+      {/* Image with overlay */}
+      <div className="relative">
+        <div className="w-full h-28 overflow-hidden">
+            <img src={image} alt={name} className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300" />
+        </div>
+        <Link to={`/product/${product?._id}`} className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+           <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-semibold shadow-lg">View Details</span>
         </Link>
       </div>
 
-      {/* Content Block */}
-      <div className="flex flex-col justify-between flex-grow p-4">
-        <Link to={`/product/${product?._id}`}>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-brand-gray-base leading-snug">
-              {name?.length > 40 ? name.slice(0, 40) + "..." : name}
-            </h3>
-
+      {/* Content */}
+      <div className="p-2 flex flex-col flex-grow">
+        <div className="flex-grow">
+            <h3 className="font-semibold text-xs text-gray-800 truncate mb-0.5">{name}</h3>
+            <p className="text-xs text-gray-500">{variants[0]?.weight}</p>
             {/* Display first detail if exists */}
             {details?.length > 0 && (
-              <div className="flex items-start h-full gap-2 text-sm text-brand-gray-base">
+              <div className="hidden md:block items-start h-full gap-2 text-sm text-brand-gray-base">
                 {/* <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-teal-500" /> */}
                 <p>
                   {details[0].length > 60
@@ -140,38 +124,33 @@ const ProductCard = ({ product }) => {
                 </p>
               </div>
             )}
-          </div>
-        </Link>
+        </div>
 
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between  mx-2">
-            <p className="text-brand-teal-base text-lg font-bold">
-              {variants[0].price} Tk
-            </p>
-            <p className="flex items-center gap-1 text-sm text-brand-gray-base">
-              <Scale className="w-4 h-4 text-brand-teal-400" />
-              {variants[0]?.weight}
-            </p>
-          </div>
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={() => handleAddtoCart(product)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl bg-brand-orange-base text-white hover:bg-brand-orange-base/90 transition-all duration-200 shadow-sm"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            Add to Cart
-          </motion.button>
+        {/* Price */}
+        <div className="mt-2">
+          <p className="font-bold text-brand-teal-base text-base">{variants[0].price} Tk</p>
+        </div>
 
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={() => handleBuyNow(product)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all duration-200 shadow-sm"
-          >
-            <CreditCard className="w-4 h-4" />
-            Buy Now
-          </motion.button>
+        {/* Actions */}
+        <div className="flex items-center gap-2 mt-2">
+             <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleAddtoCart(product)}
+                className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-orange-base text-white hover:bg-brand-orange-base/90 transition-all"
+                title="Add to Cart"
+              >
+                <ShoppingCart size={14} />
+                <span className="hidden md:inline">Add to Cart</span>
+              </motion.button>
+             <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleBuyNow(product)}
+                className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all"
+                title="Buy Now"
+              >
+                <CreditCard size={14} />
+                <span className="hidden md:inline">Buy Now</span>
+              </motion.button>
         </div>
       </div>
     </motion.div>
