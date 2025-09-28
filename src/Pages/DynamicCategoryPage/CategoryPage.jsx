@@ -3,8 +3,7 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader";
 import useScrollToTop from "../../hooks/useScrollToTop";
-import { ChevronDown } from "lucide-react";
-import ProductCard from "../ProductCard/ProductCard"; // 👈 MAKE SURE THIS PATH IS CORRECT
+import ProductCard from "../ProductCard/ProductCard";
 
 const CategoryPage = () => {
   useScrollToTop();
