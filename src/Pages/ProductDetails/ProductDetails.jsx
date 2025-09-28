@@ -94,9 +94,25 @@ const ProductDetails = () => {
   // Buy Now:
   const handleBuyNow = () => {
     const product = prepareProduct();
+
+    // GTM event
     pushByNow(product, quantity);
-    localStorage.setItem("cart", JSON.stringify([product]));
-    navigate("/cart");
+
+    // Create cart and order objects for checkout
+    const cartItems = [product];
+    const subtotal = product.price * product.quantity;
+    const shippingCost = subtotal >= 1000 ? 0 : 80; // Same logic as in Cart.jsx
+    const total = subtotal + shippingCost;
+
+    const order = {
+      items: cartItems,
+      subtotal,
+      shippingCost,
+      total,
+    };
+    // localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem("order", JSON.stringify(order));
+    navigate("/checkout");
   };
 
   // Add to Cart:
@@ -343,7 +359,7 @@ const ProductDetails = () => {
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-brand-teal-base text-white font-semibold hover:bg-brand-teal-600 transition-all duration-200 shadow-sm"
               >
                 <CreditCard className="w-5 h-5" />
-                অর্ডার করুন
+                Buy Now
               </button>
             </div>
 
