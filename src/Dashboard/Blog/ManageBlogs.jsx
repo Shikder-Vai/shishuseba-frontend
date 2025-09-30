@@ -5,8 +5,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import BlogPostModal from "./BlogPostModal";
 import { toast } from "sonner";
+import useScrollToTop from "../../hooks/useScrollToTop";
 
 const ManageBlogs = () => {
+  useScrollToTop();
   const { blogs, isLoading, refetch } = useBlogs();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);

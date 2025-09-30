@@ -49,7 +49,7 @@ const OurGallery = () => {
   }
 
   return (
-    <div className="pb-24  bg-cream-gradient">
+    <div className=" bg-cream-gradient">
       <SectionTitle title="Our Gallery" />
       {validVideos.length > 0 ? (
         <motion.div

@@ -18,7 +18,8 @@ import {
   FiDatabase,
   FiUsers,
   FiSend,
-  FiFileText
+  FiFileText,
+  FiStar
 } from "react-icons/fi";
 
 const dropdownLinks = [
@@ -35,6 +36,7 @@ const dropdownLinks = [
   { to: "/banner", icon: FiImage, label: "Banner Management" },
   { to: "/youtube", icon: FiYoutube, label: "YouTube Videos" },
   { to: "/manage-blogs", icon: FiFileText, label: "Manage Blogs" },
+  { to: "/manage-reviews", icon: FiStar, label: "Manage Reviews" },
   // { to: "/settings", icon: FiSettings, label: "Account Settings" },
   // { to: "/help", icon: FiHelpCircle, label: "Help Center" },
 ];

@@ -26,6 +26,7 @@ import CategoryPage from "../Pages/DynamicCategoryPage/CategoryPage";
 import BlogPage from "../Pages/Blog/BlogPage";
 import SingleBlogPost from "../Pages/Blog/SingleBlogPost";
 import ManageBlogs from "../Dashboard/Blog/ManageBlogs";
+import ManageReviews from "../Dashboard/Reviews/ManageReviews";
 
 export const router = createBrowserRouter([
   {
@@ -181,6 +182,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ManageBlogs />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/manage-reviews",
+        element: (
+          <PrivateRoute>
+            <ManageReviews />
           </PrivateRoute>
         ),
       },

@@ -16,7 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import useProduct from "../../hooks/useProducts";
+import useAllProducts from "../../hooks/useAllProducts";
 import Loader from "../../components/Loader";
 import ProductUploadModal from "./ProductUploadModal";
 import UpdateProductModal from "./UpdateProductModal";
@@ -33,7 +33,7 @@ const Products = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const axiosPublic = useAxiosPublic();
 
-  const [products, loadingProduct, refetch] = useProduct();
+  const [products, loadingProduct, refetch] = useAllProducts();
   const [categories] = useCategories();
 
   const handleProductModalOpen = () => setShowProductUploader(true);

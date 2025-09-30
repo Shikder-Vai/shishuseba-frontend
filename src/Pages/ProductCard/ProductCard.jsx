@@ -166,7 +166,7 @@ const ProductCard = ({ product }) => {
             title="Buy Now"
           >
             <CreditCard size={14} />
-            <span className="hidden md:inline">Buy Now</span>
+            <span className="hidden md:inline">অর্ডার করুন</span>
           </motion.button>
         </div>
       </div>
