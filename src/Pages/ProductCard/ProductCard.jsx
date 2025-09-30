@@ -100,57 +100,74 @@ const ProductCard = ({ product }) => {
     >
       {/* Image with overlay */}
       <div className="relative">
-        <div className="w-full h-28 overflow-hidden">
-            <img src={image} alt={name} className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300" />
+        <div className="w-full h-36 overflow-hidden">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
-        <Link to={`/product/${product?._id}`} className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-           <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-semibold shadow-lg">View Details</span>
+        <Link
+          to={`/product/${product?._id}`}
+          className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+            View Details
+          </span>
         </Link>
       </div>
 
       {/* Content */}
       <div className="p-2 flex flex-col flex-grow">
         <div className="flex-grow">
-            <h3 className="font-semibold text-xs text-gray-800 truncate mb-0.5">{name}</h3>
-            <p className="text-xs text-gray-500">{variants[0]?.weight}</p>
-            {/* Display first detail if exists */}
-            {details?.length > 0 && (
-              <div className="hidden md:block items-start h-full gap-2 text-sm text-brand-gray-base">
-                {/* <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-teal-500" /> */}
-                <p>
-                  {details[0].length > 60
-                    ? details[0].slice(0, 60) + "..."
-                    : details[0]}
-                </p>
-              </div>
-            )}
+          <Link to={`/product/${product?._id}`}>
+            <div className="">
+              <h3 className="md:font-extrabold font-semibold text-xs md:text-sm text-wrap text-gray-800 truncate mb-0.5">
+                {name}
+              </h3>
+              <p className="text-xs text-gray-500">{variants[0]?.weight}</p>
+              {/* Display first detail if exists */}
+              {details?.length > 0 && (
+                <div className="hidden md:block items-start h-full gap-2 text-sm text-brand-gray-base">
+                  {/* <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-teal-500" /> */}
+                  <p>
+                    {details[0].length > 60
+                      ? details[0].slice(0, 60) + "..."
+                      : details[0]}
+                  </p>
+                </div>
+              )}
+            </div>
+          </Link>
         </div>
 
         {/* Price */}
         <div className="mt-2">
-          <p className="font-bold text-brand-teal-base text-base">{variants[0].price} Tk</p>
+          <p className="font-bold text-brand-teal-base text-base">
+            {variants[0].price} Tk
+          </p>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2 mt-2">
-             <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleAddtoCart(product)}
-                className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-orange-base text-white hover:bg-brand-orange-base/90 transition-all"
-                title="Add to Cart"
-              >
-                <ShoppingCart size={14} />
-                <span className="hidden md:inline">Add to Cart</span>
-              </motion.button>
-             <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleBuyNow(product)}
-                className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all"
-                title="Buy Now"
-              >
-                <CreditCard size={14} />
-                <span className="hidden md:inline">Buy Now</span>
-              </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleAddtoCart(product)}
+            className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-orange-base text-white hover:bg-brand-orange-base/90 transition-all"
+            title="Add to Cart"
+          >
+            <ShoppingCart size={14} />
+            <span className="hidden md:inline">Add to Cart</span>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleBuyNow(product)}
+            className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold rounded-md bg-brand-teal-base text-white hover:bg-brand-teal-600 transition-all"
+            title="Buy Now"
+          >
+            <CreditCard size={14} />
+            <span className="hidden md:inline">Buy Now</span>
+          </motion.button>
         </div>
       </div>
     </motion.div>

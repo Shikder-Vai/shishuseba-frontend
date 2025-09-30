@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader";
 import useScrollToTop from "../../hooks/useScrollToTop";
 import ProductCard from "../ProductCard/ProductCard";
+import useCategories from "../../hooks/useCategories";
 
 const CategoryPage = () => {
   useScrollToTop();
   const { categoryName } = useParams();
   const axiosPublic = useAxiosPublic();
+  const [categories, loadingCategories] = useCategories();
 
   const {
     data: products = [],
@@ -23,7 +25,9 @@ const CategoryPage = () => {
     enabled: !!categoryName,
   });
 
-  if (isLoading) {
+  const category = categories.find((c) => c.category === categoryName);
+
+  if (isLoading || loadingCategories) {
     return <Loader />;
   }
 
@@ -39,7 +43,7 @@ const CategoryPage = () => {
         </nav>
 
         <h1 className="text-3xl font-bold text-brand-gray-base mb-8 capitalize">
-          {categoryName} Products
+          {category ? category.bn : categoryName}
         </h1>
 
         {products.length > 0 ? (

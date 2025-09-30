@@ -13,9 +13,9 @@ import logo from "../../assets/Logo/logo.png";
 const Footer = () => {
   const [categories] = useCategories();
   return (
-    <footer className="bg-brand-teal-400 text-gray-900 pt-24 relative z-10 select-none">
+    <footer className="bg-brand-teal-400 text-gray-900 pt-20 relative z-10 select-none">
       {/* CTA Box */}
-      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 bg-gradient-to-r from-brand-orange-light to-brand-orange-base text-gray-900 py-3 px-8 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center text-center md:text-left z-20">
+      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 bg-gradient-to-r from-brand-orange-light to-brand-orange-base text-gray-900 py-3 px-8 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center text-center md:text-left z-20 mt-4">
         <h2 className="text-3xl md:text-4xl font-bold tracking-wide drop-shadow-sm">
           Stay with Shishu Seba
         </h2>

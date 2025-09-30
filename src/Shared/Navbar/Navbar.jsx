@@ -1,6 +1,7 @@
 // Enhanced Navbar.jsx with fixed mobile dropdown and updated menu order
 import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import Topbar from "../Topbar/Topbar";
 import { useCart } from "../../hooks/useCart";
@@ -31,15 +32,15 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const drawerRef = useRef(null);
 
-  const navItems = [
-    { name: "Home", to: "/", icon: <Home size={18} className="mr-2" /> },
-    {
-      name: "About Us",
-      to: "/about",
-      icon: <Info size={18} className="mr-2" />,
-    },
-    { name: "Blog", to: "/blogs", icon: <Rss size={18} className="mr-2" /> }, // Added Blog link
-  ];
+  // const navItems = [
+  //   { name: "Home", to: "/", icon: <Home size={18} className="mr-2" /> },
+  //   {
+  //     name: "About Us",
+  //     to: "/about",
+  //     icon: <Info size={18} className="mr-2" />,
+  //   },
+  //   { name: "Blog", to: "/blogs", icon: <Rss size={18} className="mr-2" /> },
+  // ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -116,7 +117,7 @@ const Navbar = () => {
           initial={{ y: -20 }}
           animate={{ y: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 15 }}
-          className="px-6 py-3 flex justify-between items-center bg-brand-teal-500"
+          className="px-6 py-1 flex justify-between items-center bg-brand-teal-500"
         >
           <button
             onClick={() => setDrawerOpen(true)}
@@ -128,7 +129,6 @@ const Navbar = () => {
 
           <div className="flex items-center">
             <Link to="/">
-              {" "}
               <img className="w-[45px]" src={logo} alt="Logo" />
             </Link>
           </div>
@@ -415,7 +415,6 @@ const Navbar = () => {
               <Rss size={18} className="mr-2" />
               Blog
             </NavLink>
-
           </div>
 
           {!user && (

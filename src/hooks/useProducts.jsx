@@ -1,20 +1,43 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./useAxiosPublic";
 
 const useProduct = () => {
   const axiosOublic = useAxiosPublic();
+
+  const fetchProducts = async ({ pageParam = 1 }) => {
+    const res = await axiosOublic.get(`/products?page=${pageParam}&limit=8`);
+    return res.data;
+  };
+
   const {
-    data: products = [],
+    data,
+    fetchNextPage,
+    hasNextPage,
     isLoading: loadingProduct,
+    isFetchingNextPage,
     refetch,
-  } = useQuery({
+  } = useInfiniteQuery({
     queryKey: ["products"],
-    queryFn: async() => {
-        const res = await axiosOublic.get('/products')
-        return res?.data;
-    }
+    queryFn: fetchProducts,
+    getNextPageParam: (lastPage, pages) => {
+      const totalPages = Math.ceil(lastPage.total / 8);
+      if (pages.length < totalPages) {
+        return pages.length + 1;
+      }
+      return undefined;
+    },
   });
-  return [products, loadingProduct, refetch]
+
+  const products = data?.pages.flatMap((page) => page.products) || [];
+
+  return {
+    products,
+    loadingProduct,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  };
 };
 
 export default useProduct;

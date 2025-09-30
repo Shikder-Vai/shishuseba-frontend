@@ -8,6 +8,7 @@ import useAxiosPublic from "../../../hooks/useAxiosPublic";
 const PLACEHOLDER_URL = `https://via.placeholder.com/1200x400/018b76/FFFFFF?text=Banner+Image`;
 
 const Banner = () => {
+  // eslint-disable-next-line no-unused-vars
   const [currentSlide, setCurrentSlide] = useState(0);
   const [banners, setBanners] = useState([]);
   const axiosPublic = useAxiosPublic();
@@ -36,7 +37,9 @@ const Banner = () => {
   if (isError) {
     return (
       <div className="bg-gray-200 h-[400px] flex flex-col items-center justify-center p-4">
-        <p className="text-red-500 text-lg font-bold mb-2">Failed to load banners</p>
+        <p className="text-red-500 text-lg font-bold mb-2">
+          Failed to load banners
+        </p>
         <p className="text-gray-700 text-sm max-w-md text-center">
           {error?.message || "Network error"}
         </p>
@@ -62,7 +65,7 @@ const Banner = () => {
   }
 
   return (
-    <div className="w-full md:mt-2 mt-4">
+    <div className="w-full">
       <Carousel
         autoPlay
         interval={5000}
