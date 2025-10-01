@@ -1,45 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../main";
-import {
-  FiUser,
-  FiHome,
-  FiShoppingBag,
-  FiClock,
-  FiCheckCircle,
-  FiRefreshCw,
-  FiTruck,
-  FiXCircle,
-  FiImage,
-  FiYoutube,
-  FiLogOut,
-  FiChevronDown,
-  FiDatabase,
-  FiUsers,
-  FiSend,
-  FiFileText,
-  FiStar
-} from "react-icons/fi";
+import { FiHome, FiLogOut, FiChevronDown } from "react-icons/fi";
 
-const dropdownLinks = [
-  { to: "/dashboard", icon: FiHome, label: "Dashboard" },
-  { to: "/manage-admin", icon: FiUsers, label: "Manage Admin" },
-  { to: "/category", icon: FiDatabase, label: "Category" },
-  { to: "/products", icon: FiShoppingBag, label: "Products" },
-  { to: "/pending-orders", icon: FiClock, label: "Pending Orders" },
-  { to: "/approved-orders", icon: FiCheckCircle, label: "Approved Orders" },
-  { to: "/processing-orders", icon: FiRefreshCw, label: "Processing Orders" },
-  { to: "/shipping-orders", icon: FiTruck, label: "Shipping Orders" },
-  { to: "/delivered-orders", icon: FiSend, label: "Delivered Orders" },
-  { to: "/cancel-orders", icon: FiXCircle, label: "Canceled Orders" },
-  { to: "/banner", icon: FiImage, label: "Banner Management" },
-  { to: "/youtube", icon: FiYoutube, label: "YouTube Videos" },
-  { to: "/manage-blogs", icon: FiFileText, label: "Manage Blogs" },
-  { to: "/manage-reviews", icon: FiStar, label: "Manage Reviews" },
-  // { to: "/settings", icon: FiSettings, label: "Account Settings" },
-  // { to: "/help", icon: FiHelpCircle, label: "Help Center" },
-];
+const dropdownLinks = [{ to: "/dashboard", icon: FiHome, label: "Dashboard" }];
 
 const ProfileDropdown = () => {
   const { logout, user } = useAuth();
@@ -74,7 +40,10 @@ const ProfileDropdown = () => {
       >
         <div className="relative">
           <img
-            src={user?.avatar || "https://www.kindpng.com/picc/m/368-3685978_admin-icon-gray-hd-png-download.png"}
+            src={
+              user?.avatar ||
+              "https://www.kindpng.com/picc/m/368-3685978_admin-icon-gray-hd-png-download.png"
+            }
             alt="Profile"
             className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover"
           />
@@ -106,7 +75,10 @@ const ProfileDropdown = () => {
             {/* Profile Header */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
               <img
-                src={user?.avatar || "https://www.kindpng.com/picc/m/368-3685978_admin-icon-gray-hd-png-download.png"}
+                src={
+                  user?.avatar ||
+                  "https://www.kindpng.com/picc/m/368-3685978_admin-icon-gray-hd-png-download.png"
+                }
                 alt="Profile"
                 className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover"
               />
@@ -120,7 +92,7 @@ const ProfileDropdown = () => {
 
             {/* Navigation Links */}
             <ul className="py-1 max-h-96 overflow-y-auto">
-              {dropdownLinks.map(({ to, icon: Icon, label }) => (
+              {dropdownLinks.map(({ to, label, icon: Icon }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -133,7 +105,10 @@ const ProfileDropdown = () => {
                       }`
                     }
                   >
-                    <Icon className="mr-3 text-gray-500 flex-shrink-0" size={16} />
+                    <Icon
+                      className="mr-3 text-gray-500 flex-shrink-0"
+                      size={16}
+                    />
                     {label}
                   </NavLink>
                 </li>

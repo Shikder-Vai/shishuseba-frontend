@@ -5,12 +5,11 @@ import {
   Package,
   ShoppingCart,
   Users,
-  Settings,
   Image,
   Youtube,
   Newspaper,
   Star,
-  FileText,
+  Home,
   Truck,
   CheckCircle,
   XCircle,
@@ -113,6 +112,15 @@ const DashboardLayout = () => {
       <Topbar />
       <div className="flex min-h-screen">
         <aside className="w-64 bg-white border-r border-gray-200 px-4 fixed top-[48px] bottom-0 overflow-y-auto">
+          <button
+            type="button"
+            aria-label="Back to Home"
+            className="flex items-center m-2 btn"
+            onClick={() => (window.location.href = "/")}
+          >
+            <Home size={20} />
+            Back to Home
+          </button>
           <nav>
             <ul>
               {dashboardLinks.map((link) => (
