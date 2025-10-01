@@ -27,31 +27,35 @@ import BlogPage from "../Pages/Blog/BlogPage";
 import SingleBlogPost from "../Pages/Blog/SingleBlogPost";
 import ManageBlogs from "../Dashboard/Blog/ManageBlogs";
 import ManageReviews from "../Dashboard/Reviews/ManageReviews";
+import DashboardLayout from "../Layout/Dashboard/DashboardLayout";
+import ManageLandingPage from "../Dashboard/LandingPage/ManageLandingPage";
+import OfferPage from "../Pages/OfferPage/OfferPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main />,
     children: [
+      // Public Routes
       {
         path: "/",
-        element: <Home></Home>,
+        element: <Home />,
       },
       {
         path: "/cart",
-        element: <Cart></Cart>,
+        element: <Cart />,
       },
       {
         path: "/about",
-        element: <AboutUs></AboutUs>,
+        element: <AboutUs />,
       },
       {
         path: "/product/:id",
-        element: <ProductDetails></ProductDetails>,
+        element: <ProductDetails />,
       },
       {
         path: "/products/:category",
-        element: <OurProducts></OurProducts>,
+        element: <OurProducts />,
       },
       {
         path: "/category/:categoryName",
@@ -59,115 +63,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "/checkout",
-        element: <Checkout></Checkout>,
+        element: <Checkout />,
       },
       {
         path: "/order-success",
-        element: <Confirm></Confirm>,
+        element: <Confirm />,
       },
       {
         path: "/track-order",
-        element: <TrackOrder></TrackOrder>,
+        element: <TrackOrder />,
       },
       {
         path: "/login-admin",
-        element: <Login></Login>,
-      },
-      {
-        path: "/dashboard",
-        element: (
-          <PrivateRoute>
-            <Dashboard></Dashboard>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/manage-admin",
-        element: (
-          <PrivateRoute>
-            <ManageAdmin></ManageAdmin>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/category",
-        element: (
-          <PrivateRoute>
-            <Category></Category>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/products",
-        element: (
-          <PrivateRoute>
-            <Products></Products>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/pending-orders",
-        element: (
-          <PrivateRoute>
-            <OrderRequest></OrderRequest>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/approved-orders",
-        element: (
-          <PrivateRoute>
-            <ApprovedOrder></ApprovedOrder>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/processing-orders",
-        element: (
-          <PrivateRoute>
-            <PendingOrder></PendingOrder>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/shipping-orders",
-        element: (
-          <PrivateRoute>
-            <FinalOrder></FinalOrder>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/delivered-orders",
-        element: (
-          <PrivateRoute>
-            <DeliveredOrders></DeliveredOrders>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/cancel-orders",
-        element: (
-          <PrivateRoute>
-            <CancelOrder></CancelOrder>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/banner",
-        element: (
-          <PrivateRoute>
-            <BannerContent></BannerContent>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/youtube",
-        element: (
-          <PrivateRoute>
-            <YoutubeContent></YoutubeContent>
-          </PrivateRoute>
-        ),
+        element: <Login />,
       },
       {
         path: "/blogs",
@@ -178,20 +86,79 @@ export const router = createBrowserRouter([
         element: <SingleBlogPost />,
       },
       {
-        path: "/manage-blogs",
-        element: (
-          <PrivateRoute>
-            <ManageBlogs />
-          </PrivateRoute>
-        ),
+        path: "/offer",
+        element: <OfferPage />,
+      },
+    ],
+  },
+  // Dashboard Routes
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
       },
       {
-        path: "/manage-reviews",
-        element: (
-          <PrivateRoute>
-            <ManageReviews />
-          </PrivateRoute>
-        ),
+        path: "manage-admin",
+        element: <ManageAdmin />,
+      },
+      {
+        path: "category",
+        element: <Category />,
+      },
+      {
+        path: "products",
+        element: <Products />,
+      },
+      {
+        path: "pending-orders",
+        element: <OrderRequest />,
+      },
+      {
+        path: "approved-orders",
+        element: <ApprovedOrder />,
+      },
+      {
+        path: "processing-orders",
+        element: <PendingOrder />,
+      },
+      {
+        path: "shipping-orders",
+        element: <FinalOrder />,
+      },
+      {
+        path: "delivered-orders",
+        element: <DeliveredOrders />,
+      },
+      {
+        path: "cancel-orders",
+        element: <CancelOrder />,
+      },
+      {
+        path: "banner",
+        element: <BannerContent />,
+      },
+      {
+        path: "youtube",
+        element: <YoutubeContent />,
+      },
+      {
+        path: "manage-blogs",
+        element: <ManageBlogs />,
+      },
+      {
+        path: "manage-reviews",
+        element: <ManageReviews />,
+      },
+      {
+        path: "manage-landing-page",
+        element: <ManageLandingPage />,
       },
     ],
   },

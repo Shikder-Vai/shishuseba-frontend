@@ -1,9 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
-const SectionTitle = ({ title}) => {
+const SectionTitle = ({ title, isDashboard }) => {
+  if (isDashboard) {
+    return <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>;
+  }
+
   return (
     <motion.div
-      className="flex flex-col items-center py-10 px-4 relative"
+      className="flex flex-col items-center py-2 px-4 relative"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

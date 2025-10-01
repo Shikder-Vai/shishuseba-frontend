@@ -212,7 +212,9 @@ const ApprovedOrder = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-[70vh]">
         <div className="w-full max-w-4xl mx-auto p-6">
-          <SectionTitle title="Approved Orders" />
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Approved Orders
+          </h1>
           <div className="bg-white rounded-xl shadow-soft p-6 text-center">
             <p className="text-brand-gray-base text-lg font-medium">
               {searchTerm
@@ -234,7 +236,7 @@ const ApprovedOrder = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 min-h-screen py-8">
+    <div>
       <SectionTitle title="Approved Orders" />
 
       <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">

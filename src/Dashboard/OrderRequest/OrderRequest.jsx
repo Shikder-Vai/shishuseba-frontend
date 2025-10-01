@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo, Fragment } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,6 +17,7 @@ import {
   FiTrash2,
   FiPlus,
 } from "react-icons/fi";
+import { format, parse } from "date-fns";
 import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
@@ -37,7 +38,7 @@ const statusColors = {
 };
 
 const OrderRequest = () => {
-  const [products, loadingProduct] = useProduct();
+  const { products, loadingProduct } = useProduct();
   const { user } = useAuth();
   const [orders, loadingOrder, refetch] = useOrderRequest("pending");
   const axiosPublic = useAxiosPublic();
@@ -54,47 +55,36 @@ const OrderRequest = () => {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [productSearchTerm, setProductSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
-  useEffect(() => {
-    if (products && productSearchTerm) {
-      const filtered = products.filter(
-        (product) =>
-          product.name
-            .toLowerCase()
-            .includes(productSearchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(productSearchTerm.toLowerCase())
-      );
-      setFilteredProducts(filtered);
-    } else if (products) {
-      setFilteredProducts(products);
+  // ADD THIS useMemo HOOK
+  const filteredProducts = useMemo(() => {
+    if (!products) {
+      return [];
     }
-  }, [productSearchTerm, products]);
+    if (!productSearchTerm) {
+      return products;
+    }
+    return products.filter(
+      (product) =>
+        product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+        product.sku.toLowerCase().includes(productSearchTerm.toLowerCase())
+    );
+  }, [products, productSearchTerm]);
 
-  const formatProcessingTime = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, "0");
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "Pm" : "Am";
-    hours = hours % 12 || 12;
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+  const formatDate = (dateString) => {
+    if (!dateString) {
+      return "N/A";
+    }
+
+    try {
+      const inputFormat = "dd MMMM yyyy 'at' hh:mm a";
+      const parsedDate = parse(dateString, inputFormat, new Date());
+      const outputFormat = "dd MMM yyyy, p";
+
+      return format(parsedDate, outputFormat);
+    } catch (error) {
+      console.error("Failed to parse date:", dateString, error);
+      return dateString;
+    }
   };
 
   const { mutate: updateOrderStatus } = useMutation({
@@ -104,17 +94,17 @@ const OrderRequest = () => {
       if (newStatus === "approved") {
         updateData.approvedBy = {
           ...user,
-          approvedTime: formatProcessingTime(),
+          approvedTime: formatDate(),
         };
       } else if (newStatus === "processing") {
         updateData.processBy = {
           ...user,
-          processingTime: formatProcessingTime(),
+          processingTime: formatDate(),
         };
       } else if (newStatus === "cancel") {
         updateData.cancelBy = {
           ...user,
-          cancelledTime: formatProcessingTime(),
+          cancelledTime: formatDate(),
         };
       }
 
@@ -150,7 +140,7 @@ const OrderRequest = () => {
 
   const { mutate: bulkUpdateOrders } = useMutation({
     mutationFn: async (newStatus) => {
-      const approvedTime = formatProcessingTime();
+      const approvedTime = formatDate();
       const updates = selectedOrders.map((id) =>
         axiosPublic.patch(`/order-request/${id}`, {
           status: newStatus,
@@ -328,7 +318,9 @@ const OrderRequest = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-[70vh]">
         <div className="w-full max-w-4xl mx-auto p-6">
-          <SectionTitle title="Pending Orders" />
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Pending Orders
+          </h1>
           <div className="bg-white rounded-xl shadow-soft p-6 text-center">
             <p className="text-brand-gray-base text-lg font-medium">
               {searchTerm
@@ -350,7 +342,7 @@ const OrderRequest = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 min-h-screen py-8">
+    <div>
       <SectionTitle title="Pending Orders" />
 
       <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -392,10 +384,10 @@ const OrderRequest = () => {
         className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
       >
         <div className="overflow-x-auto">
-          <Table className="min-w-full">
+          <Table className="min-w-full table-fixed">
             <Thead className="bg-brand-teal-base text-white">
               <Tr>
-                <Th className="px-6 py-4 text-left">
+                <Th className="px-3 py-4 text-left w-2">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -403,32 +395,29 @@ const OrderRequest = () => {
                     className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
                   />
                 </Th>
-                <Th className="px-6 py-4 text-left">Order ID</Th>
-                <Th className="px-6 py-4 text-left">Customer Details</Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                <Th className="px-3 py-4 text-left">Order ID</Th>
+                <Th className="px-3 py-4 text-left">Customer Details</Th>
+                <Th className="px-3 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
-                <Th className="px-6 py-4 text-left hidden lg:table-cell">
+                <Th className="px-3 py-4 text-left hidden lg:table-cell">
                   Items
                 </Th>
-                <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 py-4 text-left">Total</Th>
+                <Th className="px-3 py-4 text-left hidden sm:table-cell">
                   Date
                 </Th>
-                <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left">Actions</Th>
+                <Th className="px-3 py-4 text-left">Status</Th>
+                <Th className="px-3 py-4 text-left">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
               {filteredOrders.map((o) => {
                 const isDuplicate = mobileCount[o?.user?.mobile] > 1;
                 return (
-                  <>
-                    <Tr
-                      key={o?._id}
-                      className="hover:bg-brand-cream/30 transition-colors"
-                    >
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                  <Fragment key={o?._id}>
+                    <Tr className="hover:bg-brand-cream/30 transition-colors">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={selectedOrders.includes(o._id)}
@@ -436,19 +425,22 @@ const OrderRequest = () => {
                           className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
                         />
                       </Td>
-                      <Td className="px-4 py-3">
+                      <Td className="px-2 py-3">
                         <div className="font-medium text-brand-gray-base">
                           {o?.orderId}
                         </div>
                       </Td>
-                      <Td className="px-4 py-3">
-                        <div className="font-medium text-brand-gray-base">
-                          {o?.user?.name} <br />
-                          {o?.user?.address} {o?.user?.district}
+                      <Td className="px-2 py-3">
+                        <div
+                          className="font-medium text-brand-gray-base max-w-sm overflow-hidden text-ellipsis"
+                          title={`${o?.user?.name}, ${o?.user?.address} ${o?.user?.district}`}
+                        >
+                          {o?.user?.name.slice(0, 20)}, {o?.user?.address}
+                          {o?.user?.district}
                         </div>
                       </Td>
                       <Td
-                        className={`px-4 py-3 whitespace-nowrap hidden md:table-cell ${
+                        className={`px-2 py-3 whitespace-nowrap hidden md:table-cell ${
                           isDuplicate
                             ? "bg-yellow-50 font-semibold text-brand-orange-base"
                             : "text-brand-gray-base"
@@ -456,16 +448,16 @@ const OrderRequest = () => {
                       >
                         {o?.user?.mobile}
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
+                      <Td className="px-2 py-3 w-4 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
                         {o?.items?.length} item(s)
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap font-medium text-brand-gray-base">
+                      <Td className="px-2 py-3 w-3 whitespace-nowrap font-medium text-brand-gray-base">
                         {o?.total} BDT
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap hidden sm:table-cell text-brand-gray-base">
-                        {o?.user?.orderDate}
+                      <Td className="px-2 py-3 hidden sm:table-cell text-brand-gray-base">
+                        {formatDate(o?.user?.orderDate)}
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                             statusColors[o.status] ||
@@ -475,7 +467,7 @@ const OrderRequest = () => {
                           {o.status}
                         </span>
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openDetailModal(o)}
@@ -573,7 +565,7 @@ const OrderRequest = () => {
                         </Td>
                       </Tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </Tbody>
