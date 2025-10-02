@@ -1,16 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Plus, Trash2, Image as ImageIcon, Loader2, Landmark, Package, Edit } from 'lucide-react';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
-import useAllProducts from '../../hooks/useAllProducts';
-import { imgbbKey } from '../../hooks/useImgbb';
-import Loader from '../../components/Loader';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  Plus,
+  Trash2,
+  Image as ImageIcon,
+  Loader2,
+  Landmark,
+  Package,
+  Edit,
+} from "lucide-react";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAllProducts from "../../hooks/useAllProducts";
+import { imgbbKey } from "../../hooks/useImgbb";
+import Loader from "../../components/Loader";
 
 const ManageLandingPage = () => {
   const [formData, setFormData] = useState({
-    hero: { title: '', subtitle: '', image: '' },
-    featuredProductId: '',
+    hero: { title: "", subtitle: "", image: "" },
+    featuredProductId: "",
     sections: [],
   });
   const [isUploading, setIsUploading] = useState({ status: false, id: null });
@@ -20,39 +28,42 @@ const ManageLandingPage = () => {
   const [products, loadingProducts] = useAllProducts();
 
   // Fetch existing landing page data
-  const { data: landingPageData, isLoading: isLoadingData } = useQuery({
-    queryKey: ['landingPage'],
+  const { data: _landingPageData, isLoading: isLoadingData } = useQuery({
+    queryKey: ["landingPage"],
     queryFn: async () => {
-      const res = await axiosSecure.get('/v1/landing-page');
+      const res = await axiosSecure.get("v1/landing-page");
       return res.data;
     },
     onSuccess: (data) => {
       if (data) {
         setFormData({
-          hero: data.hero || { title: '', subtitle: '', image: '' },
-          featuredProductId: data.featuredProductId || '',
+          hero: data.hero || { title: "", subtitle: "", image: "" },
+          featuredProductId: data.featuredProductId || "",
           sections: data.sections || [],
         });
       }
     },
     onError: (error) => {
       // It's okay if it fails (e.g., 404), means no data is set yet.
-      console.info("No existing landing page data found. Ready to create new.", error.response?.data?.message);
-    }
+      console.info(
+        "No existing landing page data found. Ready to create new.",
+        error.response?.data?.message
+      );
+    },
   });
 
   // Mutation to update the landing page
   const { mutate: updateLandingPage, isLoading: isSubmitting } = useMutation({
     mutationFn: async (newData) => {
-      const res = await axiosSecure.post('/v1/landing-page', newData);
+      const res = await axiosSecure.post("/landing-page", newData);
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Landing page updated successfully!');
-      queryClient.invalidateQueries(['landingPage']);
+      toast.success("Landing page updated successfully!");
+      queryClient.invalidateQueries(["landingPage"]);
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update landing page');
+      toast.error(error.message || "Failed to update landing page");
     },
   });
 
@@ -61,39 +72,54 @@ const ManageLandingPage = () => {
 
     if (sectionIndex !== null) {
       const newSections = [...formData.sections];
-      newSections[sectionIndex] = { ...newSections[sectionIndex], [name]: value };
+      newSections[sectionIndex] = {
+        ...newSections[sectionIndex],
+        [name]: value,
+      };
       setFormData({ ...formData, sections: newSections });
-    } else if (name.startsWith('hero.')) {
-      const heroField = name.split('.')[1];
-      setFormData({ ...formData, hero: { ...formData.hero, [heroField]: value } });
+    } else if (name.startsWith("hero.")) {
+      const heroField = name.split(".")[1];
+      setFormData({
+        ...formData,
+        hero: { ...formData.hero, [heroField]: value },
+      });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleImageUpload = async (file, sectionIndex = null) => {
-    const uploadId = sectionIndex !== null ? `section-${sectionIndex}` : 'hero';
+    const uploadId = sectionIndex !== null ? `section-${sectionIndex}` : "hero";
     setIsUploading({ status: true, id: uploadId });
-    
+
     const imageForm = new FormData();
-    imageForm.append('image', file);
+    imageForm.append("image", file);
 
     try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
-        method: 'POST',
-        body: imageForm,
-      });
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
+        {
+          method: "POST",
+          body: imageForm,
+        }
+      );
       const data = await res.json();
       if (data.success) {
         const imageUrl = data.data.url;
         if (sectionIndex !== null) {
           const newSections = [...formData.sections];
-          newSections[sectionIndex] = { ...newSections[sectionIndex], image: imageUrl };
+          newSections[sectionIndex] = {
+            ...newSections[sectionIndex],
+            image: imageUrl,
+          };
           setFormData({ ...formData, sections: newSections });
         } else {
-          setFormData({ ...formData, hero: { ...formData.hero, image: imageUrl } });
+          setFormData({
+            ...formData,
+            hero: { ...formData.hero, image: imageUrl },
+          });
         }
-        toast.success('Image uploaded!');
+        toast.success("Image uploaded!");
       } else {
         throw new Error(data.error.message);
       }
@@ -107,7 +133,7 @@ const ManageLandingPage = () => {
   const addSection = () => {
     setFormData({
       ...formData,
-      sections: [...formData.sections, { title: '', text: '', image: '' }],
+      sections: [...formData.sections, { title: "", text: "", image: "" }],
     });
   };
 
@@ -166,7 +192,9 @@ const ManageLandingPage = () => {
 
           {/* Hero Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Hero Section</h2>
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">
+              Hero Section
+            </h2>
             <div className="space-y-4">
               <input
                 type="text"
@@ -185,16 +213,24 @@ const ManageLandingPage = () => {
                 rows="3"
               />
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Hero Image</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Hero Image
+                </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleImageUpload(e.target.files[0])}
                   className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-teal-light file:text-brand-teal-base hover:file:bg-brand-teal-base hover:file:text-white"
                 />
-                {(isUploading.status && isUploading.id === 'hero') && <Loader2 className="animate-spin mt-2" />}
+                {isUploading.status && isUploading.id === "hero" && (
+                  <Loader2 className="animate-spin mt-2" />
+                )}
                 {formData.hero.image && (
-                  <img src={formData.hero.image} alt="Hero Preview" className="mt-4 rounded-lg max-h-48" />
+                  <img
+                    src={formData.hero.image}
+                    alt="Hero Preview"
+                    className="mt-4 rounded-lg max-h-48"
+                  />
                 )}
               </div>
             </div>
@@ -203,7 +239,9 @@ const ManageLandingPage = () => {
           {/* Dynamic Content Sections */}
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-700">Content Sections</h2>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Content Sections
+              </h2>
               <button
                 type="button"
                 onClick={addSection}
@@ -214,8 +252,13 @@ const ManageLandingPage = () => {
             </div>
 
             {formData.sections.map((section, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-sm border relative">
-                <h3 className="text-lg font-semibold text-gray-600 mb-4">Section {index + 1}</h3>
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg shadow-sm border relative"
+              >
+                <h3 className="text-lg font-semibold text-gray-600 mb-4">
+                  Section {index + 1}
+                </h3>
                 <button
                   type="button"
                   onClick={() => removeSection(index)}
@@ -241,16 +284,27 @@ const ManageLandingPage = () => {
                     rows="4"
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Section Image</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      Section Image
+                    </label>
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleImageUpload(e.target.files[0], index)}
+                      onChange={(e) =>
+                        handleImageUpload(e.target.files[0], index)
+                      }
                       className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-teal-light file:text-brand-teal-base hover:file:bg-brand-teal-base hover:file:text-white"
                     />
-                    {(isUploading.status && isUploading.id === `section-${index}`) && <Loader2 className="animate-spin mt-2" />}
+                    {isUploading.status &&
+                      isUploading.id === `section-${index}` && (
+                        <Loader2 className="animate-spin mt-2" />
+                      )}
                     {section.image && (
-                      <img src={section.image} alt={`Section ${index + 1} Preview`} className="mt-4 rounded-lg max-h-48" />
+                      <img
+                        src={section.image}
+                        alt={`Section ${index + 1} Preview`}
+                        className="mt-4 rounded-lg max-h-48"
+                      />
                     )}
                   </div>
                 </div>
@@ -266,7 +320,7 @@ const ManageLandingPage = () => {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-teal-base text-white font-semibold rounded-lg shadow-md hover:bg-brand-teal-dark disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? <Loader2 className="animate-spin" /> : <Edit />}
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

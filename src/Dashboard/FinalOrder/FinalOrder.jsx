@@ -10,6 +10,7 @@ import {
   FiTruck,
   FiPrinter,
 } from "react-icons/fi";
+import { format, parse } from "date-fns";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useOrderRequest from "../../hooks/useOrderRequest";
@@ -40,30 +41,21 @@ const FinalOrder = () => {
   const [ordersToPrint, setOrdersToPrint] = useState([]);
   const [dateFilter, setDateFilter] = useState("all");
 
-  const formatProcessingTime = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, "0");
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+  const formatDate = (dateString) => {
+    if (!dateString) {
+      return "N/A";
+    }
+
+    try {
+      const inputFormat = "dd MMMM yyyy 'at' hh:mm a";
+      const parsedDate = parse(dateString, inputFormat, new Date());
+      const outputFormat = "dd MMM yyyy, p";
+
+      return format(parsedDate, outputFormat);
+    } catch (error) {
+      console.error("Failed to parse date:", dateString, error);
+      return dateString;
+    }
   };
 
   const { mutate: updateOrderStatus } = useMutation({
@@ -73,13 +65,13 @@ const FinalOrder = () => {
         ...(newStatus === "cancel" && {
           cancelBy: {
             ...user,
-            cancelledTime: formatProcessingTime(),
+            cancelledTime: formatDate(),
           },
         }),
         ...(newStatus === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatProcessingTime(),
+            deliveredTime: formatDate(),
           },
         }),
       };
@@ -119,13 +111,13 @@ const FinalOrder = () => {
         ...(status === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatProcessingTime(),
+            deliveredTime: formatDate(),
           },
         }),
         ...(status === "cancel" && {
           cancelBy: {
             ...user,
-            cancelledTime: formatProcessingTime(),
+            cancelledTime: formatDate(),
           },
         }),
       };
@@ -248,7 +240,9 @@ const FinalOrder = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-[70vh]">
         <div className="w-full max-w-4xl mx-auto p-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">Shipping Orders</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Shipping Orders
+          </h1>
           <div className="bg-white rounded-xl shadow-soft p-6 text-center">
             <p className="text-brand-gray-base text-lg font-medium">
               {searchTerm
@@ -371,35 +365,35 @@ const FinalOrder = () => {
         className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
       >
         <div className="overflow-x-auto">
-          <Table className="min-w-full">
+          <Table className="min-w-full table-fixed">
             <Thead className="bg-brand-teal-base text-white">
               <Tr>
-                <Th className="px-6 py-4 text-left">
+                <Th className="px-3 py-4 text-left w-10">
                   <input
                     type="checkbox"
                     checked={selectAll}
                     onChange={handleSelectAll}
-                    className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
+                    className="rounded text-brand-teal-400 focus:ring-brand-teal-300 h-4 w-4"
                   />
                 </Th>
-                <Th className="px-6 py-4 text-left">SL</Th>
-                <Th className="px-6 py-4 text-left">Order ID</Th>
-                <Th className="px-6 py-4 text-left">Customer</Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                <Th className="px-3 w-7 py-4 text-left">SL</Th>
+                <Th className="px-3 py-4 text-left">Order ID</Th>
+                <Th className="px-3 py-4 text-left w-36">Customer</Th>
+                <Th className="px-3 w-28 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
-                <Th className="px-6 py-4 text-left hidden lg:table-cell">
+                <Th className="px-3 py-4 text-left hidden lg:table-cell w-24">
                   Items
                 </Th>
-                <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 py-4 text-left">Total</Th>
+                <Th className="px-3 py-4 text-left hidden sm:table-cell">
                   Order Date
                 </Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 w-32 py-4 text-left hidden sm:table-cell">
                   Shipped By
                 </Th>
-                <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left">Actions</Th>
+                <Th className="px-3 py-4 text-left ">Status</Th>
+                <Th className="px-3 py-4  text-left">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
@@ -408,47 +402,47 @@ const FinalOrder = () => {
                   key={o?._id}
                   className="hover:bg-brand-cream/30 transition-colors"
                 >
-                  <Td className="px-4 py-3 whitespace-nowrap">
+                  <Td className="px-3 py-3 whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={selectedOrders.includes(o._id)}
                       onChange={() => handleCheckbox(o._id)}
-                      className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
+                      className="rounded text-brand-teal-400 focus:ring-brand-teal-300 h-4 w-4"
                     />
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">{i + 1}</Td>
-                  <Td className="px-4 py-3">
+                  <Td className="px-3 py-3 whitespace-nowrap">{i + 1}</Td>
+                  <Td className="px-3 py-3">
                     <div className="font-medium text-brand-gray-base">
                       {o?.orderId}
                     </div>
                   </Td>
-                  <Td className="px-4 py-3">
+                  <Td className="px-3 py-3">
                     <div className="font-medium text-brand-gray-base">
                       {o?.user?.name} <br /> {o?.user?.address}{" "}
                       {o?.user?.district}
                     </div>
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">
+                  <Td className="px-3 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">
                     {o?.user?.mobile}
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
+                  <Td className="px-3 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
                     {o?.items?.length} item(s)
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap font-medium text-brand-gray-base">
+                  <Td className="px-3 py-3 whitespace-nowrap font-medium text-brand-gray-base">
                     {o?.total} BDT
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap hidden sm:table-cell text-brand-gray-base">
-                    {o?.user?.orderDate}
+                  <Td className="px-3 py-3 hidden sm:table-cell text-brand-gray-base">
+                    {formatDate(o?.user?.orderDate)}
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">
+                  <Td className="px-3 py-3">
                     <div className="text-brand-gray-base">
                       <p className="font-medium">{o?.shippingBy?.name}</p>
                       <p className="text-xs text-brand-orange-base">
-                        {o?.shippingBy?.shippingTime}
+                        {formatDate(o?.shippingBy?.shippingTime)}
                       </p>
                     </div>
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">
+                  <Td className="px-3 py-3 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         statusColors[o.status] || "bg-gray-100 text-gray-800"
@@ -457,7 +451,7 @@ const FinalOrder = () => {
                       {o.status}
                     </span>
                   </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">
+                  <Td className="px-3 py-3 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openDetailModal(o)}

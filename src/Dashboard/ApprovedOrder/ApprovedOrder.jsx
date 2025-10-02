@@ -312,10 +312,10 @@ const ApprovedOrder = () => {
         className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
       >
         <div className="overflow-x-auto">
-          <Table className="min-w-full">
+          <Table className="min-w-full table-fixed">
             <Thead className="bg-brand-teal-base text-white">
               <Tr>
-                <Th className="px-6 py-4 text-left">
+                <Th className="px-4 w-2 py-4 text-left">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -323,18 +323,18 @@ const ApprovedOrder = () => {
                     className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
                   />
                 </Th>
-                <Th className="px-6 py-4 text-left">Order ID</Th>
-                <Th className="px-6 py-4 text-left">Customer</Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                <Th className="px-4 py-4 text-left">Order ID</Th>
+                <Th className="px-4 py-4 text-left">Customer</Th>
+                <Th className="px-4 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
-                <Th className="px-6 py-4 text-left hidden lg:table-cell">
+                <Th className="px-4 py-4 text-left hidden lg:table-cell">
                   Items
                 </Th>
-                <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left">Approved By</Th>
-                <Th className="px-6 py-4 text-left">Actions</Th>
+                <Th className="px-4 py-4 text-left">Total</Th>
+                <Th className="px-4 py-4 text-left">Status</Th>
+                <Th className="px-4 py-4 text-left">Approved By</Th>
+                <Th className="px-4 py-4 text-left">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
@@ -346,7 +346,7 @@ const ApprovedOrder = () => {
                       key={o?._id}
                       className="hover:bg-brand-cream/30 transition-colors"
                     >
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={selectedOrders.includes(o._id)}
@@ -354,19 +354,19 @@ const ApprovedOrder = () => {
                           className="rounded text-brand-teal-400 focus:ring-brand-teal-300"
                         />
                       </Td>
-                      <Td className="px-4 py-3">
+                      <Td className="px-2 py-3">
                         <div className="font-medium text-brand-gray-base">
                           {o?.orderId}
                         </div>
                       </Td>
-                      <Td className="px-4 py-3">
+                      <Td className="px-2 py-3">
                         <div className="font-medium text-brand-gray-base">
                           {o?.user?.name} <br /> {o?.user?.address}{" "}
                           {o?.user?.district}
                         </div>
                       </Td>
                       <Td
-                        className={`px-4 py-3 whitespace-nowrap hidden md:table-cell ${
+                        className={`px-2 py-3 whitespace-nowrap hidden md:table-cell ${
                           isDuplicate
                             ? "bg-yellow-50 font-semibold text-brand-orange-base"
                             : "text-brand-gray-base"
@@ -374,13 +374,13 @@ const ApprovedOrder = () => {
                       >
                         {o?.user?.mobile}
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
+                      <Td className="px-2 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
                         {o?.items?.length} item(s)
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap font-medium text-brand-gray-base">
+                      <Td className="px-2 py-3 whitespace-nowrap font-medium text-brand-gray-base">
                         {o?.total} BDT
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                             statusColors[o.status] ||
@@ -390,7 +390,7 @@ const ApprovedOrder = () => {
                           {o.status}
                         </span>
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 py-3 whitespace-nowrap">
                         <div className="text-brand-gray-base">
                           <p className="font-medium">{o?.approvedBy?.name}</p>
                           <p className="text-xs text-brand-orange-base">
@@ -398,7 +398,7 @@ const ApprovedOrder = () => {
                           </p>
                         </div>
                       </Td>
-                      <Td className="px-4 py-3 whitespace-nowrap">
+                      <Td className="px-2 flex items-center justify-center py-3 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openDetailModal(o)}

@@ -1,12 +1,13 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Star, ShieldCheck, Truck, Award } from 'lucide-react';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
-import Loader from '../../components/Loader';
-import SectionTitle from '../../components/SectionTitle';
-import useScrollToTop from '../../hooks/useScrollToTop';
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
+import { Star, ShieldCheck, Truck, Award } from "lucide-react";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Loader from "../../components/Loader";
+import SectionTitle from "../../components/SectionTitle";
+import useScrollToTop from "../../hooks/useScrollToTop";
 
 const OfferPage = () => {
   useScrollToTop();
@@ -14,9 +15,9 @@ const OfferPage = () => {
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['landingPageContent'],
+    queryKey: ["landingPageContent"],
     queryFn: async () => {
-      const res = await axiosPublic.get('/v1/landing-page');
+      const res = await axiosPublic.get("/v1/landing-page");
       return res.data;
     },
   });
@@ -30,7 +31,9 @@ const OfferPage = () => {
       quantity: 1, // Default quantity is 1
     };
 
-    const subtotal = parseFloat(product.variants[0]?.price || product.price || 0);
+    const subtotal = parseFloat(
+      product.variants[0]?.price || product.price || 0
+    );
     const shippingCost = subtotal >= 1000 ? 0 : 80; // Same logic as cart
     const total = subtotal + shippingCost;
 
@@ -41,8 +44,8 @@ const OfferPage = () => {
       total,
     };
 
-    localStorage.setItem('order', JSON.stringify(order));
-    navigate('/checkout');
+    localStorage.setItem("order", JSON.stringify(order));
+    navigate("/checkout");
   };
 
   if (isLoading) {
@@ -52,8 +55,12 @@ const OfferPage = () => {
   if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gray-50">
-        <h2 className="text-2xl font-bold text-red-600 mb-2">Content Not Available</h2>
-        <p className="text-gray-600">The offer page content has not been set up by the administrator yet.</p>
+        <h2 className="text-2xl font-bold text-red-600 mb-2">
+          Content Not Available
+        </h2>
+        <p className="text-gray-600">
+          The offer page content has not been set up by the administrator yet.
+        </p>
         <p className="text-gray-500 text-sm mt-1">Please check back later.</p>
       </div>
     );
@@ -121,8 +128,12 @@ const OfferPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">{featuredProduct.name}</h2>
-            <p className="text-gray-600 mb-6">{featuredProduct.details?.join(' ')}</p>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              {featuredProduct.name}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {featuredProduct.details?.join(" ")}
+            </p>
             <div className="text-4xl font-bold text-brand-teal-base mb-8">
               ৳{featuredProduct.variants[0]?.price || featuredProduct.price}
             </div>
@@ -148,7 +159,9 @@ const OfferPage = () => {
             className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center"
           >
             <div className={`md:order-${index % 2 === 0 ? 1 : 2}`}>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">{section.title}</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                {section.title}
+              </h3>
               <p className="text-gray-600">{section.text}</p>
             </div>
             <div className={`md:order-${index % 2 === 0 ? 2 : 1}`}>
@@ -184,8 +197,12 @@ const OfferPage = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-gray-600 italic mb-4">"{review.comment}"</p>
-                  <p className="font-semibold text-gray-800">- {review.customerName}</p>
+                  <p className="text-gray-600 italic mb-4">
+                    "{review.comment}"
+                  </p>
+                  <p className="font-semibold text-gray-800">
+                    - {review.customerName}
+                  </p>
                 </motion.div>
               ))}
             </div>
