@@ -2,10 +2,12 @@ import { useLocation } from "react-router-dom";
 import { User, Phone, MapPin } from "lucide-react";
 import { pushPurchase } from "../../services/DataLayerService";
 import { useEffect, useRef } from "react";
+import useScrollToTop from "../../hooks/useScrollToTop";
 
 const Confirm = () => {
   const location = useLocation();
   const hasFiredPurchase = useRef(false);
+  useScrollToTop();
 
   const {
     orderId,

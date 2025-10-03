@@ -5,7 +5,7 @@ import Loader from "../../components/Loader";
 import Checkout from "../Checkout/Checkout";
 import "./OfferPage.css";
 
-import { ShoppingCart, Brain, Check, ShieldCheck } from "lucide-react";
+import { ShoppingCart, Check, ArrowBigRight, ShieldCheck } from "lucide-react";
 
 const OfferPage = () => {
   const axiosPublic = useAxiosPublic();
@@ -24,14 +24,12 @@ const OfferPage = () => {
     retry: false,
   });
 
-  // This useEffect hook is the key to connecting the featured product to the checkout component.
   useEffect(() => {
     if (landingPageData && landingPageData.featuredProduct) {
       const { featuredProduct } = landingPageData;
 
-      // Re-create the logic from ProductCard.jsx to set the order in localStorage
       const variant = featuredProduct.variants[0];
-      if (!variant) return; // Don't proceed if the product has no variants
+      if (!variant) return;
 
       const price = parseFloat(variant.price);
       const quantity = 1;
@@ -146,7 +144,7 @@ const OfferPage = () => {
               {problemSection.problems.map((problem, index) => (
                 <div className="problem-item" key={index}>
                   <div className="icon">
-                    <Check size={22} />
+                    <ArrowBigRight size={22} />
                   </div>
                   <span>{problem.text}</span>
                 </div>
@@ -166,6 +164,11 @@ const OfferPage = () => {
                 </div>
               ))}
             </div>
+          </div>
+          <div className="w-full flex justify-center items-center mt-10">
+            <a href="#order-form" className="cta-button">
+              এখনি অর্ডার করুন
+            </a>
           </div>
         </section>
 
@@ -223,12 +226,12 @@ const OfferPage = () => {
         </div>
       </footer>
 
-      <div className="sticky-footer-cta">
+      {/* <div className="sticky-footer-cta">
         <a href="#order-form" className="cta-button">
           <ShoppingCart size={20} style={{ marginRight: "10px" }} /> এখনি অর্ডার
           করুন
         </a>
-      </div>
+      </div> */}
     </div>
   );
 };
