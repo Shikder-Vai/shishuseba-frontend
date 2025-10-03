@@ -121,7 +121,7 @@ h2.section-title::after {
 
 /* Hero Section */
 #hero {
-  padding: 50px 0;
+  padding: 10px 0;
   /* The background is now on the container below */
   text-align: center;
   position: relative; /* Added to contain the wave */
@@ -188,7 +188,7 @@ h2.section-title::after {
 
 /* Problem Section */
 #problem {
-  padding: 80px 0;
+  padding: 50px 0;
 }
 .problem-grid {
   display: grid;
@@ -226,7 +226,7 @@ h2.section-title::after {
 
 /* Ingredients Section */
 #ingredients {
-  padding: 80px 0;
+  padding: 50px 0;
   background-color: var(--accent-color);
 }
 .ingredients-grid {
@@ -261,7 +261,7 @@ h2.section-title::after {
 
 /* Benefits Section */
 #benefits {
-  padding: 80px 0;
+  padding: 50px 0;
 }
 .benefits-content {
   display: flex;
@@ -297,7 +297,7 @@ h2.section-title::after {
 
 /* Order Form Section */
 #order-form {
-  padding: 80px 0;
+  padding: 50px 0;
   background-color: var(--light-color);
 }
 

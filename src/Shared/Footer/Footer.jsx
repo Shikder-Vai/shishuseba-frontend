@@ -149,17 +149,9 @@ const Footer = () => {
 
       {/* Copyright */}
       <div className="bg-brand-orange-base text-center py-1 text-sm text-white font-medium tracking-wide drop-shadow-sm select-text">
-        <span>© 2025. shishu seba ltd. All Rights Reserved.</span> <br />
-        <span className="">
-          Developed By{" "}
-          <a
-            href="https://abdullah-al-akash.netlify.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline text-green-700 focus:text-white transition-colors duration-300"
-          >
-            Abdullah Al Akash
-          </a>
+        <span>
+          &#169; {new Date().getFullYear()} shishu seba ltd. All Rights
+          Reserved.
         </span>
       </div>
     </footer>
