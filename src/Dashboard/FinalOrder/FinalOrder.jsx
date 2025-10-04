@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
 import PrintModal from "../../components/PrintModal";
+import axios from "axios";
 
 const statusColors = {
   shipped: "bg-yellow-100 text-yellow-800",
@@ -40,6 +41,8 @@ const FinalOrder = () => {
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [ordersToPrint, setOrdersToPrint] = useState([]);
   const [dateFilter, setDateFilter] = useState("all");
+  const [trackingHistory, setTrackingHistory] = useState(null);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
 
   const formatDate = (dateString) => {
     if (!dateString) {
@@ -175,6 +178,43 @@ const FinalOrder = () => {
     }
   };
 
+  const handleTrackOrder = async (consignmentId, orderId) => {
+    if (!consignmentId) return;
+
+    try {
+      const steadfastRes = await axios.get(
+        `https://portal.packzy.com/api/v1/status_by_cid/${consignmentId}`,
+        {
+          headers: {
+            "Api-Key": `${import.meta.env.VITE_STEADFAST_API_PUBLIC_KEY}`,
+            "Secret-Key": `${import.meta.env.VITE_STEADFAST_API_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: false,
+        }
+      );
+
+      if (steadfastRes.status === 200) {
+        setTrackingHistory(steadfastRes.data);
+        setShowTrackingModal(true);
+        if (steadfastRes.data.delivery_status === "delivered") {
+          updateOrderStatus({ id: orderId, newStatus: "delivered" });
+        }
+      } else {
+        throw new Error("Failed to fetch tracking status");
+      }
+    } catch (error) {
+      console.error("Error fetching tracking status:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to fetch tracking status from Steadfast.",
+        icon: "error",
+        confirmButtonColor: "#018b76",
+        background: "#ffffff",
+      });
+    }
+  };
+
   if (loadingOrder) return <Loader />;
 
   const handlePrint = () => {
@@ -267,73 +307,74 @@ const FinalOrder = () => {
     <div>
       <SectionTitle title="Shipping Orders" />
 
-      <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="relative w-full md:w-80">
+      <div className="mb-6 p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full md:w-auto md:flex-grow">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <FiSearch className="text-brand-gray-base" />
+            <FiSearch className="text-gray-400" />
           </div>
           <input
             type="text"
             placeholder="Search by phone number..."
-            className="block w-full pl-10 pr-3 py-2 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-500 focus:border-transparent transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        {/* Add the filter buttons here */}
-        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => setDateFilter("all")}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               dateFilter === "all"
-                ? "bg-brand-teal-base text-white shadow-soft"
-                : "text-brand-gray-base hover:bg-gray-100"
+                ? "bg-brand-teal-base text-white shadow-sm"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            All Orders
+            All
           </button>
           <button
             onClick={() => setDateFilter("today")}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               dateFilter === "today"
-                ? "bg-brand-teal-base text-white shadow-soft"
-                : "text-brand-gray-base hover:bg-gray-100"
+                ? "bg-brand-teal-base text-white shadow-sm"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             Today
           </button>
           <button
             onClick={() => setDateFilter("yesterday")}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               dateFilter === "yesterday"
-                ? "bg-brand-teal-base text-white shadow-soft"
-                : "text-brand-gray-base hover:bg-gray-100"
+                ? "bg-brand-teal-base text-white shadow-sm"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             Yesterday
           </button>
         </div>
-
         {selectedOrders.length > 0 && (
           <motion.div
-            className="flex items-center gap-4 bg-brand-cream p-3 rounded-lg shadow-soft"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 flex-shrink-0"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <p className="text-sm text-brand-gray-base">
+            <span className="text-sm font-medium text-gray-700">
               {selectedOrders.length} selected
-            </p>
+            </span>
             <button
               onClick={() => bulkUpdateOrders("delivered")}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm font-medium"
             >
-              <FiCheck /> Delivered
+              <FiCheck size={16} />
+              <span>Delivered</span>
             </button>
             <button
               onClick={handlePrint}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm font-medium"
             >
-              <FiPrinter /> Print
+              <FiPrinter size={16} />
+              <span>Print</span>
             </button>
             <button
               onClick={() => {
@@ -342,8 +383,8 @@ const FinalOrder = () => {
                   text: "You won't be able to revert this!",
                   icon: "warning",
                   showCancelButton: true,
-                  confirmButtonColor: "#018b76",
-                  cancelButtonColor: "#d33",
+                  confirmButtonColor: "#d33",
+                  cancelButtonColor: "#3085d6",
                   confirmButtonText: "Yes, cancel it!",
                 }).then((result) => {
                   if (result.isConfirmed) {
@@ -351,9 +392,10 @@ const FinalOrder = () => {
                   }
                 });
               }}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm font-medium"
             >
-              <FiX /> Canceled
+              <FiX size={16} />
+              <span>Cancel</span>
             </button>
           </motion.div>
         )}
@@ -362,7 +404,7 @@ const FinalOrder = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
+        className="bg-white rounded-xl shadow-soft border border-brand-gray-light"
       >
         <div className="overflow-x-auto">
           <Table className="min-w-full table-fixed">
@@ -397,7 +439,7 @@ const FinalOrder = () => {
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
-              {filteredOrders.reverse().map((o, i) => (
+              {filteredOrders.map((o, i) => (
                 <Tr
                   key={o?._id}
                   className="hover:bg-brand-cream/30 transition-colors"
@@ -460,6 +502,15 @@ const FinalOrder = () => {
                       >
                         <FiEye size={16} />
                       </button>
+                      {o.consignment_id && (
+                        <button
+                          onClick={() => handleTrackOrder(o.consignment_id, o._id)}
+                          className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          aria-label="Track order"
+                        >
+                          <FiTruck size={16} />
+                        </button>
+                      )}
                     </div>
                   </Td>
                 </Tr>
@@ -770,6 +821,47 @@ const FinalOrder = () => {
         />
       )}
       {/* MODAL CODE End */}
+
+      {/* Tracking History Modal */}
+      <AnimatePresence>
+        {showTrackingModal && trackingHistory && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="sticky top-0 bg-white p-6 border-b border-brand-gray-light flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-brand-teal-base">
+                  Tracking History
+                </h2>
+                <button
+                  onClick={() => setShowTrackingModal(false)}
+                  className="text-brand-gray-base hover:text-brand-orange-base"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="space-y-4">
+                  <p>
+                    <span className="font-medium">Status:</span>{" "}
+                    {trackingHistory.delivery_status}
+                  </p>
+                  {/* Add more details from trackingHistory object as needed */}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
