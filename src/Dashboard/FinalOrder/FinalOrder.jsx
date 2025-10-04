@@ -43,6 +43,7 @@ const FinalOrder = () => {
   const [dateFilter, setDateFilter] = useState("all");
   const [trackingHistory, setTrackingHistory] = useState(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [isTrackingAll, setIsTrackingAll] = useState(false);
 
   const formatDate = (dateString) => {
     if (!dateString) {
@@ -86,14 +87,6 @@ const FinalOrder = () => {
       refetch();
       setSelectedOrders([]);
       setSelectAll(false);
-      Swal.fire({
-        title: "Status Updated",
-        text: "Order status changed successfully",
-        icon: "success",
-        confirmButtonColor: "#018b76",
-        background: "#ffffff",
-        backdrop: `rgba(254,239,224,0.4)`,
-      });
       setShowDetailModal(false);
     },
     onError: () => {
@@ -213,6 +206,53 @@ const FinalOrder = () => {
         background: "#ffffff",
       });
     }
+  };
+
+  const handleTrackAll = async () => {
+    setIsTrackingAll(true);
+    let updatedCount = 0;
+    const promises = filteredOrders.map(async (order) => {
+      if (order.consignment_id && order.status !== "delivered") {
+        try {
+          const steadfastRes = await axios.get(
+            `https://portal.packzy.com/api/v1/status_by_cid/${order.consignment_id}`,
+            {
+              headers: {
+                "Api-Key": `${import.meta.env.VITE_STEADFAST_API_PUBLIC_KEY}`,
+                "Secret-Key": `${
+                  import.meta.env.VITE_STEADFAST_API_SECRET_KEY
+                }`,
+                "Content-Type": "application/json",
+              },
+              withCredentials: false,
+            }
+          );
+
+          if (
+            steadfastRes.status === 200 &&
+            steadfastRes.data.delivery_status === "delivered"
+          ) {
+            await updateOrderStatus({ id: order._id, newStatus: "delivered" });
+            updatedCount++;
+          }
+        } catch (error) {
+          console.error(
+            `Failed to track order ${order.orderId}:`,
+            error.message
+          );
+        }
+      }
+    });
+
+    await Promise.all(promises);
+    setIsTrackingAll(false);
+    Swal.fire({
+      title: "Tracking Complete",
+      text: `${updatedCount} orders have been updated to delivered.`,
+      icon: "success",
+      confirmButtonColor: "#018b76",
+      background: "#ffffff",
+    });
   };
 
   if (loadingOrder) return <Loader />;
@@ -352,6 +392,16 @@ const FinalOrder = () => {
             Yesterday
           </button>
         </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={handleTrackAll}
+            disabled={isTrackingAll}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            <FiTruck size={16} />
+            <span>{isTrackingAll ? "Tracking..." : "Track All"}</span>
+          </button>
+        </div>
         {selectedOrders.length > 0 && (
           <motion.div
             className="flex items-center gap-2 flex-shrink-0"
@@ -404,7 +454,7 @@ const FinalOrder = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl shadow-soft border border-brand-gray-light"
+        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
       >
         <div className="overflow-x-auto">
           <Table className="min-w-full table-fixed">
@@ -419,19 +469,19 @@ const FinalOrder = () => {
                   />
                 </Th>
                 <Th className="px-3 w-7 py-4 text-left">SL</Th>
-                <Th className="px-3 py-4 text-left">Order ID</Th>
+                <Th className="px-3 py-4 text-sm text-left">Order ID</Th>
                 <Th className="px-3 py-4 text-left w-36">Customer</Th>
                 <Th className="px-3 w-28 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
-                <Th className="px-3 py-4 text-left hidden lg:table-cell w-24">
+                <Th className="px-3 py-4 text-left hidden lg:table-cell w-20">
                   Items
                 </Th>
                 <Th className="px-3 py-4 text-left">Total</Th>
-                <Th className="px-3 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 text-sm py-4 text-left hidden sm:table-cell">
                   Order Date
                 </Th>
-                <Th className="px-3 w-32 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 w-28 py-4 text-left hidden sm:table-cell">
                   Shipped By
                 </Th>
                 <Th className="px-3 py-4 text-left ">Status</Th>
@@ -459,9 +509,8 @@ const FinalOrder = () => {
                     </div>
                   </Td>
                   <Td className="px-3 py-3">
-                    <div className="font-medium text-brand-gray-base">
-                      {o?.user?.name} <br /> {o?.user?.address}{" "}
-                      {o?.user?.district}
+                    <div className="font-medium text-sm text-brand-gray-base">
+                      {o?.user?.name}, {o?.user?.address},{o?.user?.district}
                     </div>
                   </Td>
                   <Td className="px-3 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">
@@ -473,12 +522,14 @@ const FinalOrder = () => {
                   <Td className="px-3 py-3 whitespace-nowrap font-medium text-brand-gray-base">
                     {o?.total} BDT
                   </Td>
-                  <Td className="px-3 py-3 hidden sm:table-cell text-brand-gray-base">
+                  <Td className="px-3 text-sm py-3 hidden sm:table-cell text-brand-gray-base">
                     {formatDate(o?.user?.orderDate)}
                   </Td>
                   <Td className="px-3 py-3">
                     <div className="text-brand-gray-base">
-                      <p className="font-medium">{o?.shippingBy?.name}</p>
+                      <p className="font-medium text-sm">
+                        {o?.shippingBy?.name}
+                      </p>
                       <p className="text-xs text-brand-orange-base">
                         {formatDate(o?.shippingBy?.shippingTime)}
                       </p>
@@ -504,7 +555,9 @@ const FinalOrder = () => {
                       </button>
                       {o.consignment_id && (
                         <button
-                          onClick={() => handleTrackOrder(o.consignment_id, o._id)}
+                          onClick={() =>
+                            handleTrackOrder(o.consignment_id, o._id)
+                          }
                           className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                           aria-label="Track order"
                         >
