@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Loader from "../../components/Loader";
 import Checkout from "../Checkout/Checkout";
@@ -8,6 +9,7 @@ import "./OfferPage.css";
 import { ShoppingCart, Check, ArrowBigRight, ShieldCheck } from "lucide-react";
 
 const OfferPage = () => {
+  const { id } = useParams();
   const axiosPublic = useAxiosPublic();
 
   const {
@@ -16,12 +18,12 @@ const OfferPage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["landingPage"],
+    queryKey: ["landingPage", id],
     queryFn: async () => {
-      const res = await axiosPublic.get("/landing-page");
+      const res = await axiosPublic.get(`/landing-page/${id}`);
       return res.data;
     },
-    retry: false,
+    enabled: !!id, // Only run query if id is available
   });
 
   useEffect(() => {

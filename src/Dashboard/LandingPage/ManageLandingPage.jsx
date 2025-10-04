@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 import {
-  Plus, Trash2, Loader2, Edit, ChevronDown, ChevronUp, ImageUp, Wand2, List, ShieldQuestion, Apple, HeartPulse, Phone
+  Plus, Trash2, Loader2, Edit, ChevronDown, ChevronUp, Wand2, List, ShieldQuestion, Apple, HeartPulse, Phone
 } from "lucide-react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useAllProducts from "../../hooks/useAllProducts";
 import Loader from "../../components/Loader";
 
-// A helper component for collapsible sections
 const AccordionSection = ({ title, icon, children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const Icon = icon;
@@ -29,7 +29,11 @@ const AccordionSection = ({ title, icon, children }) => {
 };
 
 const ManageLandingPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEditMode = id !== 'new';
   const [formData, setFormData] = useState({
+    name: "",
     hero: { title: "", subtitle: "" },
     featuredProductId: "",
     problemSection: { title: "", problems: [{ text: "" }] },
@@ -42,15 +46,16 @@ const ManageLandingPage = () => {
   const queryClient = useQueryClient();
   const [products, loadingProducts] = useAllProducts();
 
-  const { data: landingPageData, isLoading: isLoadingData } = useQuery({
-    queryKey: ["landingPage"],
+  const { isLoading: isLoadingData } = useQuery({
+    queryKey: ["landingPage", id],
     queryFn: async () => {
-      const res = await axiosPublic.get("/landing-page");
+      const res = await axiosPublic.get(`/landing-page/${id}`);
       return res.data;
     },
     onSuccess: (data) => {
       if (data) {
         setFormData({
+          name: data.name || "",
           hero: data.hero || { title: "", subtitle: "" },
           featuredProductId: data.featuredProductId || "",
           problemSection: data.problemSection || { title: "", problems: [{ text: "" }] },
@@ -60,14 +65,25 @@ const ManageLandingPage = () => {
         });
       }
     },
-    retry: false, // Don't retry on 404
+    enabled: isEditMode, // Only fetch if in edit mode
   });
 
-  const { mutate: updateLandingPage, isLoading: isSubmitting } = useMutation({
+  const { mutate: createLandingPage, isLoading: isCreating } = useMutation({
     mutationFn: (newData) => axiosPublic.post("/landing-page", newData),
     onSuccess: () => {
+      toast.success("Landing page created successfully!");
+      queryClient.invalidateQueries(["landingPages"]);
+      navigate("/dashboard/landing-pages");
+    },
+    onError: (error) => toast.error(error.message || "Failed to create"),
+  });
+
+  const { mutate: updateLandingPage, isLoading: isUpdating } = useMutation({
+    mutationFn: (newData) => axiosPublic.put(`/landing-page/${id}`, newData),
+    onSuccess: () => {
       toast.success("Landing page updated successfully!");
-      queryClient.invalidateQueries(["landingPage"]);
+      queryClient.invalidateQueries(["landingPages", "landingPage", id]);
+      navigate("/dashboard/landing-pages");
     },
     onError: (error) => toast.error(error.message || "Failed to update"),
   });
@@ -104,26 +120,36 @@ const ManageLandingPage = () => {
     e.preventDefault();
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you want to save these changes to the landing page?",
+      text: `Do you want to ${isEditMode ? 'save changes to' : 'create'} this landing page?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#00897B",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, save it!",
+      confirmButtonText: `Yes, ${isEditMode ? 'save it' : 'create it'}!`,
     }).then((result) => {
       if (result.isConfirmed) {
-        updateLandingPage(formData);
+        if (isEditMode) {
+          updateLandingPage(formData);
+        } else {
+          createLandingPage(formData);
+        }
       }
     });
   };
 
-  if (loadingProducts || isLoadingData) return <Loader />;
+  if (loadingProducts || (isEditMode && isLoadingData)) return <Loader />;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage Custom Landing Page</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          {isEditMode ? "Edit Landing Page" : "Create New Landing Page"}
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow-sm border">
+            <label className="text-lg font-semibold text-gray-700">Page Name</label>
+            <input type="text" name="name" placeholder="e.g., Summer Sale" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border rounded-lg mt-2" required />
+          </div>
 
           <AccordionSection title="Hero Section" icon={Wand2}>
             <div className="space-y-4">
@@ -179,9 +205,9 @@ const ManageLandingPage = () => {
           </AccordionSection>
 
           <div className="flex justify-end pt-6 border-t">
-            <button type="submit" disabled={isSubmitting} className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-teal-base text-white font-semibold rounded-lg shadow-md hover:bg-brand-teal-dark disabled:opacity-50">
-              {isSubmitting ? <Loader2 className="animate-spin" /> : <Edit />}
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <button type="submit" disabled={isCreating || isUpdating} className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-teal-base text-white font-semibold rounded-lg shadow-md hover:bg-brand-teal-dark disabled:opacity-50">
+              {(isCreating || isUpdating) ? <Loader2 className="animate-spin" /> : <Edit />}
+              {(isCreating || isUpdating) ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

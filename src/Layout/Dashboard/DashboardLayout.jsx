@@ -82,9 +82,9 @@ const dashboardLinks = [
     label: "Manage Admins",
   },
   {
-    to: "/dashboard/manage-landing-page",
+    to: "/dashboard/landing-pages",
     icon: <Landmark size={20} />,
-    label: "Landing Page",
+    label: "Landing Pages",
   },
 ];
 

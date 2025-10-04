@@ -29,6 +29,7 @@ import ManageBlogs from "../Dashboard/Blog/ManageBlogs";
 import ManageReviews from "../Dashboard/Reviews/ManageReviews";
 import DashboardLayout from "../Layout/Dashboard/DashboardLayout";
 import ManageLandingPage from "../Dashboard/LandingPage/ManageLandingPage";
+import LandingPageList from "../Dashboard/LandingPage/LandingPageList";
 import OfferPage from "../Pages/OfferPage/OfferPage";
 import OfferLayout from "../Layout/OfferPage/OfferLayout"; // Import the new layout
 
@@ -90,7 +91,7 @@ export const router = createBrowserRouter([
   },
   // Offer Page Route with its own layout
   {
-    path: "/offer",
+    path: "/offer/:id",
     element: <OfferLayout />,
     children: [
       {
@@ -165,7 +166,11 @@ export const router = createBrowserRouter([
         element: <ManageReviews />,
       },
       {
-        path: "manage-landing-page",
+        path: "landing-pages",
+        element: <LandingPageList />,
+      },
+      {
+        path: "manage-landing-page/:id",
         element: <ManageLandingPage />,
       },
     ],
