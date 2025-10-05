@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -42,9 +42,13 @@ const AccordionSection = ({ title, icon, children }) => {
 };
 
 const ManageLandingPage = () => {
+  // =================================================================
+  // 1. ALL HOOKS MUST BE DECLARED AT THE TOP, IN THE SAME ORDER
+  // =================================================================
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = id !== "new";
+
   const [formData, setFormData] = useState({
     name: "",
     hero: { title: "", subtitle: "" },
@@ -59,58 +63,81 @@ const ManageLandingPage = () => {
   const queryClient = useQueryClient();
   const [products, loadingProducts] = useAllProducts();
 
-  const { isLoading: isLoadingData } = useQuery({
+  const {
+    data,
+    error,
+    isLoading: isLoadingData,
+  } = useQuery({
     queryKey: ["landingPage", id],
     queryFn: async () => {
       const res = await axiosPublic.get(`/landing-pages/${id}`);
       return res.data;
     },
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          name: data?.name || "",
-          hero: data?.hero || { title: "", subtitle: "" },
-          featuredProductId: data?.featuredProductId || "",
-          problemSection: data?.problemSection || {
-            title: "",
-            problems: [{ text: "" }],
-          },
-          ingredientsSection: data.ingredientsSection || {
-            title: "",
-            ingredients: [{ name: "", image: "" }],
-          },
-          benefitsSection: data.benefitsSection || {
-            title: "",
-            image: "",
-            benefits: [{ text: "" }],
-          },
-          footer: data.footer || { phoneNumber: "" },
-        });
+    enabled: isEditMode,
+  });
+
+  // This is the combined mutation hook. It is now correctly placed at the top.
+  const { mutate: saveLandingPage, isLoading: isSaving } = useMutation({
+    mutationFn: (formData) => {
+      if (isEditMode) {
+        return axiosPublic.put(`/landing-pages/${id}`, formData);
+      } else {
+        return axiosPublic.post("/landing-pages", formData);
       }
     },
-    enabled: isEditMode, // Only fetch if in edit mode
-  });
-
-  const { mutate: createLandingPage, isLoading: isCreating } = useMutation({
-    mutationFn: (newData) => axiosPublic.post("/landing-pages", newData),
     onSuccess: () => {
-      toast.success("Landing page created successfully!");
-      queryClient.invalidateQueries(["landingPages"]);
+      toast.success(
+        `Landing page ${isEditMode ? "updated" : "created"} successfully!`
+      );
+      queryClient.invalidateQueries({ queryKey: ["landingPages"] });
+      if (isEditMode) {
+        queryClient.invalidateQueries({ queryKey: ["landingPage", id] });
+      }
       navigate("/dashboard/landing-pages");
     },
-    onError: (error) => toast.error(error.message || "Failed to create"),
-  });
-
-  const { mutate: updateLandingPage, isLoading: isUpdating } = useMutation({
-    mutationFn: (newData) => axiosPublic.put(`/landing-pages/${id}`, newData),
-    onSuccess: () => {
-      toast.success("Landing page updated successfully!");
-      queryClient.invalidateQueries(["landingPages", "landingPage", id]);
-      navigate("/dashboard/landing-pages");
+    onError: (error) => {
+      toast.error(
+        error.message || `Failed to ${isEditMode ? "update" : "create"}`
+      );
     },
-    onError: (error) => toast.error(error.message || "Failed to update"),
   });
 
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        name: data?.name || "",
+        hero: data?.hero || { title: "", subtitle: "" },
+        featuredProductId: data?.featuredProductId || "",
+        problemSection: data?.problemSection || {
+          title: "",
+          problems: [{ text: "" }],
+        },
+        ingredientsSection: data.ingredientsSection || {
+          title: "",
+          ingredients: [{ name: "", image: "" }],
+        },
+        benefitsSection: data.benefitsSection || {
+          title: "",
+          image: "",
+          benefits: [{ text: "" }],
+        },
+        footer: data.footer || { phoneNumber: "" },
+      });
+    }
+  }, [data]);
+
+  // =================================================================
+  // 2. EARLY RETURNS AND LOGIC CAN COME AFTER ALL HOOKS ARE DECLARED
+  // =================================================================
+  if (loadingProducts || (isEditMode && isLoadingData)) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <div>Error fetching landing page data: {error.message}</div>;
+  }
+
+  // Helper functions
   const handleInputChange = (e, section, field, index = null) => {
     const { name, value } = e.target;
     const newFormData = { ...formData };
@@ -154,17 +181,14 @@ const ManageLandingPage = () => {
       confirmButtonText: `Yes, ${isEditMode ? "save it" : "create it"}!`,
     }).then((result) => {
       if (result.isConfirmed) {
-        if (isEditMode) {
-          updateLandingPage(formData);
-        } else {
-          createLandingPage(formData);
-        }
+        saveLandingPage(formData);
       }
     });
   };
 
-  if (loadingProducts || (isEditMode && isLoadingData)) return <Loader />;
-
+  // =================================================================
+  // 3. THE FINAL RENDER / JSX RETURN
+  // =================================================================
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
@@ -321,7 +345,7 @@ const ManageLandingPage = () => {
                   onClick={() =>
                     handleRemoveItem("ingredientsSection", "ingredients", index)
                   }
-                  className="text-red-500 md:col-span-2"
+                  className="text-red-500 md:col-start-1" // Adjusted for better layout
                 >
                   <Trash2 />
                 </button>
@@ -399,15 +423,11 @@ const ManageLandingPage = () => {
           <div className="flex justify-end pt-6 border-t">
             <button
               type="submit"
-              disabled={isCreating || isUpdating}
+              disabled={isSaving}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-teal-base text-white font-semibold rounded-lg shadow-md hover:bg-brand-teal-dark disabled:opacity-50"
             >
-              {isCreating || isUpdating ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Edit />
-              )}
-              {isCreating || isUpdating ? "Saving..." : "Save Changes"}
+              {isSaving ? <Loader2 className="animate-spin" /> : <Edit />}
+              {isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

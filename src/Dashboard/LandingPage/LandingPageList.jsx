@@ -1,19 +1,23 @@
-import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2 } from 'lucide-react';
-import useAxiosPublic from '../../hooks/useAxiosPublic';
-import Loader from '../../components/Loader';
-import Swal from 'sweetalert2';
+import React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Loader from "../../components/Loader";
+import Swal from "sweetalert2";
 
 const LandingPageList = () => {
   const axiosPublic = useAxiosPublic();
   const queryClient = useQueryClient();
 
-  const { data: landingPages, isLoading, isError } = useQuery({
-    queryKey: ['landingPages'],
+  const {
+    data: landingPages,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["landingPages"],
     queryFn: async () => {
-      const res = await axiosPublic.get('/landing-pages');
+      const res = await axiosPublic.get("/landing-pages");
       return res.data;
     },
   });
@@ -23,23 +27,23 @@ const LandingPageList = () => {
       await axiosPublic.delete(`/landing-pages/${id}`);
     },
     onSuccess: () => {
-      Swal.fire('Deleted!', 'The landing page has been deleted.', 'success');
-      queryClient.invalidateQueries(['landingPages']);
+      Swal.fire("Deleted!", "The landing page has been deleted.", "success");
+      queryClient.invalidateQueries(["landingPages"]);
     },
     onError: () => {
-      Swal.fire('Error!', 'Failed to delete the landing page.', 'error');
+      Swal.fire("Error!", "Failed to delete the landing page.", "error");
     },
   });
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         deleteLandingPage(id);
@@ -66,19 +70,33 @@ const LandingPageList = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Page ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {landingPages.map((page) => (
               <tr key={page._id}>
                 <td className="px-6 py-4 whitespace-nowrap">{page.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <Link to={`/dashboard/manage-landing-page/${page._id}`} className="text-indigo-600 hover:text-indigo-900 mr-4">
+                <td className="px-6 py-4 whitespace-nowrap">{page._id}</td>
+                <td className="px-6 flex items-center py-4 gap-1 whitespace-nowrap text-sm font-medium">
+                  <Link
+                    to={`/dashboard/manage-landing-page/${page._id}`}
+                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                  >
                     <Edit />
                   </Link>
-                  <button onClick={() => handleDelete(page._id)} className="text-red-600 hover:text-red-900">
+                  <button
+                    onClick={() => handleDelete(page._id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
                     <Trash2 />
                   </button>
                 </td>
