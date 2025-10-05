@@ -20,7 +20,7 @@ const LandingPageList = () => {
 
   const { mutate: deleteLandingPage } = useMutation({
     mutationFn: async (id) => {
-      await axiosPublic.delete(`/landing-page/${id}`);
+      await axiosPublic.delete(`/landing-pages/${id}`);
     },
     onSuccess: () => {
       Swal.fire('Deleted!', 'The landing page has been deleted.', 'success');

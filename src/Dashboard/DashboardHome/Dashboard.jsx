@@ -453,7 +453,7 @@ const OrderAnalyticsDashboard = () => {
                 <tbody>
                   {reports.customerInsights?.map((item, index) => (
                     <motion.tr
-                      key={item.mobile}
+                      key={`${item.mobile}-${index}`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}

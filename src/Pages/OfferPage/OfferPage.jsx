@@ -20,36 +20,35 @@ const OfferPage = () => {
   } = useQuery({
     queryKey: ["landingPage", id],
     queryFn: async () => {
-      const res = await axiosPublic.get(`/landing-page/${id}`);
+      const res = await axiosPublic.get(`/landing-pages/${id}`);
       return res.data;
     },
-    enabled: !!id, // Only run query if id is available
+    enabled: !!id,
   });
 
   useEffect(() => {
     // On component mount, save the user's original cart.
-    const originalCart = localStorage.getItem("cart");
+    // const originalCart = localStorage.getItem("cart");
     const originalOrder = localStorage.getItem("order");
 
     // Return a cleanup function to run when the component unmounts.
     return () => {
       // When the user navigates away, restore their original cart.
-      if (originalCart) {
-        localStorage.setItem("cart", originalCart);
-      } else {
-        localStorage.removeItem("cart");
-      }
+      // if (originalCart) {
+      //   localStorage.setItem("cart", originalCart);
+      // } else {
+      //   localStorage.removeItem("cart");
+      // }
       if (originalOrder) {
         localStorage.setItem("order", originalOrder);
       } else {
         localStorage.removeItem("order");
       }
-      // Notify other components that the cart has been restored.
+
       window.dispatchEvent(new Event("cart-updated"));
     };
-  }, []); // Empty dependency array ensures this runs only once on mount and unmount.
+  }, []);
 
-  // This separate effect handles updating the cart when the landing page data loads.
   useEffect(() => {
     if (landingPageData && landingPageData.featuredProduct) {
       const { featuredProduct } = landingPageData;
@@ -82,9 +81,9 @@ const OfferPage = () => {
       };
 
       // Overwrite localStorage for the Checkout component.
-      localStorage.setItem("cart", JSON.stringify(cartItems));
+      // localStorage.setItem("cart", JSON.stringify(cartItems));
       localStorage.setItem("order", JSON.stringify(order));
-      window.dispatchEvent(new Event("cart-updated"));
+      // window.dispatchEvent(new Event("cart-updated"));
     }
   }, [landingPageData]);
 
