@@ -396,6 +396,9 @@ const Checkout = () => {
                   <div>
                     <p className="font-medium text-gray-900">{item?.name}</p>
                     <p className="text-sm text-gray-500">
+                      {item.weight}
+                    </p>
+                    <p className="text-sm text-gray-500">
                       Qty: {item?.quantity}
                     </p>
                   </div>

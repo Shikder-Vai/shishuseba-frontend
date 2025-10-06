@@ -104,7 +104,7 @@ const ProductCard = ({ product }) => {
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-fill p-1 group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
           />
         </div>
         <Link

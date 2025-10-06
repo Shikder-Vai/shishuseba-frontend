@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
@@ -11,6 +11,7 @@ import { ShoppingCart, Check, ArrowBigRight, ShieldCheck } from "lucide-react";
 const OfferPage = () => {
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   const {
     data: landingPageData,
@@ -27,18 +28,18 @@ const OfferPage = () => {
   });
 
   useEffect(() => {
+    if (landingPageData && landingPageData.featuredProduct) {
+      setSelectedVariant(landingPageData.featuredProduct.variants[0]);
+    }
+  }, [landingPageData]);
+
+  useEffect(() => {
     // On component mount, save the user's original cart.
-    // const originalCart = localStorage.getItem("cart");
     const originalOrder = localStorage.getItem("order");
 
     // Return a cleanup function to run when the component unmounts.
     return () => {
       // When the user navigates away, restore their original cart.
-      // if (originalCart) {
-      //   localStorage.setItem("cart", originalCart);
-      // } else {
-      //   localStorage.removeItem("cart");
-      // }
       if (originalOrder) {
         localStorage.setItem("order", originalOrder);
       } else {
@@ -50,20 +51,17 @@ const OfferPage = () => {
   }, []);
 
   useEffect(() => {
-    if (landingPageData && landingPageData.featuredProduct) {
+    if (landingPageData && landingPageData.featuredProduct && selectedVariant) {
       const { featuredProduct } = landingPageData;
 
-      const variant = featuredProduct.variants[0];
-      if (!variant) return;
-
-      const price = parseFloat(variant.price);
+      const price = parseFloat(selectedVariant.price);
       const quantity = 1;
 
       const cartItem = {
         ...featuredProduct,
-        variant,
+        variant: selectedVariant,
         price,
-        weight: variant.weight,
+        weight: selectedVariant.weight,
         admin_note: "",
         quantity: quantity,
       };
@@ -80,12 +78,10 @@ const OfferPage = () => {
         total,
       };
 
-      // Overwrite localStorage for the Checkout component.
-      // localStorage.setItem("cart", JSON.stringify(cartItems));
       localStorage.setItem("order", JSON.stringify(order));
-      // window.dispatchEvent(new Event("cart-updated"));
+      window.dispatchEvent(new Event("cart-updated"));
     }
-  }, [landingPageData]);
+  }, [landingPageData, selectedVariant]);
 
   if (isLoading) {
     return <Loader />;
@@ -138,10 +134,30 @@ const OfferPage = () => {
                 alt={featuredProduct?.name}
                 className="product-image"
               />
-              {/* Display the product name */}
               <h3 className="text-2xl font-bold text-center mt-[-10px]">
                 {featuredProduct?.name}
               </h3>
+              <div className="variant-selection">
+                <div className="variant-options">
+                  {featuredProduct?.variants.map((variant) => (
+                    <label key={variant.weight} className="variant-label">
+                      <input
+                        type="radio"
+                        name="variant"
+                        value={variant.weight}
+                        checked={selectedVariant?.weight === variant.weight}
+                        onChange={() => setSelectedVariant(variant)}
+                      />
+                      <span>{variant.weight}</span>
+                    </label>
+                  ))}
+                </div>
+                {selectedVariant && (
+                  <div className="variant-price">
+                    Price: <span>{selectedVariant.price}৳</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="wave-divider">
