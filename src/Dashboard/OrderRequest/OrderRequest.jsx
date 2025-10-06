@@ -55,7 +55,7 @@ const OrderRequest = () => {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [productSearchTerm, setProductSearchTerm] = useState("");
-  // ADD THIS useMemo HOOK
+
   const filteredProducts = useMemo(() => {
     if (!products) {
       return [];
@@ -72,7 +72,9 @@ const OrderRequest = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) {
-      return "N/A";
+      const now = new Date();
+      const outputFormat = "dd MMM yyyy, p";
+      return format(now, outputFormat);
     }
 
     try {
@@ -432,7 +434,7 @@ const OrderRequest = () => {
                       </Td>
                       <Td className="px-2 py-3">
                         <div
-                          className="font-medium text-brand-gray-base max-w-sm overflow-hidden text-ellipsis"
+                          className="font-medium text-brand-gray-base max-w-sm overflow-hidden text-sm text-ellipsis"
                           title={`${o?.user?.name}, ${o?.user?.address} ${o?.user?.district}`}
                         >
                           {o?.user?.name.slice(0, 20)}, {o?.user?.address}

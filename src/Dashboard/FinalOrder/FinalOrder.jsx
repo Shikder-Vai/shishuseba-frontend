@@ -277,7 +277,7 @@ const FinalOrder = () => {
   const filteredOrders =
     orders
       ?.filter((order) => {
-        // Step 1: Filter by the selected date
+        //  Filter by the selected date
         if (dateFilter === "all") {
           return true;
         }
@@ -306,11 +306,11 @@ const FinalOrder = () => {
         return true;
       })
       .filter((order) => {
-        // Step 2: Filter the result by your search term
+        //  Filter the result by your search term
         return order?.user?.mobile?.includes(searchTerm);
       })
       .sort((a, b) => {
-        // Step 3: Sort the final list by date
+        // Sort the final list by date
         const timeA = new Date(a.shippingBy?.shippingTime);
         const timeB = new Date(b.shippingBy?.shippingTime);
         return timeB - timeA;

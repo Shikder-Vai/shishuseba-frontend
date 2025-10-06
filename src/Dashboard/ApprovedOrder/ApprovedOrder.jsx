@@ -360,8 +360,11 @@ const ApprovedOrder = () => {
                         </div>
                       </Td>
                       <Td className="px-2 py-3">
-                        <div className="font-medium text-brand-gray-base">
-                          {o?.user?.name} <br /> {o?.user?.address}{" "}
+                        <div
+                          title={`${o?.user?.name}, ${o?.user?.address}, ${o?.user?.district}`}
+                          className="font-medium text-sm text-brand-gray-base overflow-hidden text-ellipsis"
+                        >
+                          {o?.user?.name}, {o?.user?.address},
                           {o?.user?.district}
                         </div>
                       </Td>
