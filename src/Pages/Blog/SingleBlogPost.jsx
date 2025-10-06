@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import useSingleBlog from "../../hooks/useSingleBlog";
 import useBlogs from "../../hooks/useBlogs";
 import Loader from "../../components/Loader";
+import FormattedText from "../../components/TextFormatting";
 
 const SingleBlogPost = () => {
   const { id } = useParams();
@@ -54,7 +55,7 @@ const SingleBlogPost = () => {
               {/* Blog Content */}
 
               <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-line text-lg">
-                {blog.content}
+                <FormattedText text={blog.content} />
               </div>
             </article>
           </div>

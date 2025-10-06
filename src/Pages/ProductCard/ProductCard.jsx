@@ -104,7 +104,7 @@ const ProductCard = ({ product }) => {
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-fill p-1 group-hover:scale-105 transition-transform duration-300"
           />
         </div>
         <Link
@@ -126,7 +126,7 @@ const ProductCard = ({ product }) => {
                 {name}
               </h3>
               <p className="text-xs text-gray-500">{variants[0]?.weight}</p>
-              {/* Display first detail if exists */}
+
               {details?.length > 0 && (
                 <div className="hidden md:block items-start h-full gap-2 text-sm text-brand-gray-base">
                   {/* <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-brand-teal-500" /> */}

@@ -19,7 +19,7 @@ import {
   pushByNow,
 } from "../../services/DataLayerService";
 import RelatedProducts from "../../components/RelatedProducts";
-import BoldColonText from "../../components/TextFormatting";
+import FormattedText from "../../components/TextFormatting";
 
 const ProductDetails = () => {
   useScrollToTop();
@@ -292,7 +292,7 @@ const ProductDetails = () => {
                 <div key={idx} className="mb-3 flex">
                   <span className="mr-2 text-brand-teal-base">•</span>
                   <p className="flex-1 text-justify whitespace-pre-line">
-                    <BoldColonText text={detail} />
+                    <FormattedText text={detail} />
                   </p>
                 </div>
               ))}
@@ -453,7 +453,7 @@ const ProductDetails = () => {
                       {q.question}
                     </h3>
                     <p className="text-brand-gray-base text-justify whitespace-pre-line">
-                      <BoldColonText text={q.ans} />
+                      <FormattedText text={q.ans} />
                     </p>
                   </div>
                 ))}

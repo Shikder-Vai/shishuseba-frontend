@@ -20,7 +20,7 @@ const BlogPostCard = ({ post }) => {
           <img
             src={post.img}
             alt={post.title}
-            className="w-full h-56 transition-transform duration-300 group-hover:scale-105 object-fill"
+            className="w-full h-56 transition-transform duration-300 group-hover:scale-105 object-contain"
           />
           {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div> */}
           <div className="absolute top-4 right-4">

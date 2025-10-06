@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Trash2, Loader2, CheckCircle } from "lucide-react";
 import useCategories from "../../hooks/useCategories";
@@ -16,9 +17,13 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [formData, setFormData] = useState({ details: [] });
   const [detailInput, setDetailInput] = useState("");
-  const [questions, setQuestions] = useState([{ id: 1, question: "", ans: "" }]);
-  const [dropdownQuestions, setDropdownQuestions] = useState([{ id: 1, question: "", ans: "" }]);
-  const [variants, setVariants] = useState([{ weight: '', price: '' }]);
+  const [questions, setQuestions] = useState([
+    { id: 1, question: "", ans: "" },
+  ]);
+  const [dropdownQuestions, setDropdownQuestions] = useState([
+    { id: 1, question: "", ans: "" },
+  ]);
+  const [variants, setVariants] = useState([{ weight: "", price: "" }]);
 
   // Loading states
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -83,10 +88,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
 
   // Handle questions management
   const handleAddQuestion = (setter) => {
-    setter((prev) => [
-      ...prev,
-      { id: Date.now(), question: "", ans: "" },
-    ]);
+    setter((prev) => [...prev, { id: Date.now(), question: "", ans: "" }]);
   };
 
   const handleQuestionChange = (index, key, value, setter) => {
@@ -103,7 +105,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
 
   // Handle variants management
   const handleAddVariant = () => {
-    setVariants([...variants, { weight: '', price: '' }]);
+    setVariants([...variants, { weight: "", price: "" }]);
   };
 
   const handleVariantChange = (index, field, value) => {
@@ -126,19 +128,19 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
     setDetailInput("");
     setQuestions([{ id: 1, question: "", ans: "" }]);
     setDropdownQuestions([{ id: 1, question: "", ans: "" }]);
-    setVariants([{ weight: '', price: '' }]);
+    setVariants([{ weight: "", price: "" }]);
     setSubmitStatus(null);
   };
 
   // Submit product
   const { mutate: postProduct } = useMutation({
     mutationFn: async (product) => {
-      setSubmitStatus('submitting');
+      setSubmitStatus("submitting");
       const res = await axiosPublic.post("/products", product);
       return res.data;
     },
     onSuccess: () => {
-      setSubmitStatus('success');
+      setSubmitStatus("success");
       setTimeout(() => {
         toast.success("Product added successfully");
         queryClient.invalidateQueries(["products"]);
@@ -155,13 +157,13 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const categoryObj = categories.find((cat) => cat._id === selectedCategory);
-    
+
     const payload = {
       ...formData,
       category: categoryObj?.category || formData.category || "",
       questions: questions.filter((q) => q.question && q.ans),
       dropdownQuestions: dropdownQuestions.filter((q) => q.question && q.ans),
-      variants: variants.filter(v => v.weight && v.price),
+      variants: variants.filter((v) => v.weight && v.price),
     };
 
     postProduct(payload);
@@ -183,7 +185,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
             exit={{ scale: 0.95 }}
           >
             {/* Loading overlay */}
-            {submitStatus === 'submitting' && (
+            {submitStatus === "submitting" && (
               <div className="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center gap-3">
                 <Loader2 className="animate-spin h-12 w-12 text-brand-teal-base" />
                 <p className="text-lg font-medium text-brand-gray-base">
@@ -193,7 +195,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
             )}
 
             {/* Success overlay */}
-            {submitStatus === 'success' && (
+            {submitStatus === "success" && (
               <div className="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center gap-3">
                 <CheckCircle className="h-12 w-12 text-green-500" />
                 <p className="text-lg font-medium text-brand-gray-base">
@@ -207,9 +209,12 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                 Upload New Product
               </h2>
               <button
-                onClick={() => { resetForm(); onClose(); }}
+                onClick={() => {
+                  resetForm();
+                  onClose();
+                }}
                 className="text-gray-500 hover:text-red-600 transition-colors"
-                disabled={submitStatus === 'submitting'}
+                disabled={submitStatus === "submitting"}
               >
                 <X size={24} />
               </button>
@@ -221,7 +226,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                 <h3 className="text-lg font-semibold text-brand-gray-base">
                   Basic Information
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-brand-gray-base mb-1">
@@ -349,7 +354,9 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                         type="text"
                         placeholder="e.g., 500g, 1L"
                         value={variant.weight}
-                        onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
+                        onChange={(e) =>
+                          handleVariantChange(index, "weight", e.target.value)
+                        }
                         className="w-full p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
                       />
                     </div>
@@ -362,7 +369,9 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                         type="number"
                         placeholder="0.00"
                         value={variant.price}
-                        onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                        onChange={(e) =>
+                          handleVariantChange(index, "price", e.target.value)
+                        }
                         className="w-full p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
                         min="0"
                         step="0.01"
@@ -373,7 +382,11 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                       type="button"
                       onClick={() => handleRemoveVariant(index)}
                       disabled={variants.length <= 1}
-                      className={`p-3 text-red-500 hover:text-red-700 rounded-lg ${variants.length <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`p-3 text-red-500 hover:text-red-700 rounded-lg ${
+                        variants.length <= 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -386,7 +399,7 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                 <h3 className="text-lg font-semibold text-brand-gray-base">
                   Product Details
                 </h3>
-                
+
                 <div className="flex gap-2">
                   <textarea
                     rows={1}
@@ -408,14 +421,19 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                 {formData.details.length > 0 && (
                   <ul className="space-y-2 pl-5 list-disc text-brand-gray-base">
                     {formData.details.map((detail, index) => (
-                      <li key={index} className="flex justify-between items-start">
+                      <li
+                        key={index}
+                        className="flex justify-between items-start"
+                      >
                         <span>{detail}</span>
                         <button
                           type="button"
                           onClick={() =>
                             setFormData((prev) => ({
                               ...prev,
-                              details: prev.details.filter((_, i) => i !== index),
+                              details: prev.details.filter(
+                                (_, i) => i !== index
+                              ),
                             }))
                           }
                           className="text-red-500 hover:text-red-700 ml-2"
@@ -455,7 +473,9 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                       </label>
                       <button
                         type="button"
-                        onClick={() => handleRemoveQuestion(index, setQuestions)}
+                        onClick={() =>
+                          handleRemoveQuestion(index, setQuestions)
+                        }
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 size={16} />
@@ -479,7 +499,12 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
                       placeholder="Enter answer"
                       value={qa.ans}
                       onChange={(e) =>
-                        handleQuestionChange(index, "ans", e.target.value, setQuestions)
+                        handleQuestionChange(
+                          index,
+                          "ans",
+                          e.target.value,
+                          setQuestions
+                        )
                       }
                       rows={3}
                       className="w-full p-2 border border-brand-gray-light/50 rounded"
@@ -559,18 +584,21 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
-                  onClick={() => { resetForm(); onClose(); }}
+                  onClick={() => {
+                    resetForm();
+                    onClose();
+                  }}
                   className="px-6 py-2 border border-brand-gray-light rounded-lg text-brand-gray-base hover:bg-brand-gray-light/20 transition-colors"
-                  disabled={submitStatus === 'submitting'}
+                  disabled={submitStatus === "submitting"}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={uploadingImage || submitStatus === 'submitting'}
+                  disabled={uploadingImage || submitStatus === "submitting"}
                   className="px-6 py-2 bg-brand-teal-base text-white rounded-lg hover:bg-brand-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 min-w-[120px]"
                 >
-                  {submitStatus === 'submitting' ? (
+                  {submitStatus === "submitting" ? (
                     <>
                       <Loader2 className="animate-spin h-4 w-4" />
                       Saving...
