@@ -137,27 +137,6 @@ const OfferPage = () => {
               <h3 className="text-2xl font-bold text-center mt-[-10px]">
                 {featuredProduct?.name}
               </h3>
-              <div className="variant-selection">
-                <div className="variant-options">
-                  {featuredProduct?.variants.map((variant) => (
-                    <label key={variant.weight} className="variant-label">
-                      <input
-                        type="radio"
-                        name="variant"
-                        value={variant.weight}
-                        checked={selectedVariant?.weight === variant.weight}
-                        onChange={() => setSelectedVariant(variant)}
-                      />
-                      <span>{variant.weight}</span>
-                    </label>
-                  ))}
-                </div>
-                {selectedVariant && (
-                  <div className="variant-price">
-                    Price: <span>{selectedVariant.price}৳</span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
           <div className="wave-divider">
@@ -243,6 +222,44 @@ const OfferPage = () => {
 
         <section id="order-form">
           <div className="offer-page-container">
+            <div className="variant-selection-checkout">
+              <div className="flex flex-col">
+                <img
+                  src={featuredProduct?.image}
+                  alt={featuredProduct?.name}
+                  className="max-w-60 mb-2 transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer rounded"
+                />
+                <span
+                  className="text-2xl text-brand-teal-base font-bold text-center 
+                  transition-transform duration-300 ease-in-out
+                  hover:scale-105 cursor-pointer"
+                >
+                  {featuredProduct?.name}
+                </span>
+              </div>
+              <span className="text-2xl text-brand-orange-base text-center font-bold">
+                Select Product Variant
+              </span>
+              <div className="variant-options">
+                {featuredProduct?.variants.map((variant) => (
+                  <label key={variant.weight} className="variant-label">
+                    <input
+                      type="radio"
+                      name="variant"
+                      value={variant.weight}
+                      checked={selectedVariant?.weight === variant.weight}
+                      onChange={() => setSelectedVariant(variant)}
+                    />
+                    <span>{variant.weight}</span>
+                  </label>
+                ))}
+              </div>
+              {selectedVariant && (
+                <div className="variant-price">
+                  Price: <span>{selectedVariant.price}৳</span>
+                </div>
+              )}
+            </div>
             <Checkout />
           </div>
         </section>
