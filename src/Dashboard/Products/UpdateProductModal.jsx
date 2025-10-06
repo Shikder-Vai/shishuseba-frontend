@@ -21,7 +21,7 @@ const UpdateProductModal = ({ onClose, productId }) => {
     questions: [],
     dropdownQuestions: [],
   });
-  const [detailInput, setDetailInput] = useState("");
+
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [variants, setVariants] = useState([{ weight: "", price: "" }]);
@@ -68,23 +68,6 @@ const UpdateProductModal = ({ onClose, productId }) => {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
-
-  const handleAddDetail = () => {
-    if (detailInput.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        details: [...prev.details, detailInput],
-      }));
-      setDetailInput("");
-    }
-  };
-
-  const handleRemoveDetail = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      details: prev.details.filter((_, i) => i !== index),
-    }));
   };
 
   const handleAddQuestion = (type) => {
@@ -432,44 +415,18 @@ const UpdateProductModal = ({ onClose, productId }) => {
                 <h3 className="text-lg font-semibold text-brand-gray-base">
                   Product Details
                 </h3>
-
-                <div className="flex gap-2">
-                  <textarea
-                    rows={1}
-                    value={detailInput}
-                    onChange={(e) => setDetailInput(e.target.value)}
-                    placeholder="Write product detail"
-                    className="flex-1 p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddDetail}
-                    className="flex items-center gap-1 bg-brand-teal-base text-white px-4 py-3 rounded-lg hover:bg-brand-teal-500 transition-colors"
-                  >
-                    <Plus size={16} />
-                    <span>Add</span>
-                  </button>
-                </div>
-
-                {formData.details?.length > 0 && (
-                  <ul className="space-y-2 pl-5 list-disc text-brand-gray-base">
-                    {formData.details.map((detail, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-start"
-                      >
-                        <span>{detail}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveDetail(index)}
-                          className="text-red-500 hover:text-red-700 ml-2"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <textarea
+                  rows={5}
+                  value={formData.details?.join("\n") || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      details: e.target.value.split("\n"),
+                    }))
+                  }
+                  placeholder="Write product details, one per line."
+                  className="w-full p-3 border border-brand-gray-light rounded-lg focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-300"
+                />
               </div>
 
               <div className="space-y-4">

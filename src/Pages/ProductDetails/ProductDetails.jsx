@@ -289,8 +289,7 @@ const ProductDetails = () => {
             {/* Description */}
             <div className="text-brand-gray-base">
               {item?.details?.map((detail, idx) => (
-                <div key={idx} className="mb-3 flex">
-                  <span className="mr-2 text-brand-teal-base">•</span>
+                <div key={idx} className="mb-1 md:ml-5 flex">
                   <p className="flex-1 text-justify whitespace-pre-line">
                     <FormattedText text={detail} />
                   </p>

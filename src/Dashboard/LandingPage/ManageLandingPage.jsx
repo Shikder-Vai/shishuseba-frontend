@@ -20,6 +20,7 @@ import {
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useAllProducts from "../../hooks/useAllProducts";
 import Loader from "../../components/Loader";
+import { imgbbKey } from "../../hooks/useImgbb";
 
 const AccordionSection = ({ title, icon, children }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +59,7 @@ const ManageLandingPage = () => {
     benefitsSection: { title: "", image: "", benefits: [{ text: "" }] },
     footer: { phoneNumber: "" },
   });
+  const [uploading, setUploading] = useState(false);
 
   const axiosPublic = useAxiosPublic();
   const queryClient = useQueryClient();
@@ -125,6 +127,30 @@ const ManageLandingPage = () => {
       });
     }
   }, [data]);
+
+  const handleImageUpload = async (file, onSuccess) => {
+    const form = new FormData();
+    form.append("image", file);
+    setUploading(true);
+
+    try {
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
+        { method: "POST", body: form }
+      );
+      const data = await res.json();
+      if (data.success) {
+        onSuccess(data.data.url);
+        toast.success("Image uploaded successfully");
+      } else {
+        toast.error(data.error.message || "Failed to upload image");
+      }
+    } catch (error) {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // =================================================================
   // 2. EARLY RETURNS AND LOGIC CAN COME AFTER ALL HOOKS ARE DECLARED
@@ -306,48 +332,64 @@ const ManageLandingPage = () => {
               className="w-full p-3 border rounded-lg mb-4"
             />
             {formData.ingredientsSection.ingredients.map((item, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 md:grid-cols-2 items-center gap-2 mb-2"
-              >
-                <input
-                  type="text"
-                  name="name"
-                  placeholder={`Ingredient Name ${index + 1}`}
-                  value={item.name}
-                  onChange={(e) =>
-                    handleInputChange(
-                      e,
-                      "ingredientsSection",
-                      "ingredients",
-                      index
-                    )
-                  }
-                  className="w-full p-2 border rounded-lg"
-                />
-                <input
-                  type="text"
-                  name="image"
-                  placeholder={`Image URL ${index + 1}`}
-                  value={item.image}
-                  onChange={(e) =>
-                    handleInputChange(
-                      e,
-                      "ingredientsSection",
-                      "ingredients",
-                      index
-                    )
-                  }
-                  className="w-full p-2 border rounded-lg"
-                />
+              <div key={index} className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder={`Ingredient Name ${index + 1}`}
+                      value={item.name}
+                      onChange={(e) =>
+                        handleInputChange(
+                          e,
+                          "ingredientsSection",
+                          "ingredients",
+                          index
+                        )
+                      }
+                      className="w-full p-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      name="image"
+                      placeholder={`Image URL ${index + 1}`}
+                      value={item.image}
+                      onChange={(e) =>
+                        handleInputChange(
+                          e,
+                          "ingredientsSection",
+                          "ingredients",
+                          index
+                        )
+                      }
+                      className="w-full p-2 border rounded-lg"
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-gray-500 text-sm">OR Upload:</span>
+                    <input
+                        type="file"
+                        onChange={(e) => {
+                            if (e.target.files[0]) {
+                                handleImageUpload(e.target.files[0], (url) => {
+                                    const newFormData = { ...formData };
+                                    newFormData.ingredientsSection.ingredients[index].image = url;
+                                    setFormData(newFormData);
+                                });
+                            }
+                        }}
+                        className="w-full text-sm p-1 border rounded-lg"
+                    />
+                </div>
+                {item.image && <img src={item.image} alt={item.name} className="w-24 h-24 mt-2 rounded object-cover" />}
                 <button
                   type="button"
                   onClick={() =>
                     handleRemoveItem("ingredientsSection", "ingredients", index)
                   }
-                  className="text-red-500 md:col-start-1" // Adjusted for better layout
+                  className="text-red-500 hover:text-red-700"
                 >
-                  <Trash2 />
+                  <Trash2 size={18} />
                 </button>
               </div>
             ))}
@@ -369,14 +411,43 @@ const ManageLandingPage = () => {
               onChange={(e) => handleInputChange(e, "benefitsSection", "title")}
               className="w-full p-3 border rounded-lg mb-4"
             />
-            <input
-              type="text"
-              name="image"
-              placeholder="Section Image URL"
-              value={formData.benefitsSection.image}
-              onChange={(e) => handleInputChange(e, "benefitsSection", "image")}
-              className="w-full p-3 border rounded-lg mb-4"
-            />
+            <div className="space-y-2 mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                    Section Image
+                </label>
+                <div className="p-4 border rounded-lg bg-gray-50 space-y-2">
+                    <input
+                        type="text"
+                        name="image"
+                        placeholder="Enter Image URL"
+                        value={formData.benefitsSection.image}
+                        onChange={(e) => handleInputChange(e, "benefitsSection", "image")}
+                        className="w-full p-2 border rounded-lg"
+                    />
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-500 text-sm">OR Upload:</span>
+                        <input
+                            type="file"
+                            onChange={(e) => {
+                                if (e.target.files[0]) {
+                                    handleImageUpload(e.target.files[0], (url) => {
+                                        const newFormData = { ...formData };
+                                        newFormData.benefitsSection.image = url;
+                                        setFormData(newFormData);
+                                    });
+                                }
+                            }}
+                            className="w-full text-sm p-1 border rounded-lg"
+                        />
+                    </div>
+                    {uploading && <div className="flex items-center gap-2 text-sm text-gray-500"><Loader2 className="animate-spin h-4 w-4" /> Uploading...</div>}
+                    {formData.benefitsSection.image && !uploading && (
+                        <div className="mt-2">
+                            <img src={formData.benefitsSection.image} alt="Benefits Section" className="rounded-lg max-h-48 object-cover" />
+                        </div>
+                    )}
+                </div>
+            </div>
             {formData.benefitsSection.benefits.map((item, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
@@ -423,7 +494,7 @@ const ManageLandingPage = () => {
           <div className="flex justify-end pt-6 border-t">
             <button
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || uploading}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-teal-base text-white font-semibold rounded-lg shadow-md hover:bg-brand-teal-dark disabled:opacity-50"
             >
               {isSaving ? <Loader2 className="animate-spin" /> : <Edit />}

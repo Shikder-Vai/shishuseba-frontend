@@ -39,7 +39,7 @@ const FormattedText = ({ text }) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <div key={index} className="flex items-start pl-4">
-          <span className="mr-2 text-gray-800">&bull;</span>
+          <span className="mr-2 text-brand-teal-base">&#8269;</span>
           <span>{part.substring(2, part.length - 2)}</span>
         </div>
       );
