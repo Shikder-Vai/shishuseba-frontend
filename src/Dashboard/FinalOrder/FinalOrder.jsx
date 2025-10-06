@@ -454,13 +454,13 @@ const FinalOrder = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
+        className="bg-white shadow-soft border border-brand-gray-light"
       >
-        <div className="overflow-x-auto">
+        <div>
           <Table className="min-w-full table-fixed">
-            <Thead className="bg-brand-teal-base text-white">
+            <Thead className="bg-brand-teal-base text-white sticky top-0 z-10 overflow-hidden">
               <Tr>
-                <Th className="px-3 py-4 text-left w-10">
+                <Th className="px-3 py-4 text-left w-10 rounded-tl-xl">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -485,7 +485,7 @@ const FinalOrder = () => {
                   Shipped By
                 </Th>
                 <Th className="px-3 py-4 text-left ">Status</Th>
-                <Th className="px-3 py-4  text-left">Actions</Th>
+                <Th className="px-3 py-4  text-left rounded-tr-xl">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">

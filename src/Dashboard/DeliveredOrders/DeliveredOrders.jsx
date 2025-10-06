@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
@@ -49,7 +50,9 @@ const DeliveredOrders = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-[70vh]">
         <div className="w-full max-w-4xl mx-auto p-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">Delivered Orders</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Delivered Orders
+          </h1>
           <div className="bg-white rounded-xl shadow-soft p-6 text-center">
             <p className="text-brand-gray-base text-lg font-medium">
               {searchTerm
@@ -92,13 +95,15 @@ const DeliveredOrders = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
+        className="bg-white shadow-soft border border-brand-gray-light"
       >
-        <div className="overflow-x-auto">
+        <div>
           <Table className="min-w-full">
-            <Thead className="bg-brand-teal-base text-white">
+            <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
               <Tr>
-                <Th className="px-6 py-4 text-left">Order ID</Th>
+                <Th className="px-6 py-4 text-left rounded-tl-xl text-sm">
+                  Order ID
+                </Th>
                 <Th className="px-6 py-4 text-left">Customer</Th>
                 <Th className="px-6 py-4 text-left hidden md:table-cell">
                   Phone
@@ -111,7 +116,7 @@ const DeliveredOrders = () => {
                   Date
                 </Th>
                 <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left">Actions</Th>
+                <Th className="px-6 py-4 text-left rounded-tr-xl">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">

@@ -400,13 +400,13 @@ const ProcessingOrder = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
+        className="bg-white shadow-soft border border-brand-gray-light"
       >
-        <div className="overflow-x-auto">
+        <div>
           <Table className="min-w-full table-fixed">
-            <Thead className="bg-brand-teal-base text-white">
+            <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
               <Tr>
-                <Th className="px-3 py-4 text-left w-12">
+                <Th className="px-3 py-4 text-left w-12 rounded-tl-xl">
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -423,12 +423,12 @@ const ProcessingOrder = () => {
                   Items
                 </Th>
                 <Th className="px-3 py-4 text-left">Total</Th>
-                <Th className="px-3 py-4 text-left hidden sm:table-cell">
+                <Th className="px-3 py-4 text-left hidden sm:table-cell text-sm">
                   Order Date
                 </Th>
                 <Th className="px-3 py-4 text-left w-32">Status</Th>
                 <Th className="px-3 py-4 text-left">Processed</Th>
-                <Th className="px-3 py-4 text-left">Actions</Th>
+                <Th className="px-3 py-4 text-left rounded-tr-xl">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">

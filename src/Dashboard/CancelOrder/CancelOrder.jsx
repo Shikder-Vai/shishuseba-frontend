@@ -103,14 +103,14 @@ const CancelOrder = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl overflow-hidden shadow-soft border border-brand-gray-light"
+        className="bg-white shadow-soft border border-brand-gray-light"
       >
-        <div className="overflow-x-auto">
+        <div>
           <Table className="min-w-full table-fixed">
-            <Thead className="bg-brand-teal-base text-white">
+            <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
               <Tr>
-                <Th className="px-6 py-4 text-left">SL</Th>
-                <Th className="px-6 py-4 text-left">Order ID</Th>
+                <Th className="px-6 py-4 text-left rounded-tl-xl">SL</Th>
+                <Th className="px-6 py-4 text-left text-sm">Order ID</Th>
                 <Th className="px-6 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
@@ -118,12 +118,12 @@ const CancelOrder = () => {
                   Items
                 </Th>
                 <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell">
+                <Th className="px-6 py-4 text-left hidden sm:table-cell text-sm">
                   Order Date
                 </Th>
                 <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left">Canceled By</Th>
-                <Th className="px-6 py-4 text-left">Actions</Th>
+                <Th className="px-6 py-4 text-left text-sm">Canceled By</Th>
+                <Th className="px-6 py-4 text-left rounded-tr-xl">Actions</Th>
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
