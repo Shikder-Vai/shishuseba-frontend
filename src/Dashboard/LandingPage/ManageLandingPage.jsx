@@ -20,7 +20,6 @@ import {
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useAllProducts from "../../hooks/useAllProducts";
 import Loader from "../../components/Loader";
-import { imgbbKey } from "../../hooks/useImgbb";
 
 const AccordionSection = ({ title, icon, children }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -134,16 +133,16 @@ const ManageLandingPage = () => {
     setUploading(true);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-        { method: "POST", body: form }
-      );
-      const data = await res.json();
-      if (data.success) {
-        onSuccess(data.data.url);
+      const res = await axiosPublic.post("/upload/landing-page-image", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (res.data.imageUrl) {
+        onSuccess(res.data.imageUrl);
         toast.success("Image uploaded successfully");
       } else {
-        toast.error(data.error.message || "Failed to upload image");
+        toast.error("Failed to upload image");
       }
     } catch (error) {
       toast.error("Failed to upload image");

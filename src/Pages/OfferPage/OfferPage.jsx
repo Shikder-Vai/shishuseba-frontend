@@ -113,9 +113,9 @@ const OfferPage = () => {
 
   return (
     <div className="offer-page">
-      <header className="offer-page-header">
+      {/* <header className="offer-page-header">
         <div className="offer-page-container">Shishuseba</div>
-      </header>
+      </header> */}
 
       <main>
         {/* ========== HERO SECTION ========== */}
@@ -267,7 +267,7 @@ const OfferPage = () => {
 
       <footer className="offer-page-footer">
         <div className="offer-page-container">
-          <h3>Shishuseba</h3>
+          <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
           <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
           <p>
             যেকোনো প্রয়োজনে কল করুন:{" "}

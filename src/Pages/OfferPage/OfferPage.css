@@ -67,11 +67,12 @@ h2.section-title {
 h2.section-title::after {
   content: "";
   display: block;
-  width: 70px;
+  width: 150px;
   height: 4px;
   background-color: var(--primary-color);
   margin: 12px auto 0;
-  border-radius: 2px;
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
 }
 
 .offer-page section {
@@ -122,9 +123,8 @@ h2.section-title::after {
 /* Hero Section */
 #hero {
   padding: 10px 0;
-  /* The background is now on the container below */
   text-align: center;
-  position: relative; /* Added to contain the wave */
+  position: relative;
 }
 
 .hero-content {
@@ -137,15 +137,15 @@ h2.section-title::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--accent-color); /* Moved background here */
-  border-radius: 20px; /* Added for better visuals */
-  padding-top: 40px; /* Added for spacing */
-  padding-bottom: 40px; /* Added for spacing */
+  background: var(--accent-color);
+  border-radius: 20px;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 #hero h1 {
   font-size: 38px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 #hero p {
   font-size: 18px;
@@ -174,7 +174,7 @@ h2.section-title::after {
   overflow: hidden;
   line-height: 0;
   transform: rotate(180deg);
-  z-index: -1; /* Pushed to the background */
+  z-index: -1;
 }
 .wave-divider svg {
   position: relative;
@@ -199,7 +199,7 @@ h2.section-title::after {
 }
 .problem-item {
   background-color: var(--light-color);
-  padding: 25px;
+  padding: 15px;
   border-radius: 12px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
   display: flex;
