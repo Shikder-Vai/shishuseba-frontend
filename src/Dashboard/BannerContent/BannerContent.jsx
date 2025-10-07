@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { UploadCloud } from "lucide-react";
-import { imgbbKey } from "../../hooks/useImgbb";
+import { UploadCloud, Trash2, Plus } from "lucide-react";
 
 const BannerContent = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
   const [uploadingId, setUploadingId] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newBannerFile, setNewBannerFile] = useState(null);
+
   const queryClient = useQueryClient();
   const axiosPublic = useAxiosPublic();
 
@@ -50,6 +52,54 @@ const BannerContent = () => {
     },
   });
 
+  // ✅ Add banner mutation
+  const addMutation = useMutation({
+    mutationFn: async (image) => {
+      const res = await axiosPublic.post("/banner", { image });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
+      setIsAddModalOpen(false);
+      setNewBannerFile(null);
+      Swal.fire("Success!", "New banner has been added.", "success");
+    },
+    onError: (error) => {
+      Swal.fire("Error!", error.response?.data?.message || "Failed to add the banner.", "error");
+    },
+  });
+
+  // ✅ Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await axiosPublic.delete(`/banner/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
+      Swal.fire("Deleted!", "The banner has been deleted.", "success");
+    },
+    onError: (error) => {
+      Swal.fire("Error!", error.response?.data?.message || "Failed to delete the banner.", "error");
+    },
+  });
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id);
+      }
+    });
+  };
+
   // ✅ 3. File select
   const handleFileChange = (e, id) => {
     const file = e.target.files[0];
@@ -58,7 +108,7 @@ const BannerContent = () => {
     }
   };
 
-  // ✅ 4. Upload to imgbb + backend
+  // ✅ 4. Upload to backend
   const handleUpload = async (id) => {
     const file = selectedFiles[id];
     if (!file) {
@@ -76,25 +126,21 @@ const BannerContent = () => {
     formData.append("image", file);
 
     try {
-      // Upload to ImgBB
-      const uploadRes = await axiosPublic.post(
-        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      // Upload to our backend
+      const uploadRes = await axiosPublic.post("/upload/banner-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = uploadRes.data.imageUrl;
 
-      const imageUrl = uploadRes.data?.data?.url;
       if (imageUrl) {
         // Update backend with new image URL
         mutation.mutate({ id, image: imageUrl });
-
+        
         // Clear the selected file for this banner
-        setSelectedFiles((prev) => {
-          const updated = { ...prev };
+        setSelectedFiles(prev => {
+          const updated = {...prev};
           delete updated[id];
           return updated;
         });
@@ -111,6 +157,33 @@ const BannerContent = () => {
       });
     } finally {
       setUploadingId(null);
+    }
+  };
+
+  const handleAddNewBanner = async () => {
+    if (!newBannerFile) {
+      return Swal.fire("No Image", "Please select an image for the new banner.", "warning");
+    }
+
+    const formData = new FormData();
+    formData.append("image", newBannerFile);
+
+    try {
+      const uploadRes = await axiosPublic.post("/upload/banner-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = uploadRes.data.imageUrl;
+
+      if (imageUrl) {
+        addMutation.mutate(imageUrl);
+      } else {
+        throw new Error("Image upload failed: No URL returned");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      Swal.fire("Upload Failed", err.message || "Failed to upload image", "error");
     }
   };
 
@@ -139,9 +212,48 @@ const BannerContent = () => {
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg py-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">
-        Update Banner Images
-      </h2>
+      <div className="flex justify-between items-center mb-6 border-b pb-3">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Update Banner Images
+        </h2>
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
+        >
+          <Plus size={18} />
+          Add Banner
+        </button>
+      </div>
+
+      {/* Add Banner Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Add New Banner</h3>
+            <input 
+              type="file"
+              accept="image/*"
+              onChange={(e) => setNewBannerFile(e.target.files[0])}
+              className="w-full p-2 border rounded"
+            />
+            <div className="flex justify-end gap-4 mt-6">
+              <button 
+                onClick={() => setIsAddModalOpen(false)}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleAddNewBanner}
+                disabled={addMutation.isLoading || !newBannerFile}
+                className="px-4 py-2 rounded bg-orange-600 text-white hover:bg-orange-700 disabled:bg-gray-400"
+              >
+                {addMutation.isLoading ? "Uploading..." : "Upload & Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {banners.map(({ _id, image }, index) => (
@@ -233,6 +345,12 @@ const BannerContent = () => {
                   ) : (
                     "Update Banner"
                   )}
+                </button>
+                <button
+                  onClick={() => handleDelete(_id)}
+                  className="flex items-center justify-center px-4 py-2 rounded-md text-white font-semibold transition bg-red-600 hover:bg-red-700"
+                >
+                  <Trash2 size={18} />
                 </button>
               </div>
 
