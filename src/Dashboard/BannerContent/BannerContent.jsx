@@ -12,7 +12,11 @@ const BannerContent = () => {
   const axiosPublic = useAxiosPublic();
 
   // ✅ 1. Load existing banner images from backend
-  const { data: banners = [], isLoading, isError } = useQuery({
+  const {
+    data: banners = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["banners"],
     queryFn: async () => {
       const res = await axiosPublic.get("/banner");
@@ -82,15 +86,15 @@ const BannerContent = () => {
           },
         }
       );
-      
+
       const imageUrl = uploadRes.data?.data?.url;
       if (imageUrl) {
         // Update backend with new image URL
         mutation.mutate({ id, image: imageUrl });
-        
+
         // Clear the selected file for this banner
-        setSelectedFiles(prev => {
-          const updated = {...prev};
+        setSelectedFiles((prev) => {
+          const updated = { ...prev };
           delete updated[id];
           return updated;
         });
@@ -231,7 +235,7 @@ const BannerContent = () => {
                   )}
                 </button>
               </div>
-              
+
               <p className="mt-2 text-xs text-gray-500">
                 Recommended size: 1200x400 pixels (JPG, PNG, or WEBP)
               </p>
@@ -257,7 +261,9 @@ const BannerContent = () => {
           Important Notes
         </h3>
         <ul className="mt-2 text-sm text-orange-600 list-disc pl-5 space-y-1">
-          <li>Only upload new images if you want to replace the current banner</li>
+          <li>
+            Only upload new images if you want to replace the current banner
+          </li>
           <li>Uploading will immediately replace the current banner image</li>
           <li>Leave unchanged if you don't want to update a banner</li>
         </ul>

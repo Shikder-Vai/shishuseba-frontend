@@ -42,9 +42,6 @@ const AccordionSection = ({ title, icon, children }) => {
 };
 
 const ManageLandingPage = () => {
-  // =================================================================
-  // 1. ALL HOOKS MUST BE DECLARED AT THE TOP, IN THE SAME ORDER
-  // =================================================================
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = id !== "new";
@@ -144,6 +141,7 @@ const ManageLandingPage = () => {
       } else {
         toast.error("Failed to upload image");
       }
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Failed to upload image");
     } finally {
@@ -151,9 +149,6 @@ const ManageLandingPage = () => {
     }
   };
 
-  // =================================================================
-  // 2. EARLY RETURNS AND LOGIC CAN COME AFTER ALL HOOKS ARE DECLARED
-  // =================================================================
   if (loadingProducts || (isEditMode && isLoadingData)) {
     return <Loader />;
   }
@@ -211,9 +206,6 @@ const ManageLandingPage = () => {
     });
   };
 
-  // =================================================================
-  // 3. THE FINAL RENDER / JSX RETURN
-  // =================================================================
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
@@ -331,56 +323,67 @@ const ManageLandingPage = () => {
               className="w-full p-3 border rounded-lg mb-4"
             />
             {formData.ingredientsSection.ingredients.map((item, index) => (
-              <div key={index} className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50">
+              <div
+                key={index}
+                className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder={`Ingredient Name ${index + 1}`}
-                      value={item.name}
-                      onChange={(e) =>
-                        handleInputChange(
-                          e,
-                          "ingredientsSection",
-                          "ingredients",
-                          index
-                        )
-                      }
-                      className="w-full p-2 border rounded-lg"
-                    />
-                    <input
-                      type="text"
-                      name="image"
-                      placeholder={`Image URL ${index + 1}`}
-                      value={item.image}
-                      onChange={(e) =>
-                        handleInputChange(
-                          e,
-                          "ingredientsSection",
-                          "ingredients",
-                          index
-                        )
-                      }
-                      className="w-full p-2 border rounded-lg"
-                    />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder={`Ingredient Name ${index + 1}`}
+                    value={item.name}
+                    onChange={(e) =>
+                      handleInputChange(
+                        e,
+                        "ingredientsSection",
+                        "ingredients",
+                        index
+                      )
+                    }
+                    className="w-full p-2 border rounded-lg"
+                  />
+                  <input
+                    type="text"
+                    name="image"
+                    placeholder={`Image URL ${index + 1}`}
+                    value={item.image}
+                    onChange={(e) =>
+                      handleInputChange(
+                        e,
+                        "ingredientsSection",
+                        "ingredients",
+                        index
+                      )
+                    }
+                    className="w-full p-2 border rounded-lg"
+                  />
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500 text-sm">OR Upload:</span>
-                    <input
-                        type="file"
-                        onChange={(e) => {
-                            if (e.target.files[0]) {
-                                handleImageUpload(e.target.files[0], (url) => {
-                                    const newFormData = { ...formData };
-                                    newFormData.ingredientsSection.ingredients[index].image = url;
-                                    setFormData(newFormData);
-                                });
-                            }
-                        }}
-                        className="w-full text-sm p-1 border rounded-lg"
-                    />
+                  <span className="text-gray-500 text-sm">OR Upload:</span>
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        handleImageUpload(e.target.files[0], (url) => {
+                          const newFormData = { ...formData };
+                          newFormData.ingredientsSection.ingredients[
+                            index
+                          ].image = url;
+                          setFormData(newFormData);
+                        });
+                      }
+                    }}
+                    className="w-full text-sm p-1 border rounded-lg"
+                  />
                 </div>
-                {item.image && <img src={item.image} alt={item.name} className="w-24 h-24 mt-2 rounded object-cover" />}
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-24 h-24 mt-2 rounded object-cover"
+                  />
+                )}
                 <button
                   type="button"
                   onClick={() =>
@@ -411,41 +414,51 @@ const ManageLandingPage = () => {
               className="w-full p-3 border rounded-lg mb-4"
             />
             <div className="space-y-2 mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                    Section Image
-                </label>
-                <div className="p-4 border rounded-lg bg-gray-50 space-y-2">
-                    <input
-                        type="text"
-                        name="image"
-                        placeholder="Enter Image URL"
-                        value={formData.benefitsSection.image}
-                        onChange={(e) => handleInputChange(e, "benefitsSection", "image")}
-                        className="w-full p-2 border rounded-lg"
-                    />
-                    <div className="flex items-center gap-2">
-                        <span className="text-gray-500 text-sm">OR Upload:</span>
-                        <input
-                            type="file"
-                            onChange={(e) => {
-                                if (e.target.files[0]) {
-                                    handleImageUpload(e.target.files[0], (url) => {
-                                        const newFormData = { ...formData };
-                                        newFormData.benefitsSection.image = url;
-                                        setFormData(newFormData);
-                                    });
-                                }
-                            }}
-                            className="w-full text-sm p-1 border rounded-lg"
-                        />
-                    </div>
-                    {uploading && <div className="flex items-center gap-2 text-sm text-gray-500"><Loader2 className="animate-spin h-4 w-4" /> Uploading...</div>}
-                    {formData.benefitsSection.image && !uploading && (
-                        <div className="mt-2">
-                            <img src={formData.benefitsSection.image} alt="Benefits Section" className="rounded-lg max-h-48 object-cover" />
-                        </div>
-                    )}
+              <label className="block text-sm font-medium text-gray-700">
+                Section Image
+              </label>
+              <div className="p-4 border rounded-lg bg-gray-50 space-y-2">
+                <input
+                  type="text"
+                  name="image"
+                  placeholder="Enter Image URL"
+                  value={formData.benefitsSection.image}
+                  onChange={(e) =>
+                    handleInputChange(e, "benefitsSection", "image")
+                  }
+                  className="w-full p-2 border rounded-lg"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500 text-sm">OR Upload:</span>
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        handleImageUpload(e.target.files[0], (url) => {
+                          const newFormData = { ...formData };
+                          newFormData.benefitsSection.image = url;
+                          setFormData(newFormData);
+                        });
+                      }
+                    }}
+                    className="w-full text-sm p-1 border rounded-lg"
+                  />
                 </div>
+                {uploading && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="animate-spin h-4 w-4" /> Uploading...
+                  </div>
+                )}
+                {formData.benefitsSection.image && !uploading && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.benefitsSection.image}
+                      alt="Benefits Section"
+                      className="rounded-lg max-h-48 object-cover"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             {formData.benefitsSection.benefits.map((item, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
