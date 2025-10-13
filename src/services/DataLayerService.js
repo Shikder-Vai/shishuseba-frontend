@@ -35,8 +35,8 @@ export const pushLogState = (user) => {
  * @param {string} pagePath
  * @param {string} pageTitle
  */
-export const pushPageView = (pagePath, pageTitle) => {
-  pushEvent("home_page_view", {
+export const pushPageView = (pagePath, pageTitle, eventName = "home_page_view") => {
+  pushEvent(eventName, {
     page_path: pagePath,
     page_title: pageTitle,
   });

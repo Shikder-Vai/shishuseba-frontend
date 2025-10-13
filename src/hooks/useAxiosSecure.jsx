@@ -5,7 +5,8 @@ const useAxiosSecure = () => {
   const { user } = useAuth();
 
   const axiosSecure = axios.create({
-    baseURL: "http://localhost:5000/v1",
+    // baseURL: "http://localhost:5000/v1",
+    baseURL: "https://api.shishuseba.com/v1",
   });
 
   // Check gmail before each request

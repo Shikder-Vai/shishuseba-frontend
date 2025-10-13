@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Loader from "../../components/Loader";
 import Checkout from "../Checkout/Checkout";
 import "./OfferPage.css";
+import { pushPageView, pushViewItem } from "../../services/DataLayerService";
 
-import { ShoppingCart, Check, ArrowBigRight, ShieldCheck } from "lucide-react";
+import { ArrowBigRight, ShieldCheck } from "lucide-react";
 
 const OfferPage = () => {
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const location = useLocation();
+  const hasFiredPageView = useRef(false);
+  const hasFiredViewItem = useRef(false);
 
   const {
     data: landingPageData,
@@ -34,12 +38,9 @@ const OfferPage = () => {
   }, [landingPageData]);
 
   useEffect(() => {
-    // On component mount, save the user's original cart.
     const originalOrder = localStorage.getItem("order");
 
-    // Return a cleanup function to run when the component unmounts.
     return () => {
-      // When the user navigates away, restore their original cart.
       if (originalOrder) {
         localStorage.setItem("order", originalOrder);
       } else {
@@ -83,6 +84,28 @@ const OfferPage = () => {
     }
   }, [landingPageData, selectedVariant]);
 
+  useEffect(() => {
+    if (!hasFiredPageView.current) {
+      pushPageView(
+        location.pathname,
+        document.title,
+        "landing_page_view"
+      );
+      hasFiredPageView.current = true;
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (landingPageData && selectedVariant && !hasFiredViewItem.current) {
+      const productWithPrice = {
+        ...landingPageData.featuredProduct,
+        price: selectedVariant.price,
+      };
+      pushViewItem(productWithPrice);
+      hasFiredViewItem.current = true;
+    }
+  }, [landingPageData, selectedVariant]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -113,10 +136,6 @@ const OfferPage = () => {
 
   return (
     <div className="offer-page">
-      {/* <header className="offer-page-header">
-        <div className="offer-page-container">Shishuseba</div>
-      </header> */}
-
       <main>
         {/* ========== HERO SECTION ========== */}
         <section id="hero">

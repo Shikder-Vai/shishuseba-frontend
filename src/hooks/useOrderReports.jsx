@@ -1,5 +1,5 @@
 // hooks/useOrderReports.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const useOrderReports = () => {
@@ -31,11 +31,11 @@ const useOrderReports = () => {
 
   // Base API path from your app.js
   // const API_BASE = 'http://31.97.233.143:5000/v1/reports';
-  // const API_BASE = 'https://api.shishuseba.com/v1/reports';
-  const API_BASE = "http://localhost:5000/v1/reports";
+  const API_BASE = "https://api.shishuseba.com/v1/reports";
+  // const API_BASE = "http://localhost:5000/v1/reports";
 
   // Fetch all unique districts for dropdown
-  const fetchDistricts = async () => {
+  const fetchDistricts = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, districts: true }));
       const response = await axios.get(`${API_BASE}/districts`);
@@ -46,10 +46,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, districts: false }));
     }
-  };
+  }, [API_BASE]);
 
   // Fetch sales performance report
-  const fetchSalesPerformance = async () => {
+  const fetchSalesPerformance = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, salesPerformance: true }));
       const params = {
@@ -69,10 +69,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, salesPerformance: false }));
     }
-  };
+  }, [API_BASE, filters.district, filters.endDate, filters.startDate]);
 
   // Fetch order status summary
-  const fetchOrderStatusSummary = async () => {
+  const fetchOrderStatusSummary = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, orderStatusSummary: true }));
       const params = {
@@ -90,10 +90,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, orderStatusSummary: false }));
     }
-  };
+  }, [API_BASE, filters.district]);
 
   // Fetch product performance
-  const fetchProductPerformance = async () => {
+  const fetchProductPerformance = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, productPerformance: true }));
       const params = {
@@ -113,10 +113,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, productPerformance: false }));
     }
-  };
+  }, [API_BASE, filters.district, filters.endDate, filters.startDate]);
 
   // Fetch district-wise orders
-  const fetchDistrictWiseOrders = async () => {
+  const fetchDistrictWiseOrders = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, districtWiseOrders: true }));
       const params = {
@@ -135,10 +135,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, districtWiseOrders: false }));
     }
-  };
+  }, [API_BASE, filters.endDate, filters.startDate]);
 
   // Fetch customer insights
-  const fetchCustomerInsights = async () => {
+  const fetchCustomerInsights = useCallback(async () => {
     try {
       setLoading((prev) => ({ ...prev, customerInsights: true }));
       const params = {
@@ -158,10 +158,10 @@ const useOrderReports = () => {
     } finally {
       setLoading((prev) => ({ ...prev, customerInsights: false }));
     }
-  };
+  }, [API_BASE, filters.district, filters.endDate, filters.startDate]);
 
   // Fetch all reports at once
-  const fetchAllReports = async () => {
+  const fetchAllReports = useCallback(async () => {
     await Promise.all([
       fetchSalesPerformance(),
       fetchOrderStatusSummary(),
@@ -169,50 +169,66 @@ const useOrderReports = () => {
       fetchDistrictWiseOrders(),
       fetchCustomerInsights(),
     ]);
-  };
+  }, [
+    fetchCustomerInsights,
+    fetchDistrictWiseOrders,
+    fetchOrderStatusSummary,
+    fetchProductPerformance,
+    fetchSalesPerformance,
+  ]);
 
   // Update filters and refetch affected reports
-  const updateFilters = (newFilters) => {
-    setFilters((prev) => {
-      const updatedFilters = { ...prev, ...newFilters };
+  const updateFilters = useCallback(
+    (newFilters) => {
+      setFilters((prev) => {
+        const updatedFilters = { ...prev, ...newFilters };
 
-      // Determine which reports need to be refetched based on what changed
-      const shouldRefetchSales =
-        newFilters.startDate !== undefined ||
-        newFilters.endDate !== undefined ||
-        newFilters.district !== undefined;
+        // Determine which reports need to be refetched based on what changed
+        const shouldRefetchSales =
+          newFilters.startDate !== undefined ||
+          newFilters.endDate !== undefined ||
+          newFilters.district !== undefined;
 
-      const shouldRefetchProducts =
-        newFilters.startDate !== undefined ||
-        newFilters.endDate !== undefined ||
-        newFilters.district !== undefined;
+        const shouldRefetchProducts =
+          newFilters.startDate !== undefined ||
+          newFilters.endDate !== undefined ||
+          newFilters.district !== undefined;
 
-      const shouldRefetchCustomers =
-        newFilters.startDate !== undefined ||
-        newFilters.endDate !== undefined ||
-        newFilters.district !== undefined;
+        const shouldRefetchCustomers =
+          newFilters.startDate !== undefined ||
+          newFilters.endDate !== undefined ||
+          newFilters.district !== undefined;
 
-      const shouldRefetchDistricts =
-        newFilters.startDate !== undefined || newFilters.endDate !== undefined;
+        const shouldRefetchDistricts =
+          newFilters.startDate !== undefined ||
+          newFilters.endDate !== undefined;
 
-      const shouldRefetchStatus = newFilters.district !== undefined;
+        const shouldRefetchStatus = newFilters.district !== undefined;
 
-      // Refetch reports as needed
-      if (shouldRefetchSales) fetchSalesPerformance();
-      if (shouldRefetchProducts) fetchProductPerformance();
-      if (shouldRefetchCustomers) fetchCustomerInsights();
-      if (shouldRefetchDistricts) fetchDistrictWiseOrders();
-      if (shouldRefetchStatus) fetchOrderStatusSummary();
+        // Refetch reports as needed
+        if (shouldRefetchSales) fetchSalesPerformance();
+        if (shouldRefetchProducts) fetchProductPerformance();
+        if (shouldRefetchCustomers) fetchCustomerInsights();
+        if (shouldRefetchDistricts) fetchDistrictWiseOrders();
+        if (shouldRefetchStatus) fetchOrderStatusSummary();
 
-      return updatedFilters;
-    });
-  };
+        return updatedFilters;
+      });
+    },
+    [
+      fetchCustomerInsights,
+      fetchDistrictWiseOrders,
+      fetchOrderStatusSummary,
+      fetchProductPerformance,
+      fetchSalesPerformance,
+    ]
+  );
 
   // Initialize by fetching districts and all reports
   useEffect(() => {
     fetchDistricts();
     fetchAllReports();
-  }, []);
+  }, [fetchAllReports, fetchDistricts]);
 
   return {
     reports,
