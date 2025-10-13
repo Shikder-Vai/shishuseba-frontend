@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, X, Loader2, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
-import { imgbbKey } from "../../hooks/useImgbb";
+
 
 const UpdateProductModal = ({ onClose, productId }) => {
   const { product, isLoading: loadingProduct } = useProduct(productId);
@@ -44,18 +44,22 @@ const UpdateProductModal = ({ onClose, productId }) => {
     setUploadingImage(true);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-        { method: "POST", body: form }
-      );
-      const data = await res.json();
-      if (data.success) {
-        setFormData((prev) => ({ ...prev, image: data.data.url }));
+      const res = await axiosPublic.post("/upload/product-image", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = res.data.imageUrl;
+
+      if (imageUrl) {
+        setFormData((prev) => ({ ...prev, image: imageUrl }));
         toast.success("Image uploaded successfully");
+      } else {
+        throw new Error("Image upload failed");
       }
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Failed to upload image");
+      console.error("Image upload error:", error);
     } finally {
       setUploadingImage(false);
     }

@@ -6,7 +6,7 @@ import useCategories from "../../hooks/useCategories";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { imgbbKey } from "../../hooks/useImgbb";
+
 
 const ProductUploadModal = ({ isOpen, onClose }) => {
   const [categories, loadingCategories] = useCategories();
@@ -44,14 +44,15 @@ const ProductUploadModal = ({ isOpen, onClose }) => {
     setUploadingImage(true);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-        { method: "POST", body: form }
-      );
-      const data = await res.json();
+      const res = await axiosPublic.post("/upload/product-image", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = res.data.imageUrl;
 
-      if (data.success) {
-        setFormData((prev) => ({ ...prev, image: data.data.url }));
+      if (imageUrl) {
+        setFormData((prev) => ({ ...prev, image: imageUrl }));
         toast.success("Image uploaded successfully");
       } else {
         throw new Error("Image upload failed");

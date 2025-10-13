@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
-import useImgUpload from "../../hooks/useImgUpload";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useScrollToTop from "../../hooks/useScrollToTop";
 
 const ReviewUploadModal = ({ isOpen, onClose }) => {
   useScrollToTop();
   const [imageFile, setImageFile] = useState(null);
-  const { isUploading, uploadImg } = useImgUpload();
-  const axiosSecure = useAxiosSecure();
+  const [isUploading, setIsUploading] = useState(false);
+  const axiosPublic = useAxiosPublic();
   const queryClient = useQueryClient();
 
   const { mutate: addReview, isLoading } = useMutation({
-    mutationFn: (newReview) => axiosSecure.post("/reviews", newReview),
+    mutationFn: (newReview) => axiosPublic.post("/reviews", newReview),
     onSuccess: () => {
       queryClient.invalidateQueries(["reviews"]);
       toast.success("Review added successfully");
@@ -31,12 +30,27 @@ const ReviewUploadModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
     try {
-      const imageUrl = await uploadImg(imageFile);
-      addReview({ imageUrl });
-      // eslint-disable-next-line no-unused-vars
+      const res = await axiosPublic.post("/upload/review-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = res.data.imageUrl;
+      if (imageUrl) {
+        addReview({ imageUrl });
+      } else {
+        throw new Error("Image upload failed to return a URL.");
+      }
     } catch (error) {
       toast.error("Image upload failed. Please try again.");
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 

@@ -271,11 +271,11 @@ const ProductDetails = () => {
             <div className="space-y-1">
               <div className="flex items-center space-x-3">
                 <span className="text-2xl font-bold text-brand-teal-base">
-                  {selectedVariant?.price || item?.price}৳
+                  {selectedVariant?.price || item?.price} ৳
                 </span>
                 {item?.originalPrice && (
                   <span className="text-lg line-through text-brand-gray-base">
-                    {item.originalPrice}৳
+                    {item.originalPrice} ৳
                   </span>
                 )}
               </div>

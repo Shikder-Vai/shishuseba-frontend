@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { imgbbKey } from "../../hooks/useImgbb";
+
 
 const AddProductModal = ({ onClose }) => {
   const [weights, setWeights] = useState([{ weight: "", value: null }]);
@@ -35,16 +35,14 @@ const AddProductModal = ({ onClose }) => {
     formData.append("image", file);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const data = await res.json();
-      if (data.success) {
-        setImages((prev) => [...prev, data.data.url]);
+      const res = await axiosPublic.post("/upload/product-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const imageUrl = res.data.imageUrl;
+      if (imageUrl) {
+        setImages((prev) => [...prev, imageUrl]);
       } else {
         alert("Image upload failed.");
       }
