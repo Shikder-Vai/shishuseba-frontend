@@ -1,0 +1,48 @@
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 288px; /* 18rem or min-h-72 */
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-dot {
+  width: 12px;
+  height: 12px;
+  background-color: #018b76; /* Brand teal */
+  border-radius: 50%;
+  margin: 0 5px;
+  animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.loader-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loader-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1.0);
+  }
+}
+
+.loader-text {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #555; /* A neutral gray */
+}
+
+

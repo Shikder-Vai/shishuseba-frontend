@@ -489,7 +489,9 @@ const ProcessingOrder = () => {
                       </Td>
                       <Td className="px-3 py-3">
                         <div className="text-brand-gray-base">
-                          <p className="font-medium">{o?.processBy?.name}</p>
+                          <p className="font-medium text-xs">
+                            {o?.processBy?.name}
+                          </p>
                           <p className="text-xs text-brand-orange-base">
                             {formatDate(o?.processBy?.processingTime)}
                           </p>
