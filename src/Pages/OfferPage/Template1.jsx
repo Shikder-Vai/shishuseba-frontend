@@ -237,14 +237,19 @@ const Template1 = ({ landingPageData }) => {
 
       {/* Footer */}
       <footer className="bg-[#DADADA] py-4 mt-16">
-        <div className="container mx-auto text-center font-montserrat text-xs text-black">
+        <div className="container mx-auto text-center font-montserrat text-md text-black">
+          <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
+          <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
+          <p></p>
           <p>
             যেকোনো প্রয়োজনে কল করুন:{" "}
             <a href={`tel:${footer.phoneNumber}`}>
-              <strong>{footer.phoneNumber}</strong>
+              <strong className="text-amber-900 text-lg">
+                {footer.phoneNumber}
+              </strong>
             </a>
           </p>
-          <p>
+          <p className="text-xs">
             &copy; {new Date().getFullYear()} Shishuseba.com. All Rights
             Reserved.
           </p>
