@@ -58,13 +58,22 @@ const LandingPageList = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Landing Pages</h1>
-        <Link
-          to="/dashboard/manage-landing-page/new"
-          className="bg-brand-teal-base text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          <Plus />
-          Create New Page
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            to="/dashboard/manage-landing-page/new?template=default"
+            className="bg-brand-teal-base text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Plus />
+            Create New Page (Default)
+          </Link>
+          <Link
+            to="/dashboard/manage-landing-page/new?template=template1"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Plus />
+            Create New Page (Template 1)
+          </Link>
+        </div>
       </div>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
