@@ -179,7 +179,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Video and Details Section */}
-        <section className="my-8">
+        <section className="my-6">
           <h2 className="text-3xl font-bold text-center text-[#386641] mb-6">
             {video.title}
           </h2>
@@ -207,7 +207,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Image Gallery Section */}
-        <section className="my-8">
+        <section className="my-6">
           <div className="max-w-3xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {gallery.images.map((image, index) => (
@@ -223,7 +223,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Detailed Specifications Section */}
-        <section className="my-8">
+        <section className="my-6">
           <h2 className="text-2xl font-bold text-center text-[#386641] mb-10">
             {specifications.title}
           </h2>
@@ -255,7 +255,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Why Choose Us Section */}
-        <section className="my-8">
+        <section className="my-6">
           <h2 className="text-3xl font-bold text-center text-[#386641] mb-10">
             {whyChooseUs.title}
           </h2>
@@ -291,7 +291,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Order Form Section */}
-        <section id="order-form" className="my-10 p-1">
+        <section id="order-form" className="my-6 p-1">
           <div className="bg-gray-50 p-4 rounded-t-lg">
             <h2 className="text-lg font-bold text-center text-[#386641]">
               অর্ডার করতে নিচের ফর্মটি পূরণ করে প্লেস অর্ডার বাটনে ক্লিক করুন!
@@ -308,7 +308,7 @@ const Template1 = ({ landingPageData }) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#DADADA] py-4 mt-16">
+      <footer className="bg-[#DADADA] py-4 mt-2">
         <div className="container mx-auto text-center font-montserrat text-md text-black">
           <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
           <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
