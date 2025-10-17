@@ -111,8 +111,7 @@ const ProductDetails = () => {
       total,
     };
     // localStorage.setItem("cart", JSON.stringify(cartItems));
-    localStorage.setItem("order", JSON.stringify(order));
-    navigate("/checkout");
+    navigate("/checkout", { state: { order } });
   };
 
   // Add to Cart:
@@ -228,11 +227,7 @@ const ProductDetails = () => {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`aspect-square bg-white rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      selectedImage === idx
-                        ? "border-brand-teal-base"
-                        : "border-transparent hover:border-brand-gray-light"
-                    }`}
+                    className={`aspect-square bg-white rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedImage === idx ? "border-brand-teal-base" : "border-transparent hover:border-brand-gray-light"}`}
                   >
                     <img
                       src={img}
@@ -308,11 +303,7 @@ const ProductDetails = () => {
                     <button
                       key={index}
                       onClick={() => handleVariantSelect(variant)}
-                      className={`px-4 py-2 border rounded-full font-medium transition-colors ${
-                        selectedVariant?.weight === variant.weight
-                          ? "border-brand-teal-base bg-brand-teal-base text-white"
-                          : "border-brand-gray-light bg-white hover:bg-brand-gray-light/20"
-                      }`}
+                      className={`px-4 py-2 border rounded-full font-medium transition-colors ${selectedVariant?.weight === variant.weight ? "border-brand-teal-base bg-brand-teal-base text-white" : "border-brand-gray-light bg-white hover:bg-brand-gray-light/20"}`}
                     >
                       {variant.weight}
                     </button>

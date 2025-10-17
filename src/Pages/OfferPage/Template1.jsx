@@ -14,6 +14,29 @@ const Template1 = ({ landingPageData }) => {
     footer = { phoneNumber: "" },
   } = landingPageData;
 
+  const price = parseFloat(featuredProduct.variants[0].price);
+  const quantity = 1;
+  const cartItem = {
+    ...featuredProduct,
+    variant: featuredProduct.variants[0],
+    price,
+    weight: featuredProduct.variants[0].weight,
+    admin_note: "",
+    quantity: quantity,
+  };
+
+  const cartItems = [cartItem];
+  const subtotal = price * quantity;
+  const shippingCost = subtotal >= 1000 ? 0 : 80;
+  const total = subtotal + shippingCost;
+
+  const order = {
+    items: cartItems,
+    subtotal,
+    shippingCost,
+    total,
+  };
+
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return "";
     try {
@@ -230,7 +253,7 @@ const Template1 = ({ landingPageData }) => {
             </h2>
           </div>
           <div className="p-4">
-            <Checkout />
+            <Checkout order={order} />
           </div>
         </section>
       </main>

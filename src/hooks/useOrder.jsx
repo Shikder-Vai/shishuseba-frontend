@@ -9,9 +9,7 @@ export const proceedNow = (navigate, subtotal, total, shippingCost) => {
       shippingCost,
       total,
     };
-    localStorage.setItem("order", JSON.stringify(order));
-    // console.log("Order summary saved to localStorage.");
-    navigate("/checkout");
+    navigate("/checkout", { state: { order } });
   } catch (error) {
     console.error("Failed to proceed with order", error);
   }

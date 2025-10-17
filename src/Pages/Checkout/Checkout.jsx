@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import useOrderFromLocalStorage from "../../hooks/useOrderFromLocalStorage";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Loader2,
   MapPin,
@@ -20,9 +19,10 @@ import {
 import useScrollToTop from "../../hooks/useScrollToTop";
 import { pushBeginCheckout } from "../../services/DataLayerService";
 
-const Checkout = () => {
+const Checkout = ({ order: initialOrder }) => {
   useScrollToTop();
-  const order = useOrderFromLocalStorage();
+  const location = useLocation();
+  const order = initialOrder || location.state?.order;
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -196,14 +196,11 @@ const Checkout = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <User className="w-4 h-4 text-brand-gray-base" />
-                Full Name{" "}
-                <span className="text-xs text-brand-teal-400">(পূর্ণ নাম)</span>
+                Full Name <span className="text-xs text-brand-teal-400">(পূর্ণ নাম)</span>
               </label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.name ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Enter your full name"
                 {...register("name", { required: "Name is required" })}
               />
@@ -218,16 +215,13 @@ const Checkout = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <Phone className="w-4 h-4 " />
-                Phone Number{" "}
-                <span className="text-xs text-brand-teal-400">
+                Phone Number <span className="text-xs text-brand-teal-400">
                   (১১ ডিজিটঃ 017XXXXXXXX)
                 </span>
               </label>
               <input
                 type="tel"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
-                  errors.mobile ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.mobile ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Enter your phone number"
                 {...register("mobile", {
                   required: "Phone number is required",
@@ -248,16 +242,13 @@ const Checkout = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-gray-base" />
-                Complete Address{" "}
-                <span className="text-xs text-brand-teal-400">
+                Complete Address <span className="text-xs text-brand-teal-400">
                   (গ্রাম, ইউনিয়ন, থানা, জেলা)
                 </span>
               </label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
-                  errors.address ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.address ? "border-red-500" : "border-gray-300"}`}
                 placeholder="House #, Road #, Area, etc."
                 {...register("address")}
               />
@@ -278,9 +269,7 @@ const Checkout = () => {
                 <div className="flex items-center relative">
                   <input
                     type="text"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
-                      errors.district ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.district ? "border-red-500" : "border-gray-300"}`}
                     placeholder="Search or select district"
                     value={searchTerm}
                     onChange={(e) => {
@@ -513,11 +502,7 @@ const Checkout = () => {
           <button
             onClick={handleSubmit(handleOrder)}
             disabled={isSubmitting}
-            className={`w-full mt-6 py-4 px-6 rounded-lg font-bold text-white flex items-center justify-center gap-2 ${
-              isSubmitting
-                ? "bg-gray-400"
-                : "bg-gradient-to-r from-brand-teal-base to-brand-teal-100 hover:opacity-90"
-            } transition-all duration-200 shadow-md`}
+            className={`w-full mt-6 py-4 px-6 rounded-lg font-bold text-white flex items-center justify-center gap-2 ${isSubmitting ? "bg-gray-400" : "bg-gradient-to-r from-brand-teal-base to-brand-teal-100 hover:opacity-90"} transition-all duration-200 shadow-md`}
           >
             {isSubmitting ? (
               <>

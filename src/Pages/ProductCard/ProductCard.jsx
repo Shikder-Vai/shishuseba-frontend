@@ -41,9 +41,7 @@ const ProductCard = ({ product }) => {
     };
 
     // Set both cart and order for consistency, then navigate
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-    localStorage.setItem("order", JSON.stringify(order));
-    navigate("/checkout");
+    navigate("/checkout", { state: { order } });
   };
 
   const handleAddtoCart = (item) => {

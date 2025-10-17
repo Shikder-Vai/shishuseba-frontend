@@ -17,6 +17,7 @@ const OfferPage = () => {
   const location = useLocation();
   const hasFiredPageView = useRef(false);
   const hasFiredViewItem = useRef(false);
+  const [order, setOrder] = useState(null);
 
   const {
     data: landingPageData,
@@ -39,20 +40,6 @@ const OfferPage = () => {
   }, [landingPageData]);
 
   useEffect(() => {
-    const originalOrder = localStorage.getItem("order");
-
-    return () => {
-      if (originalOrder) {
-        localStorage.setItem("order", originalOrder);
-      } else {
-        localStorage.removeItem("order");
-      }
-
-      window.dispatchEvent(new Event("cart-updated"));
-    };
-  }, []);
-
-  useEffect(() => {
     if (landingPageData && landingPageData.featuredProduct && selectedVariant) {
       const { featuredProduct } = landingPageData;
 
@@ -73,15 +60,14 @@ const OfferPage = () => {
       const shippingCost = subtotal >= 1000 ? 0 : 80;
       const total = subtotal + shippingCost;
 
-      const order = {
+      const newOrder = {
         items: cartItems,
         subtotal,
         shippingCost,
         total,
       };
 
-      localStorage.setItem("order", JSON.stringify(order));
-      window.dispatchEvent(new Event("cart-updated"));
+      setOrder(newOrder);
     }
   }, [landingPageData, selectedVariant]);
 
@@ -284,7 +270,7 @@ const OfferPage = () => {
                 </div>
               )}
             </div>
-            <Checkout />
+            <Checkout order={order} />
           </div>
         </section>
       </main>
@@ -294,7 +280,7 @@ const OfferPage = () => {
           <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
           <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
           <p>
-            যেকোনো প্রয়োজনে কল করুন:{" "}
+            যেকোনো প্রয়োজনে কল করুন: {" "}
             <a href={`tel:${footer.phoneNumber}`}>
               <strong>{footer.phoneNumber}</strong>
             </a>
