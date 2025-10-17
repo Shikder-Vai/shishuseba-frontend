@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../Pages/HomePage/Home/Home";
 import Main from "../Layout/Main/Main";
 import Cart from "../Pages/Cart/Cart";
-import Checkout from "../Pages/Checkout/Checkout";
+import CheckoutPage from "../Pages/Checkout/CheckoutPage";
 import Confirm from "../Pages/Confirm/Confirm";
 import Login from "../Authentication/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/checkout",
-        element: <Checkout />,
+        element: <CheckoutPage />,
       },
       {
         path: "/order-success",

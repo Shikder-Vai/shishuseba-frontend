@@ -304,6 +304,7 @@ const Cart = () => {
                 onClick={() =>
                   proceedNow(
                     navigate,
+                    cart,
                     subtotal,
                     total,
                     parseFloat(shippingCost)

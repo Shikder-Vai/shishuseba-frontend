@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import Checkout from "../Checkout/Checkout";
 
 const Template1 = ({ landingPageData }) => {
@@ -14,27 +14,75 @@ const Template1 = ({ landingPageData }) => {
     footer = { phoneNumber: "" },
   } = landingPageData;
 
-  const price = parseFloat(featuredProduct.variants[0].price);
-  const quantity = 1;
-  const cartItem = {
-    ...featuredProduct,
-    variant: featuredProduct.variants[0],
-    price,
-    weight: featuredProduct.variants[0].weight,
-    admin_note: "",
-    quantity: quantity,
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [order, setOrder] = useState(null);
+
+  useEffect(() => {
+    if (landingPageData && landingPageData.featuredProduct) {
+      setSelectedVariant(landingPageData.featuredProduct.variants[0]);
+    }
+  }, [landingPageData]);
+
+  useEffect(() => {
+    if (landingPageData && landingPageData.featuredProduct && selectedVariant) {
+      const { featuredProduct } = landingPageData;
+
+      const price = parseFloat(selectedVariant.price);
+      const quantity = 1;
+
+      const cartItem = {
+        ...featuredProduct,
+        variant: selectedVariant,
+        price,
+        weight: selectedVariant.weight,
+        admin_note: "",
+        quantity: quantity,
+      };
+
+      const cartItems = [cartItem];
+      const subtotal = price * quantity;
+      const shippingCost = subtotal >= 1000 ? 0 : 80;
+      const total = subtotal + shippingCost;
+
+      const newOrder = {
+        items: cartItems,
+        subtotal,
+        shippingCost,
+        total,
+      };
+
+      setOrder(newOrder);
+    }
+  }, [landingPageData, selectedVariant]);
+
+  const handleQuantityChange = (itemId, newQuantity) => {
+    if (newQuantity < 1) return;
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      items: prevOrder.items.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      ),
+    }));
   };
 
-  const cartItems = [cartItem];
-  const subtotal = price * quantity;
-  const shippingCost = subtotal >= 1000 ? 0 : 80;
-  const total = subtotal + shippingCost;
-
-  const order = {
-    items: cartItems,
-    subtotal,
-    shippingCost,
-    total,
+  const handleVariantChange = (itemId, newVariantWeight) => {
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      items: prevOrder.items.map((item) => {
+        if (item._id === itemId) {
+          const newVariant = item.variants.find(
+            (v) => v.weight === newVariantWeight
+          );
+          return {
+            ...item,
+            variant: newVariant,
+            price: newVariant.price,
+            weight: newVariant.weight,
+          };
+        }
+        return item;
+      }),
+    }));
   };
 
   const getYoutubeEmbedUrl = (url) => {
@@ -131,7 +179,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Video and Details Section */}
-        <section className="my-20">
+        <section className="my-8">
           <h2 className="text-3xl font-bold text-center text-[#386641] mb-6">
             {video.title}
           </h2>
@@ -159,7 +207,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Image Gallery Section */}
-        <section className="my-20">
+        <section className="my-8">
           <div className="max-w-3xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {gallery.images.map((image, index) => (
@@ -175,7 +223,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Detailed Specifications Section */}
-        <section className="my-20">
+        <section className="my-8">
           <h2 className="text-2xl font-bold text-center text-[#386641] mb-10">
             {specifications.title}
           </h2>
@@ -207,7 +255,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Why Choose Us Section */}
-        <section className="my-20">
+        <section className="my-8">
           <h2 className="text-3xl font-bold text-center text-[#386641] mb-10">
             {whyChooseUs.title}
           </h2>
@@ -230,7 +278,7 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Call to Action Section */}
-        <section className="my-20 bg-gray-100 py-8 px-4 rounded-lg text-center">
+        <section className="my-6 bg-gray-100 py-8 px-4 rounded-lg text-center">
           <h2 className="text-2xl font-bold text-black mb-4">
             {callToAction.title}
           </h2>
@@ -243,17 +291,18 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Order Form Section */}
-        <section
-          id="order-form"
-          className="my-20 p-1 border-2 border-[#386641] rounded-xl"
-        >
+        <section id="order-form" className="my-10 p-1">
           <div className="bg-gray-50 p-4 rounded-t-lg">
             <h2 className="text-lg font-bold text-center text-[#386641]">
               অর্ডার করতে নিচের ফর্মটি পূরণ করে প্লেস অর্ডার বাটনে ক্লিক করুন!
             </h2>
           </div>
           <div className="p-4">
-            <Checkout order={order} />
+            <Checkout
+              order={order}
+              onQuantityChange={handleQuantityChange}
+              onVariantChange={handleVariantChange}
+            />
           </div>
         </section>
       </main>

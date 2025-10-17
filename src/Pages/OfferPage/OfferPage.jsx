@@ -71,13 +71,39 @@ const OfferPage = () => {
     }
   }, [landingPageData, selectedVariant]);
 
+  const handleQuantityChange = (itemId, newQuantity) => {
+    if (newQuantity < 1) return;
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      items: prevOrder.items.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      ),
+    }));
+  };
+
+  const handleVariantChange = (itemId, newVariantWeight) => {
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      items: prevOrder.items.map((item) => {
+        if (item._id === itemId) {
+          const newVariant = item.variants.find(
+            (v) => v.weight === newVariantWeight
+          );
+          return {
+            ...item,
+            variant: newVariant,
+            price: newVariant.price,
+            weight: newVariant.weight,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
   useEffect(() => {
     if (!hasFiredPageView.current) {
-      pushPageView(
-        location.pathname,
-        document.title,
-        "landing_page_view"
-      );
+      pushPageView(location.pathname, document.title, "landing_page_view");
       hasFiredPageView.current = true;
     }
   }, [location.pathname]);
@@ -112,7 +138,7 @@ const OfferPage = () => {
     );
   }
 
-  if (landingPageData?.templateId === 'template1') {
+  if (landingPageData?.templateId === "template1") {
     return <Template1 landingPageData={landingPageData} />;
   }
 
@@ -270,7 +296,11 @@ const OfferPage = () => {
                 </div>
               )}
             </div>
-            <Checkout order={order} />
+            <Checkout
+              order={order}
+              onQuantityChange={handleQuantityChange}
+              onVariantChange={handleVariantChange}
+            />
           </div>
         </section>
       </main>
@@ -280,7 +310,7 @@ const OfferPage = () => {
           <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
           <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
           <p>
-            যেকোনো প্রয়োজনে কল করুন: {" "}
+            যেকোনো প্রয়োজনে কল করুন:{" "}
             <a href={`tel:${footer.phoneNumber}`}>
               <strong>{footer.phoneNumber}</strong>
             </a>
@@ -291,13 +321,6 @@ const OfferPage = () => {
           </p>
         </div>
       </footer>
-
-      {/* <div className="sticky-footer-cta">
-        <a href="#order-form" className="cta-button">
-          <ShoppingCart size={20} style={{ marginRight: "10px" }} /> এখনি অর্ডার
-          করুন
-        </a>
-      </div> */}
     </div>
   );
 };

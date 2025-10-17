@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Loader2,
   MapPin,
@@ -15,14 +15,15 @@ import {
   CreditCard,
   ChevronDown,
   X,
+  Plus,
+  Minus,
+  Trash2,
 } from "lucide-react";
 import useScrollToTop from "../../hooks/useScrollToTop";
 import { pushBeginCheckout } from "../../services/DataLayerService";
 
-const Checkout = ({ order: initialOrder }) => {
+const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
   useScrollToTop();
-  const location = useLocation();
-  const order = initialOrder || location.state?.order;
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,18 +44,24 @@ const Checkout = ({ order: initialOrder }) => {
 
   useEffect(() => {
     if (order) {
-      const subtotal = order.subtotal || 0;
+      const subtotal = order.items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
       const initialShipping = subtotal >= 1000 ? "0" : "80";
       setShippingCost(initialShipping);
-      setTotal(subtotal + parseFloat(initialShipping));
     }
   }, [order]);
 
   useEffect(() => {
     if (order) {
-      setTotal(order.subtotal + parseFloat(shippingCost));
+      const subtotal = order.items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      setTotal(subtotal + parseFloat(shippingCost));
     }
-  }, [shippingCost, order]);
+  }, [order, shippingCost]);
 
   // --- CHECKOUT PAGE VIEW ---
   useEffect(() => {
@@ -196,11 +203,14 @@ const Checkout = ({ order: initialOrder }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <User className="w-4 h-4 text-brand-gray-base" />
-                Full Name <span className="text-xs text-brand-teal-400">(পূর্ণ নাম)</span>
+                Full Name{" "}
+                <span className="text-xs text-brand-teal-400">(পূর্ণ নাম)</span>
               </label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.name ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Enter your full name"
                 {...register("name", { required: "Name is required" })}
               />
@@ -215,13 +225,16 @@ const Checkout = ({ order: initialOrder }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <Phone className="w-4 h-4 " />
-                Phone Number <span className="text-xs text-brand-teal-400">
+                Phone Number{" "}
+                <span className="text-xs text-brand-teal-400">
                   (১১ ডিজিটঃ 017XXXXXXXX)
                 </span>
               </label>
               <input
                 type="tel"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.mobile ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
+                  errors.mobile ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Enter your phone number"
                 {...register("mobile", {
                   required: "Phone number is required",
@@ -242,13 +255,16 @@ const Checkout = ({ order: initialOrder }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-gray-base" />
-                Complete Address <span className="text-xs text-brand-teal-400">
+                Complete Address{" "}
+                <span className="text-xs text-brand-teal-400">
                   (গ্রাম, ইউনিয়ন, থানা, জেলা)
                 </span>
               </label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.address ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
+                  errors.address ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="House #, Road #, Area, etc."
                 {...register("address")}
               />
@@ -269,7 +285,9 @@ const Checkout = ({ order: initialOrder }) => {
                 <div className="flex items-center relative">
                   <input
                     type="text"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${errors.district ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand-teal-base focus:border-brand-teal-base ${
+                      errors.district ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Search or select district"
                     value={searchTerm}
                     onChange={(e) => {
@@ -361,9 +379,9 @@ const Checkout = ({ order: initialOrder }) => {
           </h2>
 
           <div className="border-b border-gray-200 pb-4 mb-4">
-            <div className="grid grid-cols-2 gap-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
-              <div>Product</div>
-              <div className="text-right">Subtotal</div>
+            <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <div className="col-span-2">Product</div>
+              <div className="text-right text-brand-teal-200">Subtotal</div>
             </div>
           </div>
 
@@ -372,28 +390,67 @@ const Checkout = ({ order: initialOrder }) => {
             {order?.items?.map((item) => (
               <div
                 key={item?._id}
-                className="grid grid-cols-2 gap-4 items-center"
+                className="flex items-start gap-4 p-4 border rounded-lg bg-gray-50"
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
-                    <img
-                      src={item?.image}
-                      alt={item?.name}
-                      className="w-10 h-10 object-contain"
-                    />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{item?.name}</p>
-                    <p className="text-sm text-gray-500">
-                      {item.weight}
+                <img
+                  src={item?.image}
+                  alt={item?.name}
+                  className="w-20 h-20 object-contain rounded-md bg-white"
+                />
+                <div className="flex-grow">
+                  <p className="font-semibold text-gray-800">{item?.name}</p>
+                  <p className="text-sm text-gray-500">Price: {item.price}৳</p>
+                  {item.variants?.length > 1 ? (
+                    <div className="mt-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Variant
+                      </label>
+                      <select
+                        value={item.variant.weight}
+                        onChange={(e) =>
+                          onVariantChange(item._id, e.target.value)
+                        }
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                      >
+                        {item.variants.map((v) => (
+                          <option key={v.weight} value={v.weight}>
+                            {v.weight}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-2">
+                      Variant: {item.weight}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      Qty: {item?.quantity}
-                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Quantity
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          onQuantityChange(item._id, item.quantity - 1)
+                        }
+                        className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() =>
+                          onQuantityChange(item._id, item.quantity + 1)
+                        }
+                        className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right font-medium">
-                  {item?.price * item?.quantity}৳
+                <div className="text-right font-semibold text-brand-teal-base">
+                  {item.price * item.quantity}৳
                 </div>
               </div>
             ))}
@@ -502,7 +559,11 @@ const Checkout = ({ order: initialOrder }) => {
           <button
             onClick={handleSubmit(handleOrder)}
             disabled={isSubmitting}
-            className={`w-full mt-6 py-4 px-6 rounded-lg font-bold text-white flex items-center justify-center gap-2 ${isSubmitting ? "bg-gray-400" : "bg-gradient-to-r from-brand-teal-base to-brand-teal-100 hover:opacity-90"} transition-all duration-200 shadow-md`}
+            className={`w-full mt-6 py-4 px-6 rounded-lg font-bold text-white flex items-center justify-center gap-2 ${
+              isSubmitting
+                ? "bg-gray-400"
+                : "bg-gradient-to-r from-brand-teal-base to-brand-teal-100 hover:opacity-90"
+            } transition-all duration-200 shadow-md`}
           >
             {isSubmitting ? (
               <>

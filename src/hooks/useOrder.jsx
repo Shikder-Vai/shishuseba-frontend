@@ -1,7 +1,9 @@
-export const proceedNow = (navigate, subtotal, total, shippingCost) => {
+export const proceedNow = (navigate, cartItems, subtotal, total, shippingCost) => {
   try {
-    const items = localStorage.getItem("cart");
-    const cartItems = items ? JSON.parse(items) : [];
+    if (!cartItems || cartItems.length === 0) {
+      console.error("Cannot proceed to checkout with an empty cart.");
+      return; 
+    }
 
     const order = {
       items: cartItems,
