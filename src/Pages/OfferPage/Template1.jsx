@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Checkout from "../Checkout/Checkout";
 
+// Note: Ensure your global CSS or Tailwind config supports the new custom colors and the 'video-container' for responsive iframe.
+
 const Template1 = ({ landingPageData }) => {
   const {
     featuredProduct,
@@ -16,6 +18,8 @@ const Template1 = ({ landingPageData }) => {
 
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [order, setOrder] = useState(null);
+
+  // --- [Data Handling & Logic Remains Unchanged] ---
 
   useEffect(() => {
     if (landingPageData && landingPageData.featuredProduct) {
@@ -97,37 +101,43 @@ const Template1 = ({ landingPageData }) => {
     }
   };
 
+  // --- [Start of JSX with Product Name Addition in Hero] ---
+
   return (
-    <div className="bg-white">
+    <div className="bg-gray-50 font-sans min-h-screen">
       {/* Hero Section */}
-      <header className="bg-[#386641] text-white pt-5 pb-20 relative">
+      <header className="bg-indigo-800 text-white pt-10 pb-28 md:pb-32 relative overflow-hidden">
         <div className="container mx-auto max-w-5xl px-6 lg:px-0">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Text Content */}
-            <div className="md:w-1/2 text-center md:text-left">
-              <h1 className="text-3xl lg:text-4xl font-bold text-[#A8DA33] leading-tight">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
+            <div className="md:w-1/2 text-center md:text-left order-2 md:order-1">
+              <h1 className="text-4xl sm:text-4xl lg:text-5xl font-extrabold text-yellow-300 leading-tight tracking-tight">
                 {hero.title}
               </h1>
-              <p className="mt-4 text-md text-[#EBF0DF] font-semibold">
+              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-indigo-100 font-light max-w-lg mx-auto md:mx-0 opacity-90">
                 {hero.subtitle}
               </p>
               <a
                 href="#order-form"
-                className="mt-8 inline-block bg-[#A7C957] text-black font-bold py-2 px-6 rounded-md text-lg hover:bg-[#99b64f] transition duration-300"
+                className="mt-6 sm:mt-8 inline-block bg-pink-500 text-white font-extrabold py-3 px-8 sm:py-4 sm:px-10 rounded-xl text-lg sm:text-xl shadow-2xl shadow-pink-500/50 hover:bg-pink-600 transition duration-300 transform hover:scale-105"
               >
                 অর্ডার করুন
               </a>
             </div>
-            {/* Image Content */}
-            <div className="w-4/12">
+
+            {/* Image Content - With Product Name Added */}
+            <div className="w-full md:w-5/12 p-3 sm:p-4 bg-white/10 rounded-xl sm:rounded-2xl shadow-2xl order-1 md:order-2 text-center">
               <img
                 src={featuredProduct?.image}
                 alt={featuredProduct?.name}
-                className="w-full h-auto rounded-lg shadow-lg"
+                className="w-full h-auto rounded-lg"
               />
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 bg-indigo-900/50 p-2 rounded-lg mt-3">
+                {featuredProduct?.name}
+              </h2>
             </div>
           </div>
         </div>
+        {/* Shape Divider */}
         <div className="hero-shape-divider">
           <svg
             data-name="Layer 1"
@@ -136,42 +146,45 @@ const Template1 = ({ landingPageData }) => {
             preserveAspectRatio="none"
           >
             <path
-              className="shape-fill"
+              className="shape-fill fill-gray-50"
               d="M500,97C126.7,96.3,0.8,19.8,0,0v100l1000,0V1C1000,19.4,873.3,97.8,500,97z"
             ></path>
           </svg>
         </div>
       </header>
 
-      <main className="container mx-auto max-w-4xl px-6 lg:px-0 mt-8">
+      <main className="container mx-auto max-w-4xl px-6 lg:px-0 pt-8">
         {/* Features Section */}
-        <section className="my-16">
-          <h2 className="text-3xl font-bold text-center text-[#386641] mb-12">
-            {features.title}
-          </h2>
-          <div className="flex flex-col md:flex-row items-center gap-12">
+        <section className="my-12 sm:my-16">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 border-b-4 border-pink-500 inline-block pb-2">
+              {features.title}
+            </h2>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="md:w-1/2">
-              <ul className="space-y-2 text-gray-800">
+              <ul className="space-y-3 sm:space-y-4 text-gray-700 text-base sm:text-lg">
                 {features.list.map((feature, index) => (
-                  <li key={index} className="flex items-center">
-                    <i className="fas fa-check-double text-[#386641] mr-3"></i>
-                    {feature}
+                  <li key={index} className="flex items-start">
+                    <i className="fas fa-check-circle text-pink-500 text-xl sm:text-2xl mr-3 mt-1 flex-shrink-0"></i>
+                    <span className="font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 p-2 sm:p-4">
               <img
                 src={features.image}
-                alt="Headphone Features"
-                className="rounded-lg w-full"
+                alt="Product Features"
+                className="rounded-xl w-full shadow-xl"
               />
             </div>
           </div>
-          <div className="text-center mt-12">
+          <div className="text-center mt-10 sm:mt-12">
             <a
               href="#order-form"
-              className="bg-[#386641] text-white font-bold py-3 px-10 rounded-md text-lg hover:bg-[#2c5233] transition duration-300"
+              className="bg-indigo-700 text-white font-extrabold py-3 px-10 rounded-lg text-lg sm:text-xl hover:bg-indigo-800 transition duration-300 shadow-md"
             >
               অর্ডার করুন
             </a>
@@ -179,14 +192,16 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Video and Details Section */}
-        <section className="my-6">
-          <h2 className="text-3xl font-bold text-center text-[#386641] mb-6">
-            {video.title}
-          </h2>
-          <p className="text-center text-gray-700 max-w-3xl mx-auto mb-10 text-sm">
+        <section className="my-12 sm:my-16">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 border-b-4 border-pink-500 inline-block pb-2">
+              {video.title}
+            </h2>
+          </div>
+          <p className="text-center text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-10 text-sm sm:text-md">
             {video.subtitle}
           </p>
-          <div className="max-w-3xl mx-auto border-4 border-[#386641] rounded-xl overflow-hidden shadow-lg">
+          <div className="max-w-3xl mx-auto rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl">
             <div className="video-container">
               <iframe
                 src={getYoutubeEmbedUrl(video.url)}
@@ -196,10 +211,10 @@ const Template1 = ({ landingPageData }) => {
               ></iframe>
             </div>
           </div>
-          <div className="text-center mt-12">
+          <div className="text-center mt-10 sm:mt-12">
             <a
               href="#order-form"
-              className="bg-[#386641] text-white font-bold py-3 px-10 rounded-md text-lg hover:bg-[#2c5233] transition duration-300"
+              className="bg-indigo-700 text-white font-extrabold py-3 px-10 rounded-lg text-lg sm:text-xl hover:bg-indigo-800 transition duration-300 shadow-md"
             >
               অর্ডার করুন
             </a>
@@ -207,15 +222,15 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Image Gallery Section */}
-        <section className="my-6">
+        <section className="my-10 sm:my-12">
           <div className="max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {gallery.images.map((image, index) => (
                 <img
                   key={index}
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover rounded-xl shadow-lg transform hover:scale-[1.02] transition duration-500"
                 />
               ))}
             </div>
@@ -223,31 +238,33 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Detailed Specifications Section */}
-        <section className="my-6">
-          <h2 className="text-2xl font-bold text-center text-[#386641] mb-10">
-            {specifications.title}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+        <section className="my-12 sm:my-16">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 border-b-4 border-pink-500 inline-block pb-2">
+              {specifications.title}
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 text-center">
             {specifications.list.map((spec, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-3 flex flex-col items-center justify-center"
+                className="bg-white rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition duration-300 border border-gray-100"
               >
                 <img
                   src={spec.icon}
                   alt="Icon"
-                  className="h-10 w-auto mx-auto mb-2"
+                  className="h-10 w-auto sm:h-12 mx-auto mb-2 sm:mb-3"
                 />
-                <h3 className="font-semibold text-gray-800 text-sm">
+                <h3 className="font-bold text-indigo-800 text-sm sm:text-lg">
                   {spec.text}
                 </h3>
               </div>
             ))}
           </div>
-          <div className="text-center mt-12">
+          <div className="text-center mt-10 sm:mt-12">
             <a
               href="#order-form"
-              className="bg-[#386641] text-white font-bold py-3 px-10 rounded-md text-lg hover:bg-[#2c5233] transition duration-300"
+              className="bg-indigo-700 text-white font-extrabold py-3 px-10 rounded-lg text-lg sm:text-xl hover:bg-indigo-800 transition duration-300 shadow-md"
             >
               অর্ডার করুন
             </a>
@@ -255,49 +272,51 @@ const Template1 = ({ landingPageData }) => {
         </section>
 
         {/* Why Choose Us Section */}
-        <section className="my-6">
-          <h2 className="text-3xl font-bold text-center text-[#386641] mb-10">
-            {whyChooseUs.title}
-          </h2>
-          <div className="space-y-4 text-lg">
+        <section className="my-12 sm:my-16 bg-white p-6 sm:p-8 rounded-2xl shadow-2xl">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-900 border-b-4 border-pink-500 inline-block pb-2">
+              {whyChooseUs.title}
+            </h2>
+          </div>
+          <div className="space-y-4 sm:space-y-6 text-base sm:text-xl">
             {whyChooseUs.list.map((item, index) => (
               <div key={index} className="flex items-start">
-                <i className="fas fa-hand-point-right text-[#386641] text-xl mr-3 mt-1"></i>
-                <p>{item}</p>
+                <i className="fas fa-hand-point-right text-pink-500 text-xl sm:text-2xl mr-3 sm:mr-4 mt-1 flex-shrink-0"></i>
+                <p className="text-gray-700 font-medium">{item}</p>
               </div>
             ))}
           </div>
-          <div className="text-center mt-10">
+          <div className="text-center mt-10 sm:mt-12">
             <a
               href="#order-form"
-              className="bg-[#386641] text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-[#2c5233] transition duration-300"
+              className="bg-pink-500 text-white font-extrabold py-3 px-8 rounded-lg text-lg sm:text-xl hover:bg-pink-600 transition duration-300 shadow-xl"
             >
               অর্ডার করুন
             </a>
           </div>
         </section>
 
-        {/* Call to Action Section */}
-        <section className="my-6 bg-gray-100 py-8 px-4 rounded-lg text-center">
-          <h2 className="text-2xl font-bold text-black mb-4">
+        {/* Call to Action Section*/}
+        <section className="my-12 sm:my-16 bg-indigo-700 py-8 sm:py-10 px-4 rounded-xl text-center shadow-2xl">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-5 sm:mb-6">
             {callToAction.title}
           </h2>
           <a
             href={`tel:${callToAction.phone}`}
-            className="inline-block bg-yellow-400 text-black font-bold text-xl py-2 px-8 rounded-lg shadow-md hover:bg-yellow-500 transition duration-300"
+            className="inline-block bg-yellow-300 text-indigo-900 font-extrabold text-xl sm:text-2xl py-3 px-8 sm:px-10 rounded-xl shadow-lg hover:bg-yellow-400 transition duration-300 transform hover:scale-105"
           >
-            <i className="fas fa-phone-alt mr-2"></i> {callToAction.phone}
+            <i className="fas fa-phone-alt mr-3"></i> {callToAction.phone}
           </a>
         </section>
 
         {/* Order Form Section */}
-        <section id="order-form" className="my-6 p-1">
-          <div className="bg-gray-50 p-4 rounded-t-lg">
-            <h2 className="text-lg font-bold text-center text-[#386641]">
+        <section id="order-form" className="my-12 sm:my-16 p-1">
+          <div className="bg-pink-500 p-4 sm:p-5 rounded-t-2xl shadow-lg">
+            <h2 className="text-lg sm:text-xl font-extrabold text-white text-center">
               অর্ডার করতে নিচের ফর্মটি পূরণ করে প্লেস অর্ডার বাটনে ক্লিক করুন!
             </h2>
           </div>
-          <div className="p-4">
+          <div className="p-5 sm:p-6 bg-white rounded-b-2xl shadow-2xl border border-gray-100">
             <Checkout
               order={order}
               onQuantityChange={handleQuantityChange}
@@ -308,20 +327,24 @@ const Template1 = ({ landingPageData }) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#DADADA] py-4 mt-2">
-        <div className="container mx-auto text-center font-montserrat text-md text-black">
-          <h3 className="text-3xl font-semibold">শিশুসেবা</h3>
-          <p>আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
+      <footer className="bg-indigo-900 py-5 sm:py-6 mt-4 text-white">
+        <div className="container mx-auto text-center font-sans text-md px-6">
+          <h3 className="text-3xl sm:text-4xl font-extrabold text-pink-500">
+            শিশুসেবা
+          </h3>
+          <p className="text-indigo-200 mt-1">
+            আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন
+          </p>
           <p></p>
-          <p>
-            যেকোনো প্রয়োজনে কল করুন:{" "}
+          <p className="mt-4 text-base sm:text-lg">
+            যেকোনো প্রয়োজনে কল করুন:{" "}
             <a href={`tel:${footer.phoneNumber}`}>
-              <strong className="text-amber-900 text-lg">
+              <strong className="text-yellow-300 text-lg sm:text-xl hover:text-yellow-400 transition duration-300">
                 {footer.phoneNumber}
               </strong>
             </a>
           </p>
-          <p className="text-xs">
+          <p className="text-xs text-indigo-400 mt-2">
             &copy; {new Date().getFullYear()} Shishuseba.com. All Rights
             Reserved.
           </p>
