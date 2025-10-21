@@ -92,15 +92,35 @@ const ProcessingOrder = () => {
       return "N/A";
     }
 
-    try {
-      const inputFormat = "dd MMMM yyyy 'at' hh:mm a";
-      const parsedDate = parse(dateString, inputFormat, new Date());
-      const outputFormat = "dd MMM yyyy, p";
+    let parsedDate;
 
+    const isoDate = new Date(dateString);
+
+    if (!isNaN(isoDate)) {
+      parsedDate = isoDate;
+    } else {
+      try {
+        const oldFormat = "dd MMMM yyyy 'at' hh:mm a";
+        parsedDate = parse(dateString, oldFormat, new Date());
+        if (isNaN(parsedDate)) {
+          throw new Error("Could not parse old format");
+        }
+      } catch (error) {
+        console.error(
+          "Failed to parse date in any known format:",
+          dateString,
+          error
+        );
+        return "Invalid Date";
+      }
+    }
+
+    try {
+      const outputFormat = "dd MMM yyyy, h:mm aa";
       return format(parsedDate, outputFormat);
     } catch (error) {
-      console.error("Failed to parse date:", dateString, error);
-      return dateString;
+      console.error("Failed to format the parsed date:", parsedDate, error);
+      return "Formatting Error";
     }
   };
 
