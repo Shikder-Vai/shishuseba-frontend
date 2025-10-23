@@ -18,7 +18,6 @@ const ProductModal = ({ onClose, productId }) => {
   const [formData, setFormData] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [detailInput, setDetailInput] = useState("");
 
   const isEditMode = !!productId;
 
@@ -47,13 +46,13 @@ const ProductModal = ({ onClose, productId }) => {
         uses: product.uses || [],
         images: product.images || (product.image ? [product.image] : []),
         availability: product.availability || "in_stock",
-        details: product.details || [],
+        details: (product.details || []).join("\n"),
         questions: product.questions || [],
         dropdownQuestions: product.dropdownQuestions || [],
       });
     } else if (!isEditMode) {
       setFormData({
-        name: { en: "", bn: "" },
+        name: "",
         category: "",
         variants: [{ sku: "", name: "", price: "", stock_quantity: "" }],
         description: { en: "", bn: "" },
@@ -61,7 +60,7 @@ const ProductModal = ({ onClose, productId }) => {
         uses: [],
         images: [],
         availability: "in_stock",
-        details: [],
+        details: "",
         questions: [],
         dropdownQuestions: [],
       });
@@ -133,24 +132,6 @@ const ProductModal = ({ onClose, productId }) => {
     }
   };
 
-  const handleAddDetail = () => {
-    if (detailInput.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        details: [...prev.details, detailInput],
-      }));
-      setDetailInput("");
-    }
-  };
-
-  const handleDetailChange = (index, value) => {
-    setFormData((prev) => {
-      const updatedDetails = [...prev.details];
-      updatedDetails[index] = value;
-      return { ...prev, details: updatedDetails };
-    });
-  };
-
   const handleAddQuestion = (field) => {
     setFormData((prev) => ({
       ...prev,
@@ -210,6 +191,7 @@ const ProductModal = ({ onClose, productId }) => {
     e.preventDefault();
     const payload = {
       ...formData,
+      details: formData.details.split("\n").filter((d) => d.trim() !== ""),
       variants: formData.variants
         .map((v) => ({
           ...v,
@@ -407,48 +389,14 @@ const ProductModal = ({ onClose, productId }) => {
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Product Details</h3>
-              <div className="space-y-2">
-                {formData.details.map((detail, index) => (
-                  <div key={index} className="flex gap-2 items-center">
-                    <textarea
-                      value={detail}
-                      onChange={(e) =>
-                        handleDetailChange(index, e.target.value)
-                      }
-                      className="flex-1 p-3 border rounded-lg"
-                      rows={2}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          details: prev.details.filter((_, i) => i !== index),
-                        }))
-                      }
-                      className="btn btn-sm btn-warning"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <textarea
-                  rows={1}
-                  value={detailInput}
-                  onChange={(e) => setDetailInput(e.target.value)}
-                  placeholder="Write a new product detail and click Add"
-                  className="flex-1 p-3 border rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddDetail}
-                  className="btn btn-primary"
-                >
-                  <Plus size={16} /> Add
-                </button>
-              </div>
+              <textarea
+                name="details"
+                value={formData.details}
+                onChange={handleInputChange}
+                placeholder="Enter product details, one per line."
+                className="textarea textarea-bordered w-full"
+                rows={4}
+              />
             </div>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
