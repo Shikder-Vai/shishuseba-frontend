@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../../components/Loader";
 import Categories from "../Categories/Categories";
 import { FiLogOut, FiShoppingBag, FiTruck, FiCheckCircle, FiClock, FiXCircle, FiDollarSign, FiPieChart } from "react-icons/fi";
+import LowStockAlert from './LowStockAlert';
 
 const DashboardHome = () => {
   const { user, loading, logout } = useAuth();
@@ -152,6 +153,8 @@ const DashboardHome = () => {
           </div>
         </div>
       )}
+
+      <LowStockAlert />
 
       {/* Recent Orders and Popular Products */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

@@ -5,6 +5,7 @@ import Cart from "../Pages/Cart/Cart";
 import CheckoutPage from "../Pages/Checkout/CheckoutPage";
 import Confirm from "../Pages/Confirm/Confirm";
 import Login from "../Authentication/Login";
+import Register from "../Authentication/Register";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import Products from "../Dashboard/Products/Products";
 import ProductDetails from "../Pages/ProductDetails/ProductDetails";
@@ -32,6 +33,7 @@ import ManageLandingPage from "../Dashboard/LandingPage/ManageLandingPage";
 import LandingPageList from "../Dashboard/LandingPage/LandingPageList";
 import OfferPage from "../Pages/OfferPage/OfferPage";
 import OfferLayout from "../Layout/OfferPage/OfferLayout"; // Import the new layout
+import Inventory from "../Dashboard/Inventory/Inventory";
 
 export const router = createBrowserRouter([
   {
@@ -80,6 +82,10 @@ export const router = createBrowserRouter([
         element: <Login />,
       },
       {
+        path: "/register",
+        element: <Register />,
+      },
+      {
         path: "/blogs",
         element: <BlogPage />,
       },
@@ -124,6 +130,10 @@ export const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
+      },
+      {
+        path: "inventory",
+        element: <Inventory />,
       },
       {
         path: "pending-orders",

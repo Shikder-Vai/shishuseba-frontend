@@ -47,12 +47,15 @@ const OfferPage = () => {
       const quantity = 1;
 
       const cartItem = {
-        ...featuredProduct,
-        variant: selectedVariant,
-        price,
+        _id: featuredProduct._id,
+        name: typeof featuredProduct.name === 'object' ? featuredProduct.name.en : featuredProduct.name,
+        image: featuredProduct.image,
+        sku: selectedVariant.sku,
+        price: price,
         weight: selectedVariant.weight,
-        admin_note: "",
         quantity: quantity,
+        variants: featuredProduct.variants,
+        variant: selectedVariant,
       };
 
       const cartItems = [cartItem];
@@ -167,11 +170,11 @@ const OfferPage = () => {
             <div>
               <img
                 src={featuredProduct?.image}
-                alt={featuredProduct?.name}
+                alt={typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
                 className="product-image"
               />
               <h3 className="text-2xl font-bold text-center mt-[-10px]">
-                {featuredProduct?.name}
+                {typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
               </h3>
             </div>
           </div>
@@ -262,7 +265,7 @@ const OfferPage = () => {
               <div className="flex flex-col">
                 <img
                   src={featuredProduct?.image}
-                  alt={featuredProduct?.name}
+                  alt={typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
                   className="max-w-60 mb-2 transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer rounded"
                 />
                 <span
@@ -270,7 +273,7 @@ const OfferPage = () => {
                   transition-transform duration-300 ease-in-out
                   hover:scale-105 cursor-pointer"
                 >
-                  {featuredProduct?.name}
+                  {typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
                 </span>
               </div>
               <span className="text-2xl text-brand-orange-base text-center font-bold">

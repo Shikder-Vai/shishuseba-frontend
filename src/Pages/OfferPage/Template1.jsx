@@ -35,12 +35,15 @@ const Template1 = ({ landingPageData }) => {
       const quantity = 1;
 
       const cartItem = {
-        ...featuredProduct,
-        variant: selectedVariant,
-        price,
+        _id: featuredProduct._id,
+        name: typeof featuredProduct.name === 'object' ? featuredProduct.name.en : featuredProduct.name,
+        image: featuredProduct.image,
+        sku: selectedVariant.sku,
+        price: price,
         weight: selectedVariant.weight,
-        admin_note: "",
         quantity: quantity,
+        variants: featuredProduct.variants,
+        variant: selectedVariant,
       };
 
       const cartItems = [cartItem];
@@ -128,11 +131,11 @@ const Template1 = ({ landingPageData }) => {
             <div className="w-full md:w-5/12 p-3 sm:p-4 bg-white/10 rounded-xl sm:rounded-2xl shadow-2xl order-1 md:order-2 text-center">
               <img
                 src={featuredProduct?.image}
-                alt={featuredProduct?.name}
+                alt={typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
                 className="w-full h-auto rounded-lg"
               />
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 bg-indigo-900/50 p-2 rounded-lg mt-3">
-                {featuredProduct?.name}
+                {typeof featuredProduct?.name === 'object' ? featuredProduct?.name.en : featuredProduct?.name}
               </h2>
             </div>
           </div>

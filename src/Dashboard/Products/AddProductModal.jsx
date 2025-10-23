@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 
-
 const AddProductModal = ({ onClose }) => {
-  const [weights, setWeights] = useState([{ weight: "", value: null }]);
+  const [variants, setVariants] = useState([{ sku: "", name: "", price: "", stock_quantity: "" }]);
   const [images, setImages] = useState([]);
   const [subCategories, setSubCategories] = useState([""]);
   const [ingredients, setIngredients] = useState([""]);
@@ -21,10 +20,10 @@ const AddProductModal = ({ onClose }) => {
   const addToArray = (setter, initial = "") => () => setter((prev) => [...prev, initial]);
   const removeFromArray = (setter) => (index) => setter((prev) => prev.filter((_, i) => i !== index));
 
-  const updateWeights = (index, key, value) => {
-    const updated = [...weights];
+  const updateVariant = (index, key, value) => {
+    const updated = [...variants];
     updated[index][key] = value;
-    setWeights(updated);
+    setVariants(updated);
   };
 
   const handleImageUpload = async (e) => {
@@ -35,7 +34,7 @@ const AddProductModal = ({ onClose }) => {
     formData.append("image", file);
 
     try {
-      const res = await axiosPublic.post("/upload/product-image", formData, {
+      const res = await axiosPublic.post("/v1/upload", { image: file }, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -56,12 +55,7 @@ const AddProductModal = ({ onClose }) => {
     e.preventDefault();
     const form = e.target;
 
-    const original = parseFloat(form.original.value);
-    const discounted = parseFloat(form.discounted.value);
-    const discount_percent = Math.round(((original - discounted) / original) * 100);
-
     const product = {
-      id: form.id.value,
       name: {
         bn: form.name_bn.value,
         en: form.name_en.value,
@@ -70,12 +64,11 @@ const AddProductModal = ({ onClose }) => {
         main: form.category_main.value,
         sub: subCategories.filter(Boolean),
       },
-      price: {
-        original,
-        discounted,
-        discount_percent,
-      },
-      weights: weights.filter((w) => w.weight && w.value),
+      variants: variants.map(v => ({
+        ...v,
+        price: parseFloat(v.price),
+        stock_quantity: parseInt(v.stock_quantity, 10)
+      })).filter(v => v.sku && v.name && !isNaN(v.price) && !isNaN(v.stock_quantity)),
       description: {
         bn: form.description_bn.value,
         en: form.description_en.value,
@@ -86,12 +79,19 @@ const AddProductModal = ({ onClose }) => {
       availability: form.availability.value,
     };
 
-    await axiosPublic.post("/add-product", {product})
-    .then(res => {
-        console.log(res);
-    })
-    console.log("Submitted Product JSON:", product);
-    onClose();
+    if (product.variants.length === 0) {
+      alert("Please add at least one valid variant.");
+      return;
+    }
+
+    try {
+      const res = await axiosPublic.post("/v1/products", product);
+      console.log(res);
+      onClose();
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      alert(`Failed to add product: ${error.response?.data?.error || error.message}`);
+    }
   };
 
   return (
@@ -112,8 +112,6 @@ const AddProductModal = ({ onClose }) => {
           <h2 className="text-xl font-bold mb-6 text-center">Add New Product</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="id" placeholder="Product ID" className="input input-bordered w-full" required />
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input name="name_bn" placeholder="Product Name (Bangla)" className="input input-bordered w-full" required />
               <input name="name_en" placeholder="Product Name (English)" className="input input-bordered w-full" required />
@@ -132,22 +130,19 @@ const AddProductModal = ({ onClose }) => {
             </div>
             <button type="button" onClick={addToArray(setSubCategories)} className="btn btn-sm btn-outline">+ Add Subcategory</button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="original" placeholder="Original Price" className="input input-bordered w-full" type="number" required />
-              <input name="discounted" placeholder="Discounted Price" className="input input-bordered w-full" type="number" required />
-            </div>
-
-            <label className="mt-2 font-medium">Weights and SKUs:</label>
+            <label className="mt-2 font-medium">Variants:</label>
             <div className="space-y-2">
-              {weights.map((w, i) => (
-                <div key={i} className="flex flex-wrap gap-2">
-                  <input value={w.weight} onChange={(e) => updateWeights(i, "weight", e.target.value)} placeholder="Weight" className="input input-bordered flex-1 min-w-[100px]" />
-                  <input value={w.sku} onChange={(e) => updateWeights(i, "sku", e.target.value)} placeholder="SKU" className="input input-bordered flex-1 min-w-[100px]" />
-                  <button type="button" onClick={() => removeFromArray(setWeights)(i)} className="btn btn-sm btn-warning">✕</button>
+              {variants.map((v, i) => (
+                <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center">
+                  <input value={v.sku} onChange={(e) => updateVariant(i, "sku", e.target.value)} placeholder="SKU" className="input input-bordered w-full" required />
+                  <input value={v.name} onChange={(e) => updateVariant(i, "name", e.target.value)} placeholder="Variant Name" className="input input-bordered w-full" required />
+                  <input value={v.price} onChange={(e) => updateVariant(i, "price", e.target.value)} placeholder="Price" className="input input-bordered w-full" type="number" required />
+                  <input value={v.stock_quantity} onChange={(e) => updateVariant(i, "stock_quantity", e.target.value)} placeholder="Stock" className="input input-bordered w-full" type="number" required />
+                  <button type="button" onClick={() => removeFromArray(setVariants)(i)} className="btn btn-sm btn-warning col-span-2 md:col-span-1">✕ Remove</button>
                 </div>
               ))}
             </div>
-            <button type="button" onClick={addToArray(setWeights, { weight: "", sku: "" })} className="btn btn-sm btn-outline">+ Add Weight</button>
+            <button type="button" onClick={addToArray(setVariants, { sku: "", name: "", price: "", stock_quantity: "" })} className="btn btn-sm btn-outline">+ Add Variant</button>
 
             <textarea name="description_bn" placeholder="Description (Bangla)" className="textarea textarea-bordered w-full" />
             <textarea name="description_en" placeholder="Description (English)" className="textarea textarea-bordered w-full" />

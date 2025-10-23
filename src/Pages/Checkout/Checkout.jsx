@@ -122,7 +122,6 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
     setIsSubmitting(true);
 
     try {
-      // Generate unique 8-digit ID combining date, time, and phone
       const now = new Date();
       const day = String(now.getDate()).padStart(2, "0");
       const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -172,6 +171,8 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
           timer: 1500,
         });
       }
+      console.log(res?.data, "res.data");
+      console.log(newOrder);
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       Swal.fire({

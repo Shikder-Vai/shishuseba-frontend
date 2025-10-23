@@ -16,12 +16,15 @@ const ProductCard = ({ product }) => {
     const quantity = 1;
 
     const newItem = {
-      ...item,
-      variant,
-      price,
-      weight,
-      admin_note: "",
+      _id: item._id,
+      name: typeof item.name === 'object' ? item.name.en : item.name,
+      image: item.image,
+      sku: variant.sku,
+      price: price,
+      weight: weight,
       quantity: quantity,
+      variants: item.variants,
+      variant: variant,
     };
 
     // GTM event
@@ -49,12 +52,15 @@ const ProductCard = ({ product }) => {
     const price = variant.price;
     const weight = variant.weight;
     const newItem = {
-      ...item,
-      variant,
-      price,
-      weight,
-      admin_note: "",
+      _id: item._id,
+      name: typeof item.name === 'object' ? item.name.en : item.name,
+      image: item.image,
+      sku: variant.sku,
+      price: price,
+      weight: weight,
       quantity: 1,
+      variants: item.variants,
+      variant: variant,
     };
     const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -101,7 +107,7 @@ const ProductCard = ({ product }) => {
         <div className="w-full h-36 overflow-hidden">
           <img
             src={image}
-            alt={name}
+            alt={typeof name === 'object' ? name.en : name}
             className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -121,7 +127,7 @@ const ProductCard = ({ product }) => {
           <Link to={`/product/${product?._id}`}>
             <div className="">
               <h3 className="md:font-extrabold font-semibold text-xs md:text-sm text-wrap text-gray-800 truncate mb-0.5">
-                {name}
+                {typeof name === 'object' ? name.en : name}
               </h3>
               <p className="text-xs text-gray-500">{variants[0]?.weight}</p>
 

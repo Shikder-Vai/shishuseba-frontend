@@ -80,15 +80,19 @@ const ProductDetails = () => {
 
   // Prepare product for cart/order
   const prepareProduct = () => {
-    return {
-      ...item,
-      ...(selectedVariant && {
-        weight: selectedVariant.weight,
-        price: selectedVariant.price,
-        variant: selectedVariant,
-      }),
+    const productForCart = {
+      _id: item._id,
+      name: typeof item.name === 'object' ? item.name.en : item.name,
+      image: item.image || (item.images && item.images[0]),
+      sku: selectedVariant.sku,
+      price: selectedVariant.price,
+      weight: selectedVariant.weight,
       quantity: quantity,
+      variants: item.variants, // include all variants
+      variant: selectedVariant, // include the selected variant
     };
+    console.log("productForCart:", JSON.stringify(productForCart, null, 2));
+    return productForCart;
   };
 
   // Buy Now:
@@ -196,7 +200,7 @@ const ProductDetails = () => {
               <div className="flex items-center">
                 <ChevronDown className="w-4 h-4 text-brand-gray-light transform -rotate-90" />
                 <span className="ml-1 text-sm font-medium text-brand-teal-base md:ml-2">
-                  {item?.name}
+                  {typeof item.name === 'object' ? item.name.en : item.name}
                 </span>
               </div>
             </li>
@@ -210,7 +214,7 @@ const ProductDetails = () => {
             <div className="relative bg-white rounded-xl shadow-soft overflow-hidden aspect-square flex items-center justify-center p-4 border border-brand-gray-light">
               <img
                 src={images[selectedImage]}
-                alt={item?.name}
+                alt={typeof item.name === 'object' ? item.name.en : item.name}
                 className="w-full h-full object-contain transition-opacity duration-300"
               />
               {item?.discount && (
@@ -231,7 +235,7 @@ const ProductDetails = () => {
                   >
                     <img
                       src={img}
-                      alt={`${item?.name} thumbnail ${idx + 1}`}
+                      alt={`${typeof item.name === 'object' ? item.name.en : item.name} thumbnail ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -245,7 +249,7 @@ const ProductDetails = () => {
             {/* Title and Rating */}
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-base mb-2">
-                {item?.name}
+                {typeof item.name === 'object' ? item.name.en : item.name}
               </h1>
               <div className="flex items-center space-x-2">
                 <div className="flex">
