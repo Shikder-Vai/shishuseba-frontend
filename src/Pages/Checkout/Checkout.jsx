@@ -202,7 +202,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
           <form onSubmit={handleSubmit(handleOrder)} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              <label className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <User className="w-4 h-4 text-brand-gray-base" />
                 Full Name{" "}
                 <span className="text-xs text-brand-teal-400">(পূর্ণ নাম)</span>
@@ -224,7 +224,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
 
             {/* Phone Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              <label className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <Phone className="w-4 h-4 " />
                 Phone Number{" "}
                 <span className="text-xs text-brand-teal-400">
@@ -254,7 +254,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
 
             {/* Address Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              <label className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-gray-base" />
                 Complete Address{" "}
                 <span className="text-xs text-brand-teal-400">
@@ -278,7 +278,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
 
             {/* District Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              <label className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-gray-base" />
                 District
               </label>
@@ -358,7 +358,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
 
             {/* Order Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              <label className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <Info className="w-4 h-4 text-brand-gray-base" />
                 Order Notes (Optional)
               </label>
