@@ -11,7 +11,7 @@ const UpdateStockModal = ({ sku, onClose }) => {
 
   const { mutate: updateStock, isLoading } = useMutation({
     mutationFn: async (data) => {
-            const res = await axiosSecure.post('/v1/inventory/stock/update', data);
+            const res = await axiosSecure.post('/inventory/stock/update', data);
       return res.data;
     },
     onSuccess: () => {

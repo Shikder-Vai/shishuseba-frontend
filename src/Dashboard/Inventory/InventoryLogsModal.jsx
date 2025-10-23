@@ -7,7 +7,7 @@ const InventoryLogsModal = ({ sku, onClose }) => {
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['inventoryLogs', sku],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/v1/inventory/logs/${sku}`);
+      const res = await axiosSecure.get(`/inventory/logs/${sku}`);
       return res.data;
     },
   });
