@@ -373,15 +373,15 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-8">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 mb-6">
             <ShoppingCart className="w-6 h-6 text-brand-teal-base" />
             Order Summary
           </h2>
 
           <div className="border-b border-gray-200 pb-4 mb-4">
-            <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
-              <div className="col-span-2">Product</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <div className="col-span-1 md:col-span-2">Product</div>
               <div className="text-right text-brand-teal-200">Subtotal</div>
             </div>
           </div>
@@ -391,19 +391,30 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
             {order?.items?.map((item) => (
               <div
                 key={item?._id}
-                className="flex items-start gap-4 p-4 border rounded-lg bg-gray-50"
+                className="block md:flex items-start gap-4 p-2 md:p-4 border rounded-lg bg-gray-50"
               >
-                <img
-                  src={item?.image}
-                  alt={item?.name}
-                  className="w-20 h-20 object-contain rounded-md bg-white"
-                />
+                <div className="flex flex-col relative">
+                  <div>
+                    <img
+                      src={item?.image}
+                      alt={item?.name}
+                      className="w-16 h-16 md:w-20 md:h-20 object-contain rounded-md bg-white"
+                    />
+                  </div>
+                  <div className="text-right top-0 right-0 absolute block md:hidden font-semibold text-sm md:text-base text-brand-teal-base">
+                    {item.price * item.quantity}৳
+                  </div>
+                </div>
                 <div className="flex-grow">
-                  <p className="font-semibold text-gray-800">{item?.name}</p>
-                  <p className="text-sm text-gray-500">Price: {item.price}৳</p>
+                  <p className="font-semibold text-sm md:text-base text-gray-800">
+                    {item?.name}
+                  </p>
+                  <p className="text-xs md:text-sm text-gray-500">
+                    Price: {item.price}৳
+                  </p>
                   {item.variants?.length > 1 ? (
                     <div className="mt-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-xs md:text-sm font-medium text-gray-700">
                         Variant
                       </label>
                       <select
@@ -411,22 +422,23 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
                         onChange={(e) =>
                           onVariantChange(item._id, e.target.value)
                         }
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        className="mt-1 block w-full pl-3 pr-10 py-1 text-xs md:text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                       >
                         {item.variants.map((v) => (
                           <option key={v.weight} value={v.weight}>
                             {v.weight}
                           </option>
                         ))}
+                        ;
                       </select>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-xs md:text-sm text-gray-500 mt-2">
                       Variant: {item.weight}
                     </p>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-xs md:text-sm font-medium text-gray-700">
                       Quantity
                     </label>
                     <div className="flex items-center gap-2">
@@ -436,7 +448,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
                         }
                         className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
                       >
-                        <Minus size={16} />
+                        <Minus size={14} />
                       </button>
                       <span>{item.quantity}</span>
                       <button
@@ -445,12 +457,12 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
                         }
                         className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300"
                       >
-                        <Plus size={16} />
+                        <Plus size={14} />
                       </button>
                     </div>
                   </div>
                 </div>
-                <div className="text-right font-semibold text-brand-teal-base">
+                <div className="text-right hidden font-semibold md:block text-sm md:text-base text-brand-teal-base">
                   {item.price * item.quantity}৳
                 </div>
               </div>
