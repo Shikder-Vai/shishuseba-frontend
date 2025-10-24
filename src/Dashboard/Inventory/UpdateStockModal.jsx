@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { toast } from "sonner";
+import useAllProducts from "../../hooks/useAllProducts";
 
 const UpdateStockModal = ({ sku, onClose }) => {
   const [quantity, setQuantity] = useState("");
   const [reason, setReason] = useState("Stock In");
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
+  const [products] = useAllProducts();
+
+  useEffect(() => {
+    if (products.length > 0) {
+      for (const product of products) {
+        const variant = product.variants.find((v) => v.sku === sku);
+        if (variant) {
+          setQuantity(variant.stock_quantity);
+          break;
+        }
+      }
+    }
+  }, [products, sku]);
 
   const { mutate: updateStock, isLoading } = useMutation({
     mutationFn: async (data) => {
