@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { toast } from "sonner";
 
 const UpdateStockModal = ({ sku, onClose }) => {
-  const [quantity, setQuantity] = useState('');
-  const [reason, setReason] = useState('Stock In');
+  const [quantity, setQuantity] = useState("");
+  const [reason, setReason] = useState("Stock In");
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
 
   const { mutate: updateStock, isLoading } = useMutation({
     mutationFn: async (data) => {
-            const res = await axiosSecure.post('/inventory/stock/update', data);
+      const res = await axiosSecure.post("/inventory/stock/update", data);
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Stock updated successfully');
-      queryClient.invalidateQueries(['products']);
+      toast.success("Stock updated successfully");
+      queryClient.invalidateQueries(["products"]);
       onClose();
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || 'Failed to update stock');
+      toast.error(error.response?.data?.error || "Failed to update stock");
     },
   });
 
@@ -28,7 +28,7 @@ const UpdateStockModal = ({ sku, onClose }) => {
     e.preventDefault();
     const parsedQuantity = parseInt(quantity, 10);
     if (isNaN(parsedQuantity)) {
-      toast.error('Please enter a valid quantity.');
+      toast.error("Please enter a valid quantity.");
       return;
     }
     updateStock({ sku, quantity: parsedQuantity, reason });
@@ -59,14 +59,19 @@ const UpdateStockModal = ({ sku, onClose }) => {
               <option>Stock In</option>
               <option>Adjustment</option>
               <option>Return</option>
+              <option>Damage</option>
             </select>
           </div>
           <div className="flex justify-end gap-4">
             <button type="button" className="btn" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary" disabled={isLoading}>
-              {isLoading ? 'Updating...' : 'Update'}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Update"}
             </button>
           </div>
         </form>

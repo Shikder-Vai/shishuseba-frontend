@@ -3,6 +3,8 @@ import useAllProducts from "../../hooks/useAllProducts";
 import SectionTitle from "../../components/SectionTitle";
 import UpdateStockModal from "./UpdateStockModal";
 import InventoryLogsModal from "./InventoryLogsModal";
+import { Logs } from "lucide-react";
+import { FiEdit2, FiEdit3 } from "react-icons/fi";
 
 const Inventory = () => {
   const [products, isLoading] = useAllProducts();
@@ -31,7 +33,8 @@ const Inventory = () => {
               <th>Variant Name</th>
               <th>SKU</th>
               <th>Price</th>
-              <th>Stock Quantity</th>
+              <th>Stock Q</th>
+              <th>Stock Price</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -39,11 +42,16 @@ const Inventory = () => {
             {products.map((product) =>
               product.variants.map((variant) => (
                 <tr key={variant.sku || product.sku}>
-                  <td>{typeof product.name === 'object' ? product.name.en : product.name}</td>
+                  <td>
+                    {typeof product.name === "object"
+                      ? product.name.en
+                      : product.name}
+                  </td>
                   <td>{variant.name || "N/A"}</td>
                   <td>{variant.sku || product.sku || "N/A"}</td>
                   <td>{variant.price}</td>
                   <td>{variant.stock_quantity}</td>
+                  <td>{variant.stock_quantity * variant.price}</td>
                   <td>
                     <button
                       onClick={() =>
@@ -51,13 +59,13 @@ const Inventory = () => {
                       }
                       className="btn btn-sm btn-primary mr-2"
                     >
-                      Update Stock
+                      <FiEdit3 className="mr-1" />
                     </button>
                     <button
                       onClick={() => openLogsModal(variant.sku || product.sku)}
                       className="btn btn-sm btn-secondary"
                     >
-                      View Logs
+                      <Logs className="ml-1" />
                     </button>
                   </td>
                 </tr>
