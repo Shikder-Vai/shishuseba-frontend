@@ -17,7 +17,7 @@ const ManageLandingPage = () => {
   const {
     data,
     isLoading: isLoadingData,
-    error,
+    error: _error,
   } = useQuery({
     queryKey: ["landingPage", id],
     queryFn: async () => {

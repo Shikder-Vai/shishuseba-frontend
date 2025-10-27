@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { Plus, Trash2, Loader2, Edit, Apple, Phone } from "lucide-react";
@@ -58,6 +58,7 @@ const ManageTemplate1 = ({ id }) => {
       } else {
         toast.error("Failed to upload image");
       }
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Failed to upload image");
     } finally {
@@ -184,7 +185,9 @@ const ManageTemplate1 = ({ id }) => {
               name="name"
               placeholder="e.g., Hoco W35 Headphone"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full p-3 border rounded-lg mt-2"
               required
             />
@@ -201,7 +204,10 @@ const ManageTemplate1 = ({ id }) => {
                 name="featuredProductId"
                 value={formData.featuredProductId}
                 onChange={(e) =>
-                  setFormData({ ...formData, featuredProductId: e.target.value })
+                  setFormData({
+                    ...formData,
+                    featuredProductId: e.target.value,
+                  })
                 }
                 className="w-full p-3 border rounded-lg"
                 required
@@ -209,7 +215,7 @@ const ManageTemplate1 = ({ id }) => {
                 <option value="">-- Select a Product --</option>
                 {products.map((product) => (
                   <option key={product._id} value={product._id}>
-                    {product.name}
+                    {product.name.en}
                   </option>
                 ))}
               </select>
@@ -355,7 +361,10 @@ const ManageTemplate1 = ({ id }) => {
           <div className="bg-white p-4 rounded-lg shadow-sm border">
             <h2 className="text-xl font-semibold mb-4">Gallery Section</h2>
             {formData.gallery.images.map((item, index) => (
-              <div key={index} className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50">
+              <div
+                key={index}
+                className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50"
+              >
                 <input
                   type="text"
                   placeholder="Image URL"
@@ -418,13 +427,14 @@ const ManageTemplate1 = ({ id }) => {
               name="title"
               placeholder="Section Title"
               value={formData.specifications.title}
-              onChange={(e) =>
-                handleInputChange(e, "specifications", "title")
-              }
+              onChange={(e) => handleInputChange(e, "specifications", "title")}
               className="w-full p-2 border rounded mb-2"
             />
             {formData.specifications.list.map((item, index) => (
-              <div key={index} className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50">
+              <div
+                key={index}
+                className="p-4 border rounded-lg mb-2 space-y-2 bg-gray-50"
+              >
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 text-sm">Icon Upload:</span>
                   <input
@@ -478,7 +488,9 @@ const ManageTemplate1 = ({ id }) => {
 
           {/* Why Choose Us Section */}
           <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-semibold mb-4">Why Choose Us Section</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Why Choose Us Section
+            </h2>
             <input
               type="text"
               name="title"
