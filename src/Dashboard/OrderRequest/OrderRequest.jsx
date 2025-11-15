@@ -63,13 +63,16 @@ const OrderRequest = () => {
     if (!productSearchTerm) {
       return products;
     }
-    return products.filter(
-      (product) =>
-        product.name.en
-          .toLowerCase()
-          .includes(productSearchTerm.toLowerCase()) ||
+    return products.filter((product) => {
+      const productName =
+        typeof product.name === "string"
+          ? product.name
+          : product.name.en || product.name.bn;
+      return (
+        productName.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
         product.sku.toLowerCase().includes(productSearchTerm.toLowerCase())
-    );
+      );
+    });
   }, [products, productSearchTerm]);
 
   const formatDate = (dateString) => {
@@ -1283,7 +1286,11 @@ const OrderRequest = () => {
                       <div className="flex items-start gap-4">
                         <img
                           src={product.image}
-                          alt={product.name}
+                          alt={
+                            typeof product.name === "string"
+                              ? product.name
+                              : product.name.en || product.name.bn
+                          }
                           className="w-16 h-16 object-cover rounded"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -1292,7 +1299,9 @@ const OrderRequest = () => {
                         />
                         <div className="flex-1">
                           <h3 className="font-medium text-brand-gray-base">
-                            {product.name.en || product.name}
+                            {typeof product.name === "string"
+                              ? product.name
+                              : product.name.en || product.name.bn}
                           </h3>
                           <p className="text-sm text-brand-gray-base">
                             {product.variants.map((variant, index) => (

@@ -28,7 +28,6 @@ import SectionTitle from "../../components/SectionTitle";
 import useProduct from "../../hooks/useProducts";
 import { format } from "date-fns";
 
-
 const statusColors = {
   approved: "bg-brand-teal-50 text-brand-teal-base",
   processing: "bg-blue-100 text-blue-600",
@@ -104,8 +103,6 @@ const ApprovedOrder = () => {
 
     setShowProductSearchModal(false);
   };
-
-
 
   const formatProcessingTime = () => {
     return format(new Date(), "dd MMM yyyy, h:mm aa");
@@ -300,6 +297,13 @@ const ApprovedOrder = () => {
     setSelectAll(!selectAll);
   };
 
+  const handleCheckbox = (orderId) => {
+    setSelectedOrders((prevSelected) =>
+      prevSelected.includes(orderId)
+        ? prevSelected.filter((id) => id !== orderId)
+        : [...prevSelected, orderId]
+    );
+  };
   const handleEditChange = (e, field, isItem = false, itemIndex = null) => {
     const { name, value } = e.target;
 
@@ -1299,166 +1303,166 @@ const ApprovedOrder = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
-            {/* Product Search Modal */}
-            <AnimatePresence>
-              {showProductSearchModal && (
-                <motion.div
-                  className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+
+      {/* Product Search Modal */}
+      <AnimatePresence>
+        {showProductSearchModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-xl w-full max-w-3xl max-h-[80vh] overflow-y-auto shadow-xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="sticky top-0 bg-white p-6 border-b border-brand-gray-light flex justify-between items-center z-10">
+                <h2 className="text-xl font-semibold text-brand-teal-base">
+                  Search Products
+                </h2>
+                <button
+                  onClick={() => setShowProductSearchModal(false)}
+                  className="text-brand-gray-base hover:text-brand-orange-base"
                 >
-                  <motion.div
-                    className="bg-white rounded-xl w-full max-w-3xl max-h-[80vh] overflow-y-auto shadow-xl"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                  >
-                    <div className="sticky top-0 bg-white p-6 border-b border-brand-gray-light flex justify-between items-center z-10">
-                      <h2 className="text-xl font-semibold text-brand-teal-base">
-                        Search Products
-                      </h2>
-                      <button
-                        onClick={() => setShowProductSearchModal(false)}
-                        className="text-brand-gray-base hover:text-brand-orange-base"
-                      >
-                        <FiX size={24} />
-                      </button>
-                    </div>
-      
-                    <div className="p-6">
-                      <div className="relative mb-6">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <FiSearch className="text-brand-gray-base" />
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="Search products by name or SKU..."
-                          className="block w-full pl-10 pr-3 py-2 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
-                          value={productSearchTerm}
-                          onChange={(e) => setProductSearchTerm(e.target.value)}
-                        />
-                      </div>
-      
-                      <div className="space-y-4">
-                        {filteredProducts.map(
-                          (product) => (
-                            console.log(product),
-                            (
-                              <div
-                                key={product._id}
-                                className="border border-brand-gray-light rounded-lg p-4"
-                              >
-                                <div className="flex items-start gap-4">
-                                  <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-16 h-16 object-cover rounded"
-                                    onError={(e) => {
-                                      e.target.onerror = null;
-                                      e.target.src = "https://via.placeholder.com/64";
-                                    }}
-                                  />
-                                  <div className="flex-1">
-                                    <h3 className="font-medium text-brand-gray-base">
-                                      {product.name.en || product.name}
-                                    </h3>
-                                    <p className="text-sm text-brand-gray-base">
-                                      {product.variants.map((variant, index) => (
-                                        <span key={index}>{variant.sku}, </span>
-                                      ))}
-                                    </p>
-                                    <div className="mt-2">
-                                      <h4 className="text-sm font-medium text-brand-gray-base mb-1">
-                                        Variants:
-                                      </h4>
-                                      <div className="flex flex-wrap gap-2">
-                                        {product.variants.map((variant, idx) => (
-                                          <button
-                                            key={idx}
-                                            onClick={() =>
-                                              selectProductVariant(product, variant)
-                                            }
-                                            className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
-                                          >
-                                            {variant.weight} - {variant.price} BDT
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  </div>
+                  <FiX size={24} />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="relative mb-6">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiSearch className="text-brand-gray-base" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search products by name or SKU..."
+                    className="block w-full pl-10 pr-3 py-2 border border-brand-gray-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
+                    value={productSearchTerm}
+                    onChange={(e) => setProductSearchTerm(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  {filteredProducts.map(
+                    (product) => (
+                      console.log(product),
+                      (
+                        <div
+                          key={product._id}
+                          className="border border-brand-gray-light rounded-lg p-4"
+                        >
+                          <div className="flex items-start gap-4">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/64";
+                              }}
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-medium text-brand-gray-base">
+                                {product.name.en || product.name}
+                              </h3>
+                              <p className="text-sm text-brand-gray-base">
+                                {product.variants.map((variant, index) => (
+                                  <span key={index}>{variant.sku}, </span>
+                                ))}
+                              </p>
+                              <div className="mt-2">
+                                <h4 className="text-sm font-medium text-brand-gray-base mb-1">
+                                  Variants:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {product.variants.map((variant, idx) => (
+                                    <button
+                                      key={idx}
+                                      onClick={() =>
+                                        selectProductVariant(product, variant)
+                                      }
+                                      className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
+                                    >
+                                      {variant.weight} - {variant.price} BDT
+                                    </button>
+                                  ))}
                                 </div>
                               </div>
-                            )
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-      
-            {/* Note Modal */}
-            <AnimatePresence>
-              {showNoteModal && (
-                <motion.div
-                  className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Note Modal */}
+      <AnimatePresence>
+        {showNoteModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-brand-teal-base">
+                  Add Admin Note
+                </h2>
+                <button
+                  onClick={() => setShowNoteModal(false)}
+                  className="text-brand-gray-base hover:text-brand-orange-base"
                 >
-                  <motion.div
-                    className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                  >
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-lg font-semibold text-brand-teal-base">
-                        Add Admin Note
-                      </h2>
-                      <button
-                        onClick={() => setShowNoteModal(false)}
-                        className="text-brand-gray-base hover:text-brand-orange-base"
-                      >
-                        <FiX size={20} />
-                      </button>
-                    </div>
-                    <textarea
-                      rows="4"
-                      className="w-full border border-brand-gray-light rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
-                      placeholder="Write your note here..."
-                      value={noteText}
-                      onChange={(e) => setNoteText(e.target.value)}
-                    />
-                    <div className="flex justify-end gap-3 mt-4">
-                      <button
-                        onClick={() => {
-                          setShowNoteModal(false);
-                          setNoteText("");
-                          setActiveOrderId(null);
-                        }}
-                        className="px-4 py-2 bg-brand-gray-light hover:bg-brand-gray-base text-brand-gray-base rounded-lg transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() =>
-                          saveAdminNote({ id: activeOrderId, admin_note: noteText })
-                        }
-                        className="px-4 py-2 bg-brand-teal-base hover:bg-brand-teal-300 text-white rounded-lg transition-colors"
-                      >
-                        Save Note
-                      </button>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      };
+                  <FiX size={20} />
+                </button>
+              </div>
+              <textarea
+                rows="4"
+                className="w-full border border-brand-gray-light rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
+                placeholder="Write your note here..."
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+              />
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => {
+                    setShowNoteModal(false);
+                    setNoteText("");
+                    setActiveOrderId(null);
+                  }}
+                  className="px-4 py-2 bg-brand-gray-light hover:bg-brand-gray-base text-brand-gray-base rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() =>
+                    saveAdminNote({ id: activeOrderId, admin_note: noteText })
+                  }
+                  className="px-4 py-2 bg-brand-teal-base hover:bg-brand-teal-300 text-white rounded-lg transition-colors"
+                >
+                  Save Note
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export default ApprovedOrder;
