@@ -65,47 +65,49 @@ const OrderRequest = () => {
     }
     return products.filter(
       (product) =>
-        product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+        product.name.en
+          .toLowerCase()
+          .includes(productSearchTerm.toLowerCase()) ||
         product.sku.toLowerCase().includes(productSearchTerm.toLowerCase())
     );
   }, [products, productSearchTerm]);
 
   const formatDate = (dateString) => {
-      if (!dateString) {
-        return "N/A";
-      }
-  
-      let parsedDate;
-  
-      const isoDate = new Date(dateString);
-  
-      if (!isNaN(isoDate)) {
-        parsedDate = isoDate;
-      } else {
-        try {
-          const oldFormat = "dd MMMM yyyy 'at' hh:mm a";
-          parsedDate = parse(dateString, oldFormat, new Date());
-          if (isNaN(parsedDate)) {
-            throw new Error("Could not parse old format");
-          }
-        } catch (error) {
-          console.error(
-            "Failed to parse date in any known format:",
-            dateString,
-            error
-          );
-          return "Invalid Date";
-        }
-      }
-  
+    if (!dateString) {
+      return "N/A";
+    }
+
+    let parsedDate;
+
+    const isoDate = new Date(dateString);
+
+    if (!isNaN(isoDate)) {
+      parsedDate = isoDate;
+    } else {
       try {
-        const outputFormat = "dd MMM yyyy, h:mm aa";
-        return format(parsedDate, outputFormat);
+        const oldFormat = "dd MMMM yyyy 'at' hh:mm a";
+        parsedDate = parse(dateString, oldFormat, new Date());
+        if (isNaN(parsedDate)) {
+          throw new Error("Could not parse old format");
+        }
       } catch (error) {
-        console.error("Failed to format the parsed date:", parsedDate, error);
-        return "Formatting Error";
+        console.error(
+          "Failed to parse date in any known format:",
+          dateString,
+          error
+        );
+        return "Invalid Date";
       }
-    };
+    }
+
+    try {
+      const outputFormat = "dd MMM yyyy, h:mm aa";
+      return format(parsedDate, outputFormat);
+    } catch (error) {
+      console.error("Failed to format the parsed date:", parsedDate, error);
+      return "Formatting Error";
+    }
+  };
 
   const { mutate: updateOrderStatus } = useMutation({
     mutationFn: async ({ id, newStatus }) => {
@@ -114,17 +116,17 @@ const OrderRequest = () => {
       if (newStatus === "approved") {
         updateData.approvedBy = {
           ...user,
-          approvedTime: formatDate(),
+          approvedTime: formatDate(new Date()),
         };
       } else if (newStatus === "processing") {
         updateData.processBy = {
           ...user,
-          processingTime: formatDate(),
+          processingTime: formatDate(new Date()),
         };
       } else if (newStatus === "cancel") {
         updateData.cancelBy = {
           ...user,
-          cancelledTime: formatDate(),
+          cancelledTime: formatDate(new Date()),
         };
       }
 
@@ -311,7 +313,7 @@ const OrderRequest = () => {
   const selectProductVariant = (product, variant) => {
     const newItem = {
       ...product,
-      _id: product._id + variant.weight, // Create unique ID for each variant
+      _id: product._id + variant.weight,
       weight: variant.weight,
       price: parseFloat(variant.price),
       variant: variant,
@@ -760,7 +762,7 @@ const OrderRequest = () => {
                           <span className="font-medium text-brand-gray-base">
                             Approved:
                           </span>{" "}
-                          {selectedOrder.approvedBy.approvedTime}
+                          {formatDate(selectedOrder.approvedBy.approvedTime)}
                         </p>
                       )}
                       {selectedOrder.processBy && (
@@ -768,7 +770,7 @@ const OrderRequest = () => {
                           <span className="font-medium text-brand-gray-base">
                             Processed:
                           </span>{" "}
-                          {selectedOrder.processBy.processingTime}
+                          {formatDate(selectedOrder.processBy.processingTime)}
                         </p>
                       )}
                       {selectedOrder.cancelBy && (
@@ -776,7 +778,7 @@ const OrderRequest = () => {
                           <span className="font-medium text-brand-gray-base">
                             Cancelled:
                           </span>{" "}
-                          {selectedOrder.cancelBy.cancelledTime}
+                          {formatDate(selectedOrder.cancelBy.cancelledTime)}
                         </p>
                       )}
                     </div>
@@ -831,7 +833,7 @@ const OrderRequest = () => {
                                 />
                                 <div>
                                   <p className="font-medium text-brand-gray-base">
-                                    {item.name}
+                                    {item.name.en}
                                   </p>
                                   <p className="text-xs text-brand-gray-base">
                                     {item.weight}
@@ -1143,7 +1145,7 @@ const OrderRequest = () => {
                               <div className="flex items-center gap-3">
                                 <img
                                   src={item.image}
-                                  alt={item.name}
+                                  alt={item.name.en}
                                   className="w-10 h-10 object-cover rounded"
                                   onError={(e) => {
                                     e.target.onerror = null;
@@ -1153,7 +1155,7 @@ const OrderRequest = () => {
                                 />
                                 <div>
                                   <p className="font-medium text-brand-gray-base">
-                                    {item.name}
+                                    {item.name.en}
                                   </p>
                                   <p className="text-xs text-brand-gray-base">
                                     {item.weight}
@@ -1165,7 +1167,7 @@ const OrderRequest = () => {
                               <input
                                 type="text"
                                 name="sku"
-                                value={item.sku}
+                                value={item.variant.sku}
                                 onChange={(e) =>
                                   handleEditChange(e, null, true, index)
                                 }
@@ -1274,50 +1276,57 @@ const OrderRequest = () => {
                 </div>
 
                 <div className="space-y-4">
-                  {filteredProducts.map((product) => (
-                    <div
-                      key={product._id}
-                      className="border border-brand-gray-light rounded-lg p-4"
-                    >
-                      <div className="flex items-start gap-4">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-16 h-16 object-cover rounded"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/64";
-                          }}
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-medium text-brand-gray-base">
-                            {product.name}
-                          </h3>
-                          <p className="text-sm text-brand-gray-base">
-                            {product.sku}
-                          </p>
-                          <div className="mt-2">
-                            <h4 className="text-sm font-medium text-brand-gray-base mb-1">
-                              Variants:
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {product.variants.map((variant, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() =>
-                                    selectProductVariant(product, variant)
-                                  }
-                                  className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
-                                >
-                                  {variant.weight} - {variant.price} BDT
-                                </button>
-                              ))}
+                  {filteredProducts.map(
+                    (product) => (
+                      console.log(product),
+                      (
+                        <div
+                          key={product._id}
+                          className="border border-brand-gray-light rounded-lg p-4"
+                        >
+                          <div className="flex items-start gap-4">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/64";
+                              }}
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-medium text-brand-gray-base">
+                                {product.name.en || product.name}
+                              </h3>
+                              <p className="text-sm text-brand-gray-base">
+                                {product.variants.map((variant, index) => (
+                                  <span key={index}>{variant.sku}, </span>
+                                ))}
+                              </p>
+                              <div className="mt-2">
+                                <h4 className="text-sm font-medium text-brand-gray-base mb-1">
+                                  Variants:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {product.variants.map((variant, idx) => (
+                                    <button
+                                      key={idx}
+                                      onClick={() =>
+                                        selectProductVariant(product, variant)
+                                      }
+                                      className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
+                                    >
+                                      {variant.weight} - {variant.price} BDT
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      )
+                    )
+                  )}
                 </div>
               </div>
             </motion.div>
