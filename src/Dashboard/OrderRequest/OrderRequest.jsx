@@ -897,19 +897,18 @@ const OrderRequest = () => {
                       <h3 className="text-lg font-medium text-brand-teal-base">
                         Admin Notes
                       </h3>
-                      {!selectedOrder.admin_note && (
-                        <button
-                          onClick={() => {
-                            setActiveOrderId(selectedOrder._id);
-                            setNoteText("");
-                            setShowNoteModal(true);
-                            setShowDetailModal(false);
-                          }}
-                          className="text-brand-teal-base hover:underline flex items-center gap-1 text-sm"
-                        >
-                          <FiEdit2 size={14} /> Add Note
-                        </button>
-                      )}
+                      <button
+                        onClick={() => {
+                          setActiveOrderId(selectedOrder._id);
+                          setNoteText(selectedOrder.admin_note || "");
+                          setShowNoteModal(true);
+                          setShowDetailModal(false);
+                        }}
+                        className="text-brand-teal-base hover:underline flex items-center gap-1 text-sm"
+                      >
+                        <FiEdit2 size={14} />{" "}
+                        {selectedOrder.admin_note ? "Edit Note" : "Add Note"}
+                      </button>
                     </div>
                     <div className="bg-brand-gray-light/30 p-4 rounded-lg h-full">
                       {selectedOrder.admin_note ? (
@@ -1276,57 +1275,52 @@ const OrderRequest = () => {
                 </div>
 
                 <div className="space-y-4">
-                  {filteredProducts.map(
-                    (product) => (
-                      console.log(product),
-                      (
-                        <div
-                          key={product._id}
-                          className="border border-brand-gray-light rounded-lg p-4"
-                        >
-                          <div className="flex items-start gap-4">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-16 h-16 object-cover rounded"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "https://via.placeholder.com/64";
-                              }}
-                            />
-                            <div className="flex-1">
-                              <h3 className="font-medium text-brand-gray-base">
-                                {product.name.en || product.name}
-                              </h3>
-                              <p className="text-sm text-brand-gray-base">
-                                {product.variants.map((variant, index) => (
-                                  <span key={index}>{variant.sku}, </span>
-                                ))}
-                              </p>
-                              <div className="mt-2">
-                                <h4 className="text-sm font-medium text-brand-gray-base mb-1">
-                                  Variants:
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {product.variants.map((variant, idx) => (
-                                    <button
-                                      key={idx}
-                                      onClick={() =>
-                                        selectProductVariant(product, variant)
-                                      }
-                                      className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
-                                    >
-                                      {variant.weight} - {variant.price} BDT
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
+                  {filteredProducts.map((product) => (
+                    <div
+                      key={product._id}
+                      className="border border-brand-gray-light rounded-lg p-4"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-16 h-16 object-cover rounded"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/64";
+                          }}
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-medium text-brand-gray-base">
+                            {product.name.en || product.name}
+                          </h3>
+                          <p className="text-sm text-brand-gray-base">
+                            {product.variants.map((variant, index) => (
+                              <span key={index}>{variant.sku}, </span>
+                            ))}
+                          </p>
+                          <div className="mt-2">
+                            <h4 className="text-sm font-medium text-brand-gray-base mb-1">
+                              Variants:
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {product.variants.map((variant, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() =>
+                                    selectProductVariant(product, variant)
+                                  }
+                                  className="px-3 py-1 text-sm border border-brand-teal-300 text-brand-teal-base rounded-full hover:bg-brand-teal-50 transition-colors"
+                                >
+                                  {variant.weight} - {variant.price} BDT
+                                </button>
+                              ))}
                             </div>
                           </div>
                         </div>
-                      )
-                    )
-                  )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
