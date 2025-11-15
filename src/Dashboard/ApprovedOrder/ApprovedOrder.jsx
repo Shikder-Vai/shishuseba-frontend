@@ -18,6 +18,8 @@ import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
+import { format } from "date-fns";
+
 
 const statusColors = {
   approved: "bg-brand-teal-50 text-brand-teal-base",
@@ -38,30 +40,10 @@ const ApprovedOrder = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
 
+
+
   const formatProcessingTime = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, "0");
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "Pm" : "Am";
-    hours = hours % 12 || 12;
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+    return format(new Date(), "dd MMM yyyy, h:mm aa");
   };
 
   const { mutate: updateOrderStatus } = useMutation({
@@ -73,16 +55,21 @@ const ApprovedOrder = () => {
           ...user,
           processingTime: formatProcessingTime(),
         };
+      } else if (newStatus === "cancel") {
+        updateData.cancelBy = {
+          ...user,
+          cancelledTime: formatProcessingTime(),
+        };
       }
 
       const res = await axiosPublic.patch(`/order-request/${id}`, updateData);
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       refetch();
       Swal.fire({
         title: "Status Updated",
-        text: "Order status changed to processing",
+        text: `Order status changed to ${variables.newStatus}`,
         icon: "success",
         confirmButtonColor: "#018b76",
         background: "#ffffff",
@@ -476,6 +463,7 @@ const ApprovedOrder = () => {
                               >
                                 <option value="approved">Approved</option>
                                 <option value="processing">Processing</option>
+                                <option value="cancel">Cancel</option>
                               </select>
                             </div>
                           </div>

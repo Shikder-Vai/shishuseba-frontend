@@ -26,11 +26,51 @@ const CancelOrder = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [dateFilter, setDateFilter] = useState("all");
 
   if (loadingOrder) return <Loader />;
 
   const filteredOrders =
-    orders?.filter((order) => order?.user?.mobile?.includes(searchTerm)) || [];
+    orders
+      ?.filter((order) => {
+        // Step 1: Filter by the selected date
+        if (dateFilter === "all") {
+          return true;
+        }
+
+        const orderDate = new Date(order.cancelBy?.cancelledTime);
+        const today = new Date();
+
+        if (dateFilter === "today") {
+          return (
+            orderDate.getDate() === today.getDate() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        if (dateFilter === "yesterday") {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return (
+            orderDate.getDate() === yesterday.getDate() &&
+            orderDate.getMonth() === yesterday.getMonth() &&
+            orderDate.getFullYear() === yesterday.getFullYear()
+          );
+        }
+
+        return true;
+      })
+      .filter((order) => {
+        // Step 2: Filter the result by your search term
+        return order?.user?.mobile?.includes(searchTerm);
+      })
+      .sort((a, b) => {
+        // Step 3: Sort the final list by date
+        const timeA = new Date(a.cancelBy?.cancelledTime);
+        const timeB = new Date(b.cancelBy?.cancelledTime);
+        return timeB - timeA;
+      }) || [];
 
   const formatDate = (dateString) => {
     if (!dateString) {
@@ -105,7 +145,7 @@ const CancelOrder = () => {
     <div>
       <SectionTitle title="Canceled Orders" />
 
-      <div className="mb-6">
+      <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="relative w-full md:w-80">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <FiSearch className="text-brand-gray-base" />
@@ -117,6 +157,40 @@ const CancelOrder = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+
+        {/* Add the filter buttons here */}
+        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light">
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "all"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "today"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setDateFilter("yesterday")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "yesterday"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Yesterday
+          </button>
         </div>
       </div>
 
@@ -147,7 +221,7 @@ const CancelOrder = () => {
               </Tr>
             </Thead>
             <Tbody className="divide-y divide-brand-gray-light">
-              {filteredOrders.reverse().map((o, i) => (
+              {filteredOrders.map((o, i) => (
                 <Tr
                   key={o?._id}
                   className="hover:bg-brand-cream/30 transition-colors"
@@ -186,7 +260,7 @@ const CancelOrder = () => {
                     <div className="text-brand-gray-base">
                       <p className="font-medium">{o?.cancelBy?.name}</p>
                       <p className="text-xs text-brand-orange-base">
-                        {o?.cancelBy?.cancelledTime}
+                        {formatDate(o?.cancelBy?.cancelledTime)}
                       </p>
                     </div>
                   </Td>
@@ -411,7 +485,7 @@ const CancelOrder = () => {
                                 />
                                 <div>
                                   <p className="font-medium text-brand-gray-base">
-                                    {item.name}
+                                    {item.name.en}
                                   </p>
                                   <p className="text-xs text-brand-gray-base">
                                     {item.weight}
