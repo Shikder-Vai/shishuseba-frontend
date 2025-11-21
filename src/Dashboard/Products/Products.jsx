@@ -19,6 +19,7 @@ import ProductModal from "./ProductModal"; // Unified modal
 import useCategories from "../../hooks/useCategories";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { useRole } from "../../hooks/useRole";
 
 const Products = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,6 +29,7 @@ const Products = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const axiosPublic = useAxiosPublic();
+  const role = useRole();
 
   const [products, loadingProduct, refetch] = useAllProducts();
   const [categories] = useCategories();
@@ -126,13 +128,15 @@ const Products = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-brand-teal-500">Product Management</h1>
-          <button
-            onClick={handleAddModalOpen}
-            className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white"
-          >
-            <PlusCircle size={18} />
-            Add Product
-          </button>
+          {(role === "admin" || role === "moderator") && (
+            <button
+              onClick={handleAddModalOpen}
+              className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white"
+            >
+              <PlusCircle size={18} />
+              Add Product
+            </button>
+          )}
         </div>
 
         {(showAddModal || selectedProduct) && (
@@ -189,12 +193,16 @@ const Products = () => {
                       <img src={product.image || product.images?.[0]} alt={typeof product.name === 'object' ? product.name.en : product.name} className="h-10 w-10 rounded-md object-cover" />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => handleUpdateClick(product)} className="text-brand-teal-base hover:text-brand-teal-500">
-                        <Edit2 size={16} />
-                      </button>
-                      <button onClick={() => handleDeleteProduct(product._id, (typeof product.name === 'object' ? product.name.en : product.name))} className="ml-4 text-red-600 hover:text-red-800">
-                        <Trash2 size={16} />
-                      </button>
+                      {(role === "admin" || role === "moderator") && (
+                        <button onClick={() => handleUpdateClick(product)} className="text-brand-teal-base hover:text-brand-teal-500">
+                          <Edit2 size={16} />
+                        </button>
+                      )}
+                      {role === "admin" && (
+                        <button onClick={() => handleDeleteProduct(product._id, (typeof product.name === 'object' ? product.name.en : product.name))} className="ml-4 text-red-600 hover:text-red-800">
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

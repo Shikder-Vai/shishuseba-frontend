@@ -6,7 +6,9 @@ import CheckoutPage from "../Pages/Checkout/CheckoutPage";
 import Confirm from "../Pages/Confirm/Confirm";
 import Login from "../Authentication/Login";
 import Register from "../Authentication/Register";
-import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import AdminRoute from "../PrivateRoute/AdminRoute";
+import ModeratorRoute from "../PrivateRoute/ModeratorRoute";
+import AccessDeniedPage from "../PrivateRoute/AccessDeniedPage";
 import Products from "../Dashboard/Products/Products";
 import ProductDetails from "../Pages/ProductDetails/ProductDetails";
 import OrderRequest from "../Dashboard/OrderRequest/OrderRequest";
@@ -93,6 +95,10 @@ export const router = createBrowserRouter([
         path: "/blog/:id",
         element: <SingleBlogPost />,
       },
+      {
+        path: "/access-denied",
+        element: <AccessDeniedPage />,
+      },
     ],
   },
   // Offer Page Route with its own layout
@@ -110,9 +116,9 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <PrivateRoute>
+      <ModeratorRoute>
         <DashboardLayout />
-      </PrivateRoute>
+      </ModeratorRoute>
     ),
     children: [
       {
@@ -121,7 +127,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "manage-admin",
-        element: <ManageAdmin />,
+        element: (
+          <AdminRoute>
+            <ManageAdmin />
+          </AdminRoute>
+        ),
       },
       {
         path: "category",

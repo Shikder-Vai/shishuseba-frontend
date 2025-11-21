@@ -1,38 +1,38 @@
-import { useState, useEffect } from "react";
-import useAxiosPublic from "./useAxiosPublic";
+import { useState, useEffect, useCallback } from "react";
+import useAxiosSecure from "./useAxiosSecure";
 
 const useAdminManager = () => {
-  const axiosPublic = useAxiosPublic();
-  const [admins, setAdmins] = useState([]);
+  const axiosSecure = useAxiosSecure();
+  const [admin, setAdmin] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Fetch all admins
-  const fetchAdmins = async () => {
+  // ✅ Fetch all admin (stable reference via useCallback)
+  const fetchAdmin = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosPublic.get(`/admins`);
-      setAdmins(res.data);
+      const res = await axiosSecure.get(`/admin`);
+      setAdmin(res.data);
     } catch (err) {
-      console.error("Fetch Admins Error:", err);
-      setError("Failed to load admins");
+      console.error("Fetch Admin Error:", err);
+      setError("Failed to load admin");
     } finally {
       setLoading(false);
     }
-  };
+  }, [axiosSecure]);
 
   // ✅ Create new admin
   const createAdmin = async (name, email, password) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosPublic.post(`/register`, {
+      const res = await axiosSecure.post(`/register`, {
         name,
         email,
         password,
       });
-      await fetchAdmins(); // Refresh after creation
+      await fetchAdmin(); // Refresh after creation
       return { success: true, message: res.data.message };
     } catch (err) {
       console.error("Create Admin Error:", err);
@@ -48,8 +48,8 @@ const useAdminManager = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosPublic.delete(`/users/${id}`);
-      await fetchAdmins(); // Refresh after deletion
+      const res = await axiosSecure.delete(`/users/${id}`);
+      await fetchAdmin(); // Refresh after deletion
       return { success: true, message: res.data.message };
     } catch (err) {
       console.error("Delete Admin Error:", err);
@@ -60,16 +60,17 @@ const useAdminManager = () => {
     }
   };
 
-  // ✅ Auto-load admins on mount
+  // ✅ Auto-load admin
   useEffect(() => {
-    fetchAdmins();
+    fetchAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    admins,
+    admin,
     loading,
     error,
-    fetchAdmins,
+    fetchAdmin,
     createAdmin,
     deleteAdmin,
   };

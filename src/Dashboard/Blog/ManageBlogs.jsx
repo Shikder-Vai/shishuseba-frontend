@@ -6,6 +6,7 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import BlogPostModal from "./BlogPostModal";
 import { toast } from "sonner";
 import useScrollToTop from "../../hooks/useScrollToTop";
+import { useRole } from "../../hooks/useRole";
 
 const ManageBlogs = () => {
   useScrollToTop();
@@ -14,6 +15,7 @@ const ManageBlogs = () => {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
+  const role = useRole();
 
   const { mutate: deleteBlog } = useMutation({
     mutationFn: (id) => axiosSecure.delete(`/blogs/${id}`),
@@ -50,12 +52,14 @@ const ManageBlogs = () => {
     <div className="container mx-auto mb-20 px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Manage Blogs</h1>
-        <button
-          onClick={() => openModal(null)}
-          className="btn bg-orange-500 text-white"
-        >
-          Create New Post
-        </button>
+        {(role === "admin" || role === "moderator") && (
+          <button
+            onClick={() => openModal(null)}
+            className="btn bg-orange-500 text-white"
+          >
+            Create New Post
+          </button>
+        )}
       </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -79,18 +83,22 @@ const ManageBlogs = () => {
                   </p>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <button
-                    onClick={() => openModal(blog)}
-                    className="btn btn-sm btn-outline btn-info mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(blog._id)}
-                    className="btn btn-sm btn-outline btn-error"
-                  >
-                    Delete
-                  </button>
+                  {(role === "admin" || role === "moderator") && (
+                    <button
+                      onClick={() => openModal(blog)}
+                      className="btn btn-sm btn-outline btn-info mr-2"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {role === "admin" && (
+                    <button
+                      onClick={() => handleDelete(blog._id)}
+                      className="btn btn-sm btn-outline btn-error"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

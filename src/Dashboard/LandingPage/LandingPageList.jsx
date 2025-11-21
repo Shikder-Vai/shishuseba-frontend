@@ -5,10 +5,12 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Loader from "../../components/Loader";
 import Swal from "sweetalert2";
+import { useRole } from "../../hooks/useRole";
 
 const LandingPageList = () => {
   const axiosPublic = useAxiosPublic();
   const queryClient = useQueryClient();
+  const role = useRole();
 
   const {
     data: landingPages,
@@ -58,22 +60,24 @@ const LandingPageList = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Landing Pages</h1>
-        <div className="flex gap-4">
-          <Link
-            to="/dashboard/manage-landing-page/new?template=default"
-            className="bg-brand-teal-base text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Plus />
-            Create New Page (Default)
-          </Link>
-          <Link
-            to="/dashboard/manage-landing-page/new?template=template1"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Plus />
-            Create New Page (Template 1)
-          </Link>
-        </div>
+        {(role === "admin" || role === "moderator") && (
+          <div className="flex gap-4">
+            <Link
+              to="/dashboard/manage-landing-page/new?template=default"
+              className="bg-brand-teal-base text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus />
+              Create New Page (Default)
+            </Link>
+            <Link
+              to="/dashboard/manage-landing-page/new?template=template1"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus />
+              Create New Page (Template 1)
+            </Link>
+          </div>
+        )}
       </div>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
@@ -96,18 +100,22 @@ const LandingPageList = () => {
                 <td className="px-6 py-4 whitespace-nowrap">{page.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{page._id}</td>
                 <td className="px-6 flex items-center py-4 gap-1 whitespace-nowrap text-sm font-medium">
-                  <Link
-                    to={`/dashboard/manage-landing-page/${page._id}`}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    <Edit />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(page._id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <Trash2 />
-                  </button>
+                  {(role === "admin" || role === "moderator") && (
+                    <Link
+                      to={`/dashboard/manage-landing-page/${page._id}`}
+                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                      <Edit />
+                    </Link>
+                  )}
+                  {role === "admin" && (
+                    <button
+                      onClick={() => handleDelete(page._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      <Trash2 />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

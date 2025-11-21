@@ -9,13 +9,17 @@ const useAxiosSecure = () => {
     // baseURL: "https://api.shishuseba.com/v1",
   });
 
-  // Check gmail before each request
-  axiosSecure.interceptors.request.use((config) => {
-    if (!user?.email?.endsWith("@gmail.com")) {
-      throw new Error("Gmail required");
+  axiosSecure.interceptors.request.use(
+    (config) => {
+      if (user?._id) {
+        config.headers["user-id"] = user._id;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return config;
-  });
+  );
 
   return axiosSecure;
 };

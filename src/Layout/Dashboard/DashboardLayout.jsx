@@ -20,7 +20,7 @@ import Topbar from "../../Shared/Topbar/Topbar";
 
 const dashboardLinks = [
   { to: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-{ to: "/dashboard/products", icon: <Package size={20} />, label: "Products" },
+  { to: "/dashboard/products", icon: <Package size={20} />, label: "Products" },
   {
     to: "/dashboard/inventory",
     icon: <Package size={20} />,
@@ -84,7 +84,7 @@ const dashboardLinks = [
   {
     to: "/dashboard/manage-admin",
     icon: <Users size={20} />,
-    label: "Manage Admins",
+    label: "Manage Admin",
   },
   {
     to: "/dashboard/landing-pages",

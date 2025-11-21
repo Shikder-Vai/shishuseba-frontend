@@ -5,16 +5,14 @@ import { useAuth } from "../main";
 import { Mail, Lock } from "lucide-react";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [localLoading, setLocalLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLocalLoading(true);
 
     try {
       await login(email, password);
@@ -44,12 +42,10 @@ export default function Login() {
         background: "#feefe0",
         color: "#015d4f",
       });
-    } finally {
-      setLocalLoading(false);
     }
   };
 
-  const isLoading = localLoading;
+  const isLoading = loading;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-cream p-4">

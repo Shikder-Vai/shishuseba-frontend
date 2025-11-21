@@ -6,12 +6,14 @@ import useReviews from "../../hooks/useReviews";
 import Loader from "../../components/Loader";
 import ReviewUploadModal from "./ReviewUploadModal";
 import Swal from "sweetalert2";
+import { useRole } from "../../hooks/useRole";
 
 const ManageReviews = () => {
   const { reviews, loadingReviews, refetch } = useReviews();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
+  const role = useRole();
 
   const { mutate: deleteReview } = useMutation({
     mutationFn: (id) => axiosSecure.delete(`/reviews/${id}`),
@@ -53,12 +55,14 @@ const ManageReviews = () => {
             For best results, please upload images with a 3:2 aspect ratio (e.g., 600x400 pixels).
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="btn bg-orange-500 text-white"
-        >
-          Add New Review
-        </button>
+        {(role === "admin" || role === "moderator") && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="btn bg-orange-500 text-white"
+          >
+            Add New Review
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -66,12 +70,14 @@ const ManageReviews = () => {
           <div key={review._id} className="bg-white shadow-md rounded-lg overflow-hidden">
             <img src={review.imageUrl} alt="Review" className="w-full h-48 object-cover" />
             <div className="p-4">
-              <button
-                onClick={() => handleDelete(review._id)}
-                className="btn btn-sm btn-outline btn-error w-full"
-              >
-                Delete
-              </button>
+              {role === "admin" && (
+                <button
+                  onClick={() => handleDelete(review._id)}
+                  className="btn btn-sm btn-outline btn-error w-full"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}

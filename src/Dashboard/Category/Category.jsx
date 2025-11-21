@@ -16,6 +16,7 @@ import {
 import useCategories from "../../hooks/useCategories";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
+import { useRole } from "../../hooks/useRole";
 
 const Category = () => {
   const axiosPublic = useAxiosPublic();
@@ -24,6 +25,7 @@ const Category = () => {
   const [editingId, setEditingId] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
+  const role = useRole();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -167,25 +169,27 @@ const Category = () => {
             </p>
           </div>
           
-          <button
-            onClick={() => {
-              resetForm();
-              setActiveTab(activeTab === "list" ? "form" : "list");
-            }}
-            className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white mt-4 md:mt-0 flex items-center gap-2"
-          >
-            {activeTab === "list" ? (
-              <>
-                <Tag size={18} />
-                Add New Category
-              </>
-            ) : (
-              <>
-                <List size={18} />
-                View All Categories
-              </>
-            )}
-          </button>
+          {(role === "admin" || role === "moderator") && (
+            <button
+              onClick={() => {
+                resetForm();
+                setActiveTab(activeTab === "list" ? "form" : "list");
+              }}
+              className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white mt-4 md:mt-0 flex items-center gap-2"
+            >
+              {activeTab === "list" ? (
+                <>
+                  <Tag size={18} />
+                  Add New Category
+                </>
+              ) : (
+                <>
+                  <List size={18} />
+                  View All Categories
+                </>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Main Content Area */}
@@ -199,22 +203,24 @@ const Category = () => {
               <List size={18} />
               Category List
             </button>
-            <button
-              className={`px-6 py-3 font-medium flex items-center gap-2 ${activeTab === "form" ? "text-brand-teal-base border-b-2 border-brand-teal-base" : "text-brand-gray-base"}`}
-              onClick={() => {
-                resetForm();
-                setActiveTab("form");
-              }}
-            >
-              <Tag size={18} />
-              {editingId ? "Edit Category" : "Add Category"}
-            </button>
+            {(role === "admin" || role === "moderator") && (
+              <button
+                className={`px-6 py-3 font-medium flex items-center gap-2 ${activeTab === "form" ? "text-brand-teal-base border-b-2 border-brand-teal-base" : "text-brand-gray-base"}`}
+                onClick={() => {
+                  resetForm();
+                  setActiveTab("form");
+                }}
+              >
+                <Tag size={18} />
+                {editingId ? "Edit Category" : "Add Category"}
+              </button>
+            )}
           </div>
 
           {/* Tab Panels */}
           <div className="p-6">
             <AnimatePresence mode="wait">
-              {activeTab === "form" ? (
+              {activeTab === "form" && (role === "admin" || role === "moderator") ? (
                 <motion.div
                   key="form"
                   initial={{ opacity: 0, y: 10 }}
@@ -367,20 +373,24 @@ const Category = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <div className="flex justify-end gap-2">
-                                    <button
-                                      onClick={() => handleEdit(cat)}
-                                      className="text-brand-teal-base hover:text-brand-teal-500 flex items-center gap-1"
-                                    >
-                                      <Edit2 size={16} />
-                                      <span>Edit</span>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDelete(cat._id, cat.en)}
-                                      className="text-red-600 hover:text-red-800 flex items-center gap-1"
-                                    >
-                                      <Trash2 size={16} />
-                                      <span>Delete</span>
-                                    </button>
+                                    {(role === "admin" || role === "moderator") && (
+                                      <button
+                                        onClick={() => handleEdit(cat)}
+                                        className="text-brand-teal-base hover:text-brand-teal-500 flex items-center gap-1"
+                                      >
+                                        <Edit2 size={16} />
+                                        <span>Edit</span>
+                                      </button>
+                                    )}
+                                    {role === "admin" && (
+                                      <button
+                                        onClick={() => handleDelete(cat._id, cat.en)}
+                                        className="text-red-600 hover:text-red-800 flex items-center gap-1"
+                                      >
+                                        <Trash2 size={16} />
+                                        <span>Delete</span>
+                                      </button>
+                                    )}
                                   </div>
                                 </td>
                               </tr>
@@ -470,20 +480,22 @@ const Category = () => {
       </div>
 
       {/* Floating Action Button (Mobile) */}
-      <div className="lg:hidden fixed bottom-6 right-6 z-10">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => {
-            resetForm();
-            setActiveTab(activeTab === "list" ? "form" : "list");
-          }}
-          className="bg-brand-orange-base text-white p-4 rounded-full shadow-lg"
-          aria-label={activeTab === "list" ? "Add category" : "View categories"}
-        >
-          {activeTab === "list" ? <Plus size={24} /> : <List size={24} />}
-        </motion.button>
-      </div>
+      {(role === "admin" || role === "moderator") && (
+        <div className="lg:hidden fixed bottom-6 right-6 z-10">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => {
+              resetForm();
+              setActiveTab(activeTab === "list" ? "form" : "list");
+            }}
+            className="bg-brand-orange-base text-white p-4 rounded-full shadow-lg"
+            aria-label={activeTab === "list" ? "Add category" : "View categories"}
+          >
+            {activeTab === "list" ? <Plus size={24} /> : <List size={24} />}
+          </motion.button>
+        </div>
+      )}
     </motion.div>
   );
 };

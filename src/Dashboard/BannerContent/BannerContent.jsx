@@ -3,12 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { UploadCloud, Trash2, Plus } from "lucide-react";
+import { useRole } from "../../hooks/useRole";
 
 const BannerContent = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
   const [uploadingId, setUploadingId] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newBannerFile, setNewBannerFile] = useState(null);
+  const role = useRole();
 
   const queryClient = useQueryClient();
   const axiosPublic = useAxiosPublic();
@@ -216,13 +218,15 @@ const BannerContent = () => {
         <h2 className="text-2xl font-bold text-gray-800">
           Update Banner Images
         </h2>
-        <button 
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
-        >
-          <Plus size={18} />
-          Add Banner
-        </button>
+        {(role === "admin" || role === "moderator") && (
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
+          >
+            <Plus size={18} />
+            Add Banner
+          </button>
+        )}
       </div>
 
       {/* Add Banner Modal */}
@@ -280,83 +284,89 @@ const BannerContent = () => {
             </div>
 
             <div className="flex-grow">
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Upload New Image
-              </label>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-grow">
-                  <input
-                    type="file"
-                    id={`file-${_id}`}
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(e, _id)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white">
-                    <div className="flex items-center">
-                      <UploadCloud className="text-orange-500 mr-2" size={18} />
-                      <span className="text-sm text-gray-500 truncate max-w-[120px]">
-                        {selectedFiles[_id]
-                          ? selectedFiles[_id].name
-                          : "Choose file..."}
-                      </span>
+              {(role === "admin" || role === "moderator") && (
+                <>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Upload New Image
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-grow">
+                      <input
+                        type="file"
+                        id={`file-${_id}`}
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, _id)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white">
+                        <div className="flex items-center">
+                          <UploadCloud className="text-orange-500 mr-2" size={18} />
+                          <span className="text-sm text-gray-500 truncate max-w-[120px]">
+                            {selectedFiles[_id]
+                              ? selectedFiles[_id].name
+                              : "Choose file..."}
+                          </span>
+                        </div>
+                        <button className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">
+                          Browse
+                        </button>
+                      </div>
                     </div>
-                    <button className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">
-                      Browse
+
+                    <button
+                      onClick={() => handleUpload(_id)}
+                      disabled={uploadingId === _id || !selectedFiles[_id]}
+                      className={`flex items-center justify-center px-4 py-2 rounded-md text-white font-semibold transition min-w-[120px] ${
+                        uploadingId === _id
+                          ? "bg-orange-400 cursor-not-allowed"
+                          : selectedFiles[_id]
+                          ? "bg-orange-600 hover:bg-orange-700"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      {uploadingId === _id ? (
+                        <>
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Uploading...
+                        </>
+                      ) : (
+                        "Update Banner"
+                      )}
                     </button>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleUpload(_id)}
-                  disabled={uploadingId === _id || !selectedFiles[_id]}
-                  className={`flex items-center justify-center px-4 py-2 rounded-md text-white font-semibold transition min-w-[120px] ${
-                    uploadingId === _id
-                      ? "bg-orange-400 cursor-not-allowed"
-                      : selectedFiles[_id]
-                      ? "bg-orange-600 hover:bg-orange-700"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }`}
-                >
-                  {uploadingId === _id ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                    {role === "admin" && (
+                      <button
+                        onClick={() => handleDelete(_id)}
+                        className="flex items-center justify-center px-4 py-2 rounded-md text-white font-semibold transition bg-red-600 hover:bg-red-700"
                       >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Uploading...
-                    </>
-                  ) : (
-                    "Update Banner"
-                  )}
-                </button>
-                <button
-                  onClick={() => handleDelete(_id)}
-                  className="flex items-center justify-center px-4 py-2 rounded-md text-white font-semibold transition bg-red-600 hover:bg-red-700"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                  </div>
 
-              <p className="mt-2 text-xs text-gray-500">
-                Recommended size: 1200x400 pixels (JPG, PNG, or WEBP)
-              </p>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Recommended size: 1200x400 pixels (JPG, PNG, or WEBP)
+                  </p>
+                </>
+              )}
             </div>
           </div>
         ))}
