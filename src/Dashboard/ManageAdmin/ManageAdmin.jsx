@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PlusCircle,
@@ -10,15 +9,28 @@ import {
   Loader2,
   AlertTriangle,
   Info,
+  ShieldCheck,
 } from "lucide-react";
 import useAdminManager from "../../hooks/useAdminManager";
 import { useRole } from "../../hooks/useRole";
 
 const ManageAdmin = () => {
-  const { admin, loading, error, createAdmin, deleteAdmin } = useAdminManager();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const {
+    users,
+    loading,
+    error,
+    createUser,
+    deleteUser,
+    updateUserRole,
+  } = useAdminManager();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "user",
+  });
   const [activeTab, setActiveTab] = useState("list");
-  const role = useRole();
+  const currentUserRole = useRole();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,26 +42,27 @@ const ManageAdmin = () => {
     if (!form.name || !form.email || !form.password) {
       Swal.fire({
         title: "Missing Information",
-        text: "All fields are required to create an admin",
+        text: "Name, email, and password are required",
         icon: "warning",
         confirmButtonColor: "#018b76",
       });
       return;
     }
 
-    const { success, error } = await createAdmin(
+    const { success, error } = await createUser(
       form.name,
       form.email,
-      form.password
+      form.password,
+      form.role
     );
     if (success) {
       Swal.fire({
         title: "Success!",
-        text: "Admin account created successfully",
+        text: "User account created successfully",
         icon: "success",
         confirmButtonColor: "#018b76",
       });
-      setForm({ name: "", email: "", password: "" });
+      setForm({ name: "", email: "", password: "", role: "user" });
       setActiveTab("list");
     } else {
       Swal.fire({
@@ -61,32 +74,42 @@ const ManageAdmin = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, role) => {
+    if (role === "admin") {
+      Swal.fire({
+        title: "Action Forbidden",
+        text: "Admin accounts cannot be deleted.",
+        icon: "error",
+        confirmButtonColor: "#018b76",
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: "Confirm Deletion",
-      text: "This will permanently remove the admin account",
+      text: "This will permanently remove the user account.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#018b76",
+      confirmButtonColor: "#d33",
       cancelButtonColor: "#6c6c6c",
-      confirmButtonText: "Delete Admin",
+      confirmButtonText: "Delete User",
       cancelButtonText: "Cancel",
       background: "#feefe0",
     });
 
     if (result.isConfirmed) {
-      const { success, error } = await deleteAdmin(id);
+      const { success, error } = await deleteUser(id);
       if (success) {
         Swal.fire({
           title: "Deleted!",
-          text: "The admin has been removed",
+          text: "The user has been removed.",
           icon: "success",
           confirmButtonColor: "#018b76",
         });
       } else {
         Swal.fire({
           title: "Error",
-          text: error || "Failed to delete admin",
+          text: error || "Failed to delete user.",
           icon: "error",
           confirmButtonColor: "#018b76",
         });
@@ -94,7 +117,26 @@ const ManageAdmin = () => {
     }
   };
 
-  // Animation variants
+  const handleRoleChange = async (id, newRole) => {
+    const { success, error } = await updateUserRole(id, newRole);
+    if (success) {
+      Swal.fire({
+        title: "Success!",
+        text: "User role updated successfully.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: error || "Failed to update role.",
+        icon: "error",
+        confirmButtonColor: "#018b76",
+      });
+    }
+  };
+
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3 } },
@@ -107,20 +149,18 @@ const ManageAdmin = () => {
       variants={fadeIn}
       className="min-h-screen p-6 bg-brand-cream"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
+      <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-brand-teal-500 mb-2 flex items-center gap-2">
               <Users size={32} className="text-brand-orange-base" />
-              Admin Management
+              User Management
             </h1>
             <p className="text-brand-gray-base">
-              Create and manage administrator accounts for your platform
+              Manage all user accounts and roles for your platform.
             </p>
           </div>
-
-          {role === "admin" && (
+          {currentUserRole === "admin" && (
             <button
               onClick={() =>
                 setActiveTab(activeTab === "list" ? "create" : "list")
@@ -129,22 +169,18 @@ const ManageAdmin = () => {
             >
               {activeTab === "list" ? (
                 <>
-                  <UserPlus size={18} />
-                  Add New Admin
+                  <UserPlus size={18} /> Add New User
                 </>
               ) : (
                 <>
-                  <Users size={18} />
-                  View All Admin
+                  <Users size={18} /> View All Users
                 </>
               )}
             </button>
           )}
         </div>
 
-        {/* Tab Content */}
         <div className="bg-white rounded-xl shadow-soft overflow-hidden">
-          {/* Tabs */}
           <div className="flex border-b border-brand-gray-light">
             <button
               className={`px-6 py-3 font-medium flex items-center gap-2 ${
@@ -154,10 +190,9 @@ const ManageAdmin = () => {
               }`}
               onClick={() => setActiveTab("list")}
             >
-              <Users size={18} />
-              Admin List
+              <Users size={18} /> User List
             </button>
-            {role === "admin" && (
+            {currentUserRole === "admin" && (
               <button
                 className={`px-6 py-3 font-medium flex items-center gap-2 ${
                   activeTab === "create"
@@ -166,111 +201,67 @@ const ManageAdmin = () => {
                 }`}
                 onClick={() => setActiveTab("create")}
               >
-                <PlusCircle size={18} />
-                Create Admin
+                <PlusCircle size={18} /> Create User
               </button>
             )}
           </div>
 
-          {/* Tab Panels */}
           <div className="p-6">
             <AnimatePresence mode="wait">
-              {activeTab === "create" && role === "admin" ? (
+              {activeTab === "create" && currentUserRole === "admin" ? (
                 <motion.div
                   key="create"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
                 >
                   <div className="max-w-2xl mx-auto">
                     <h2 className="text-xl font-semibold text-brand-teal-500 mb-6 flex items-center gap-2">
-                      <UserPlus size={24} />
-                      Create New Admin Account
+                      <UserPlus size={24} /> Create New User Account
                     </h2>
-
                     <form onSubmit={handleCreate} className="space-y-6">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-brand-gray-base">
-                          Full Name
-                        </label>
-                        <input
-                          name="name"
-                          type="text"
-                          placeholder="John Doe"
-                          className="input input-bordered w-full focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-100"
-                          value={form.name}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-brand-gray-base">
-                          Email Address
-                        </label>
-                        <input
-                          name="email"
-                          type="email"
-                          placeholder="admin@example.com"
-                          className="input input-bordered w-full focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-100"
-                          value={form.email}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-brand-gray-base">
-                          Password
-                        </label>
-                        <input
-                          name="password"
-                          type="password"
-                          placeholder="••••••••"
-                          className="input input-bordered w-full focus:ring-2 focus:ring-brand-teal-100 focus:border-brand-teal-100"
-                          value={form.password}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="pt-2">
-                        <button
-                          type="submit"
-                          className="btn w-full bg-brand-teal-base hover:bg-brand-teal-500 text-white flex items-center justify-center gap-2"
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <Loader2 size={18} className="animate-spin" />
-                              Creating Admin...
-                            </>
-                          ) : (
-                            <>
-                              <UserPlus size={18} />
-                              Create Admin Account
-                            </>
-                          )}
-                        </button>
-                      </div>
+                      <input
+                        name="name"
+                        type="text"
+                        placeholder="Full Name"
+                        className="input input-bordered w-full"
+                        value={form.name}
+                        onChange={handleChange}
+                      />
+                      <input
+                        name="email"
+                        type="email"
+                        placeholder="Email Address"
+                        className="input input-bordered w-full"
+                        value={form.email}
+                        onChange={handleChange}
+                      />
+                      <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        className="input input-bordered w-full"
+                        value={form.password}
+                        onChange={handleChange}
+                      />
+                      <select
+                        name="role"
+                        className="select select-bordered w-full"
+                        value={form.role}
+                        onChange={handleChange}
+                      >
+                        <option value="user">User</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <button
+                        type="submit"
+                        className="btn w-full bg-brand-teal-base hover:bg-brand-teal-500 text-white"
+                        disabled={loading}
+                      >
+                        {loading ? "Creating..." : "Create User Account"}
+                      </button>
                     </form>
-
-                    <div className="mt-8 p-4 bg-brand-orange-light rounded-lg border border-brand-orange-base/20">
-                      <div className="flex items-start gap-3">
-                        <Info
-                          size={18}
-                          className="text-brand-orange-base mt-0.5 flex-shrink-0"
-                        />
-                        <div>
-                          <h4 className="font-medium text-brand-gray-base mb-1">
-                            Admin Privileges
-                          </h4>
-                          <p className="text-sm text-brand-gray-base">
-                            Admin will have full access to all system settings
-                            and user management features. Ensure you only grant
-                            admin privileges to trusted individuals.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               ) : (
@@ -279,130 +270,77 @@ const ManageAdmin = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
                 >
-                  {/* Loading State */}
                   {loading && (
-                    <div className="flex justify-center items-center py-12">
+                    <div className="flex justify-center py-12">
                       <Loader2
                         size={32}
                         className="animate-spin text-brand-teal-base"
                       />
                     </div>
                   )}
-
-                  {/* Error State */}
                   {error && (
-                    <div className="p-4 mb-6 bg-red-50 rounded-lg border border-red-200">
-                      <div className="flex items-center gap-3 text-red-600">
-                        <AlertTriangle size={20} />
-                        <span className="font-medium">{error}</span>
-                      </div>
+                    <div className="p-4 text-red-600 bg-red-50 rounded-lg">
+                      {error}
                     </div>
                   )}
-
-                  {/* Admin List */}
                   {!loading && (
-                    <div className="overflow-hidden rounded-lg border border-brand-gray-light">
+                    <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-brand-gray-light">
                         <thead className="bg-brand-teal-base">
                           <tr>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                            >
-                              #
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                            >
-                              Name
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                            >
-                              Email
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                            >
-                              Created
-                            </th>
-                            {role === "admin" && (
-                              <th
-                                scope="col"
-                                className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider"
-                              >
-                                Actions
-                              </th>
-                            )}
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">#</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Name</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Email</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Role</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Created</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-brand-gray-light">
-                          {admin.length > 0 ? (
-                            admin.map((admin, index) => (
-                              <tr
-                                key={admin._id}
-                                className="hover:bg-brand-cream/50 transition-colors"
-                              >
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-gray-base">
-                                  {index + 1}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray-base">
-                                  {admin.name}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray-base">
-                                  {admin.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray-base">
-                                  {new Date(admin.createdAt).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      year: "numeric",
-                                      month: "short",
-                                      day: "numeric",
-                                    }
-                                  )}
-                                </td>
-                                {role === "admin" && (
-                                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button
-                                      onClick={() => handleDelete(admin._id)}
-                                      className="text-red-600 hover:text-red-800 flex items-center gap-1 ml-auto"
-                                      disabled={loading}
-                                    >
-                                      <Trash2 size={16} />
-                                      <span>Delete</span>
-                                    </button>
-                                  </td>
-                                )}
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td
-                                colSpan="5"
-                                className="px-6 py-12 text-center"
-                              >
-                                <div className="flex flex-col items-center justify-center text-brand-gray-base">
-                                  <Users
-                                    size={48}
-                                    className="text-brand-gray-light mb-4"
-                                  />
-                                  <p className="font-medium">
-                                    No admin accounts found
-                                  </p>
-                                  <p className="text-sm mt-1">
-                                    Create your first admin account to get
-                                    started
-                                  </p>
-                                </div>
+                          {users && users.map((user, index) => (
+                            <tr key={user._id}>
+                              <td className="px-6 py-4">{index + 1}</td>
+                              <td className="px-6 py-4">{user.name}</td>
+                              <td className="px-6 py-4">{user.email}</td>
+                              <td className="px-6 py-4">
+                                <select
+                                  value={user.role}
+                                  onChange={(e) =>
+                                    handleRoleChange(user._id, e.target.value)
+                                  }
+                                  className="select select-bordered select-sm"
+                                  disabled={
+                                    loading || currentUserRole !== "admin"
+                                  }
+                                >
+                                  <option value="user">User</option>
+                                  <option value="moderator">Moderator</option>
+                                  <option value="admin">Admin</option>
+                                </select>
+                              </td>
+                              <td className="px-6 py-4">
+                                {new Date(
+                                  user.createdAt
+                                ).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button
+                                  onClick={() =>
+                                    handleDelete(user._id, user.role)
+                                  }
+                                  className="btn btn-sm btn-ghost text-red-600"
+                                  disabled={
+                                    loading ||
+                                    user.role === "admin" ||
+                                    currentUserRole !== "admin"
+                                  }
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </td>
                             </tr>
-                          )}
+                          ))}
                         </tbody>
                       </table>
                     </div>
@@ -410,78 +348,6 @@ const ManageAdmin = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Usage Guidelines */}
-        <div className="mt-12 bg-white p-6 rounded-xl shadow-soft">
-          <h3 className="text-xl font-semibold text-brand-teal-500 mb-4 flex items-center gap-2">
-            <Info size={24} />
-            Admin Management Guidelines
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="bg-brand-teal-50 p-2 rounded-full">
-                  <UserPlus size={18} className="text-brand-teal-base" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-brand-gray-base">
-                    Creating Admin
-                  </h4>
-                  <p className="text-sm text-brand-gray-base mt-1">
-                    Only create admin accounts for trusted team members. Each
-                    admin will have full system access.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="bg-brand-orange-light p-2 rounded-full">
-                  <AlertTriangle size={18} className="text-brand-orange-base" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-brand-gray-base">Security</h4>
-                  <p className="text-sm text-brand-gray-base mt-1">
-                    Ensure admin use strong passwords and enable two-factor
-                    authentication for added security.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="bg-brand-teal-50 p-2 rounded-full">
-                  <Trash2 size={18} className="text-brand-teal-base" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-brand-gray-base">
-                    Deleting Admin
-                  </h4>
-                  <p className="text-sm text-brand-gray-base mt-1">
-                    Deleting an admin is permanent. The action cannot be undone,
-                    so proceed with caution.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="bg-brand-teal-50 p-2 rounded-full">
-                  <Users size={18} className="text-brand-teal-base" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-brand-gray-base">
-                    Best Practices
-                  </h4>
-                  <p className="text-sm text-brand-gray-base mt-1">
-                    Maintain at least two admin accounts at all times to prevent
-                    lockout situations.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
