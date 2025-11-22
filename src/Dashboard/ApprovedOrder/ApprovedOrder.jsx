@@ -117,6 +117,10 @@ const ApprovedOrder = () => {
           ...user,
           processingTime: formatProcessingTime(),
         };
+      } else if (newStatus === "pending") {
+        // backend expects approvedBy/processBy/etc to be present to perform updates
+        // set approvedBy to an empty object so the controller will $set status and approvedBy
+        updateData.approvedBy = {};
       } else if (newStatus === "cancel") {
         updateData.cancelBy = {
           ...user,
@@ -634,6 +638,7 @@ const ApprovedOrder = () => {
                               >
                                 <option value="approved">Approved</option>
                                 <option value="processing">Processing</option>
+                                <option value="pending">Pending</option>
                                 <option value="cancel">Cancel</option>
                               </select>
                             </div>
@@ -717,6 +722,7 @@ const ApprovedOrder = () => {
                       >
                         <option value="approved">Approved</option>
                         <option value="processing">Processing</option>
+                        <option value="pending">Pending</option>
                         <option value="cancel">Cancel</option>
                       </select>
                     </div>

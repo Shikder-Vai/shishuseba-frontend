@@ -165,7 +165,8 @@ const OrderRequest = () => {
 
   const { mutate: bulkUpdateOrders } = useMutation({
     mutationFn: async (newStatus) => {
-      const approvedTime = formatDate();
+      // use current date for approvedTime
+      const approvedTime = formatDate(new Date());
       const updates = selectedOrders.map((id) =>
         axiosPublic.patch(`/order-request/${id}`, {
           status: newStatus,

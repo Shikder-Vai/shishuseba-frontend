@@ -159,6 +159,9 @@ const ProcessingOrder = () => {
           ...user,
           deliveredTime: formatProcessingTime(),
         };
+      } else if (newStatus === "pending") {
+        // include an empty processBy object so backend will run processBy branch and set status
+        updateData.processBy = {};
       } else if (newStatus === "cancel") {
         updateData.cancelBy = {
           ...user,
@@ -590,6 +593,7 @@ const ProcessingOrder = () => {
                               >
                                 <option value="processing">Processing</option>
                                 <option value="delivered">Delivered</option>
+                                <option value="pending">Pending</option>
                                 <option value="cancel">Cancel</option>
                               </select>
                             </div>
@@ -648,7 +652,7 @@ const ProcessingOrder = () => {
                         {selectedOrder.status}
                       </p>
                     </div>
-                    {/* <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                       <select
                         className="border border-brand-gray-light px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
                         defaultValue={selectedOrder?.status}
@@ -662,9 +666,10 @@ const ProcessingOrder = () => {
                       >
                         <option value="processing">Processing</option>
                         <option value="delivered">Delivered</option>
+                        <option value="pending">Pending</option>
                         <option value="cancel">Cancel</option>
                       </select>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
 
