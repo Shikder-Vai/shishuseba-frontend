@@ -240,7 +240,8 @@ const OrderRequest = () => {
       ?.filter((order) => {
         if (dateFilter === "all") return true;
 
-        const orderDate = parseToDate(order.user?.orderDate) || new Date(order.user?.orderDate);
+        const orderDate =
+          parseToDate(order.user?.orderDate) || new Date(order.user?.orderDate);
         const today = new Date();
 
         if (!orderDate || isNaN(orderDate)) return false;
