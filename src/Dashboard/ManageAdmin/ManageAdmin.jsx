@@ -1,28 +1,14 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  PlusCircle,
-  Trash2,
-  UserPlus,
-  Users,
-  Loader2,
-  AlertTriangle,
-  Info,
-  ShieldCheck,
-} from "lucide-react";
+import { PlusCircle, Trash2, UserPlus, Users, Loader2 } from "lucide-react";
 import useAdminManager from "../../hooks/useAdminManager";
 import { useRole } from "../../hooks/useRole";
 
 const ManageAdmin = () => {
-  const {
-    users,
-    loading,
-    error,
-    createUser,
-    deleteUser,
-    updateUserRole,
-  } = useAdminManager();
+  const { users, loading, error, createUser, deleteUser, updateUserRole } =
+    useAdminManager();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -165,7 +151,7 @@ const ManageAdmin = () => {
               onClick={() =>
                 setActiveTab(activeTab === "list" ? "create" : "list")
               }
-              className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white mt-4 md:mt-0 flex items-center gap-2"
+              className="btn bg-brand-teal-base hover:bg-brand-teal-500 text-white mt-4 md:mt-0 flex items-center gap-2 "
             >
               {activeTab === "list" ? (
                 <>
@@ -289,58 +275,71 @@ const ManageAdmin = () => {
                       <table className="min-w-full divide-y divide-brand-gray-light">
                         <thead className="bg-brand-teal-base">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">#</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">Created</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase">Actions</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">
+                              #
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">
+                              Name
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">
+                              Email
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">
+                              Role
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase">
+                              Created
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase">
+                              Actions
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-brand-gray-light">
-                          {users && users.map((user, index) => (
-                            <tr key={user._id}>
-                              <td className="px-6 py-4">{index + 1}</td>
-                              <td className="px-6 py-4">{user.name}</td>
-                              <td className="px-6 py-4">{user.email}</td>
-                              <td className="px-6 py-4">
-                                <select
-                                  value={user.role}
-                                  onChange={(e) =>
-                                    handleRoleChange(user._id, e.target.value)
-                                  }
-                                  className="select select-bordered select-sm"
-                                  disabled={
-                                    loading || currentUserRole !== "admin"
-                                  }
-                                >
-                                  <option value="user">User</option>
-                                  <option value="moderator">Moderator</option>
-                                  <option value="admin">Admin</option>
-                                </select>
-                              </td>
-                              <td className="px-6 py-4">
-                                {new Date(
-                                  user.createdAt
-                                ).toLocaleDateString()}
-                              </td>
-                              <td className="px-6 py-4 text-right">
-                                <button
-                                  onClick={() =>
-                                    handleDelete(user._id, user.role)
-                                  }
-                                  className="btn btn-sm btn-ghost text-red-600"
-                                  disabled={
-                                    loading ||
-                                    user.role === "admin" ||
-                                    currentUserRole !== "admin"
-                                  }
-                                >
-                                  <Trash2 size={16} />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                          {users &&
+                            users.map((user, index) => (
+                              <tr key={user._id}>
+                                <td className="px-6 py-4">{index + 1}</td>
+                                <td className="px-6 py-4">{user.name}</td>
+                                <td className="px-6 py-4">{user.email}</td>
+                                <td className="px-6 py-4">
+                                  <select
+                                    value={user.role}
+                                    onChange={(e) =>
+                                      handleRoleChange(user._id, e.target.value)
+                                    }
+                                    className="select select-bordered select-sm"
+                                    disabled={
+                                      loading || currentUserRole !== "admin"
+                                    }
+                                  >
+                                    <option value="user">User</option>
+                                    <option value="moderator">Moderator</option>
+                                    <option value="admin">Admin</option>
+                                  </select>
+                                </td>
+                                <td className="px-6 py-4">
+                                  {new Date(
+                                    user.createdAt
+                                  ).toLocaleDateString()}
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                  <button
+                                    onClick={() =>
+                                      handleDelete(user._id, user.role)
+                                    }
+                                    className="btn btn-sm btn-ghost text-red-600"
+                                    disabled={
+                                      loading ||
+                                      user.role === "admin" ||
+                                      currentUserRole !== "admin"
+                                    }
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>

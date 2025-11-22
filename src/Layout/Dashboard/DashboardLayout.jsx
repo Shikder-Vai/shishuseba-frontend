@@ -17,8 +17,9 @@ import {
   Landmark,
 } from "lucide-react";
 import Topbar from "../../Shared/Topbar/Topbar";
+import { useRole } from "../../hooks/useRole"; // Import useRole
 
-const dashboardLinks = [
+const allDashboardLinks = [
   { to: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
   { to: "/dashboard/products", icon: <Package size={20} />, label: "Products" },
   {
@@ -84,7 +85,8 @@ const dashboardLinks = [
   {
     to: "/dashboard/manage-admin",
     icon: <Users size={20} />,
-    label: "Manage Admin",
+    label: "Manage Users",
+    roles: ["admin"], // Role-based visibility
   },
   {
     to: "/dashboard/landing-pages",
@@ -112,6 +114,13 @@ const NavItem = ({ to, icon, label }) => (
 );
 
 const DashboardLayout = () => {
+  const userRole = useRole(); // Get user role
+
+  // Filter links based on role
+  const dashboardLinks = allDashboardLinks.filter(
+    (link) => !link.roles || link.roles.includes(userRole)
+  );
+
   return (
     <div>
       <Topbar />
