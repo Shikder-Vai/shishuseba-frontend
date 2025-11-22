@@ -203,8 +203,16 @@ const CancelOrder = () => {
           <Table className="min-w-full table-fixed">
             <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
               <Tr>
-                <Th className="px-6 py-4 text-left rounded-tl-xl">SL</Th>
+                <Th
+                  className="px-1 py-2 text-left rounded-tl-xl"
+                  style={{ width: "10px" }}
+                >
+                  SL
+                </Th>
                 <Th className="px-6 py-4 text-left text-sm">Order ID</Th>
+                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                  Customer
+                </Th>
                 <Th className="px-6 py-4 text-left hidden md:table-cell">
                   Phone
                 </Th>
@@ -226,13 +234,26 @@ const CancelOrder = () => {
                   key={o?._id}
                   className="hover:bg-brand-cream/30 transition-colors"
                 >
-                  <Td className="px-4 py-3 whitespace-nowrap">{i + 1}</Td>
+                  <Td
+                    className="px-1 py-2 whitespace-nowrap"
+                    style={{ width: "10px" }}
+                  >
+                    {i + 1}
+                  </Td>
                   <Td className="px-4 py-3">
                     <div className="font-medium text-brand-gray-base">
                       {o?.orderId}
                     </div>
                     <div className="text-sm text-brand-gray-base md:hidden">
                       {o?.user?.mobile}
+                    </div>
+                  </Td>
+                  <Td className="px-4 py-3 hidden md:table-cell">
+                    <div className="font-medium text-brand-gray-base">
+                      {o?.user?.name}
+                    </div>
+                    <div className="text-xs text-brand-gray-base">
+                      {o?.user?.address}, {o?.user?.district}
                     </div>
                   </Td>
                   <Td className="px-4 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">

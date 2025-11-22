@@ -22,14 +22,73 @@ const statusColors = {
 const DeliveredOrders = () => {
   const [orders, loadingOrder] = useOrderRequest("delivered");
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
   const [expandedRow, setExpandedRow] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   if (loadingOrder) return <Loader />;
 
+  // Parse various date formats into a Date object (ISO or legacy formats)
+  const parseToDate = (dateString) => {
+    if (!dateString) return null;
+
+    const isoDate = new Date(dateString);
+    if (!isNaN(isoDate)) return isoDate;
+
+    try {
+      const oldFormat = "dd MMMM yyyy 'at' hh:mm a";
+      const parsed = parse(dateString, oldFormat, new Date());
+      if (!isNaN(parsed)) return parsed;
+    } catch (e) {
+      // fallthrough
+    }
+
+    try {
+      const altFormat = "dd MMM yyyy, h:mm aa";
+      const parsedAlt = parse(dateString, altFormat, new Date());
+      if (!isNaN(parsedAlt)) return parsedAlt;
+    } catch (e) {
+      // fallthrough
+    }
+
+    return null;
+  };
+
   const filteredOrders =
-    orders?.filter((order) => order?.user?.mobile?.includes(searchTerm)) || [];
+    orders
+      ?.filter((order) => {
+        if (dateFilter === "all") return true;
+
+        // Prefer the delivered timestamp for delivered orders; fall back to orderDate
+        const rawDate =
+          order?.deliveredBy?.deliveredTime || order?.user?.orderDate;
+        const orderDate = parseToDate(rawDate) || new Date(rawDate);
+        const today = new Date();
+
+        if (!orderDate || isNaN(orderDate)) return false;
+
+        if (dateFilter === "today") {
+          return (
+            orderDate.getDate() === today.getDate() &&
+            orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        if (dateFilter === "yesterday") {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
+          return (
+            orderDate.getDate() === yesterday.getDate() &&
+            orderDate.getMonth() === yesterday.getMonth() &&
+            orderDate.getFullYear() === yesterday.getFullYear()
+          );
+        }
+
+        return true;
+      })
+      .filter((order) => order?.user?.mobile?.includes(searchTerm)) || [];
 
   const mobileCount = {};
   orders?.forEach((o) => {
@@ -89,6 +148,38 @@ const DeliveredOrders = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-brand-gray-light mt-3 md:mt-0">
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "all"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "today"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setDateFilter("yesterday")}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              dateFilter === "yesterday"
+                ? "bg-brand-teal-base text-white shadow-soft"
+                : "text-brand-gray-base hover:bg-gray-100"
+            }`}
+          >
+            Yesterday
+          </button>
         </div>
       </div>
 
