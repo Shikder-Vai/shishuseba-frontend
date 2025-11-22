@@ -89,13 +89,13 @@ const FinalOrder = () => {
         ...(newStatus === "cancel" && {
           cancelBy: {
             ...user,
-            cancelledTime: formatDate(),
+            cancelledTime: new Date().toISOString(),
           },
         }),
         ...(newStatus === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatDate(),
+            deliveredTime: new Date().toISOString(),
           },
         }),
       };
@@ -127,13 +127,13 @@ const FinalOrder = () => {
         ...(status === "delivered" && {
           deliveredBy: {
             ...user,
-            deliveredTime: formatDate(),
+            deliveredTime: new Date().toISOString(),
           },
         }),
         ...(status === "cancel" && {
           cancelBy: {
             ...user,
-            cancelledTime: formatDate(),
+            cancelledTime: new Date().toISOString(),
           },
         }),
       };

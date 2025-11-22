@@ -125,29 +125,8 @@ const ProcessingOrder = () => {
   };
 
   const formatProcessingTime = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, "0");
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "Pm" : "Am";
-    hours = hours % 12 || 12;
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+    // Use date-fns formatting used elsewhere: 'dd MMM yyyy, h:mm aa'
+    return format(new Date(), "dd MMM yyyy, h:mm aa");
   };
 
   const { mutate: updateOrderStatus } = useMutation({
@@ -157,7 +136,12 @@ const ProcessingOrder = () => {
       if (newStatus === "delivered") {
         updateData.deliveredBy = {
           ...user,
-          deliveredTime: formatProcessingTime(),
+          deliveredTime: new Date().toISOString(),
+        };
+      } else if (newStatus === "approved") {
+        updateData.approvedBy = {
+          ...user,
+          approvedTime: new Date().toISOString(),
         };
       } else if (newStatus === "pending") {
         // include an empty processBy object so backend will run processBy branch and set status
@@ -165,7 +149,7 @@ const ProcessingOrder = () => {
       } else if (newStatus === "cancel") {
         updateData.cancelBy = {
           ...user,
-          cancelledTime: formatProcessingTime(),
+          cancelledTime: new Date().toISOString(),
         };
       }
       console.log(updateData);
@@ -593,6 +577,7 @@ const ProcessingOrder = () => {
                               >
                                 <option value="processing">Processing</option>
                                 <option value="delivered">Delivered</option>
+                                <option value="approved">Approved</option>
                                 <option value="pending">Pending</option>
                                 <option value="cancel">Cancel</option>
                               </select>
@@ -666,6 +651,7 @@ const ProcessingOrder = () => {
                       >
                         <option value="processing">Processing</option>
                         <option value="delivered">Delivered</option>
+                        <option value="approved">Approved</option>
                         <option value="pending">Pending</option>
                         <option value="cancel">Cancel</option>
                       </select>
@@ -740,7 +726,7 @@ const ProcessingOrder = () => {
                         <span className="font-medium text-brand-gray-base">
                           Processing Time:
                         </span>{" "}
-                        {selectedOrder.processBy?.processingTime}
+                        {formatDate(selectedOrder.processBy?.processingTime)}
                       </p>
                     </div>
                   </div>
@@ -766,7 +752,7 @@ const ProcessingOrder = () => {
                         <span className="font-medium text-brand-gray-base">
                           Approval Time:
                         </span>{" "}
-                        {selectedOrder.approvedBy?.approvedTime}
+                        {formatDate(selectedOrder.approvedBy?.approvedTime)}
                       </p>
                     </div>
                   </div>
