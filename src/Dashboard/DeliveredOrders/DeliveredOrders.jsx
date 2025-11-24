@@ -13,6 +13,7 @@ import SectionTitle from "../../components/SectionTitle";
 import useOrderRequest from "../../hooks/useOrderRequest";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import { parse } from "date-fns";
 
 const statusColors = {
   delivered: "bg-green-100 text-green-600",
@@ -40,7 +41,7 @@ const DeliveredOrders = () => {
       const oldFormat = "dd MMMM yyyy 'at' hh:mm a";
       const parsed = parse(dateString, oldFormat, new Date());
       if (!isNaN(parsed)) return parsed;
-    } catch (e) {
+    } catch {
       // fallthrough
     }
 
@@ -48,7 +49,7 @@ const DeliveredOrders = () => {
       const altFormat = "dd MMM yyyy, h:mm aa";
       const parsedAlt = parse(dateString, altFormat, new Date());
       if (!isNaN(parsedAlt)) return parsedAlt;
-    } catch (e) {
+    } catch {
       // fallthrough
     }
 

@@ -42,6 +42,8 @@ const ProcessingOrder = () => {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
+  const [bulkCourierNote, setBulkCourierNote] = useState("");
+  const [modalCourierNote, setModalCourierNote] = useState("");
 
   //...inside the ProcessingOrder component
 
@@ -130,7 +132,7 @@ const ProcessingOrder = () => {
   };
 
   const { mutate: updateOrderStatus } = useMutation({
-    mutationFn: async ({ id, newStatus }) => {
+    mutationFn: async ({ id, newStatus, courierNote }) => {
       const updateData = { status: newStatus };
 
       if (newStatus === "delivered") {
@@ -138,6 +140,15 @@ const ProcessingOrder = () => {
           ...user,
           deliveredTime: new Date().toISOString(),
         };
+      } else if (newStatus === "shipped") {
+        updateData.shippingBy = {
+          ...user,
+          shippingTime: new Date().toISOString(),
+        };
+        // allow optional courier note
+        if (typeof courierNote === "string" && courierNote.trim() !== "") {
+          updateData.shippingNote = courierNote;
+        }
       } else if (newStatus === "approved") {
         updateData.approvedBy = {
           ...user,
@@ -179,8 +190,8 @@ const ProcessingOrder = () => {
   });
 
   const { mutate: bulkUpdateOrders } = useMutation({
-    mutationFn: async (newStatus) => {
-      const updateTime = formatProcessingTime();
+    mutationFn: async ({ newStatus, courierNote }) => {
+      const updateTimeIso = new Date().toISOString();
 
       // First get the selected orders data
       const selectedOrdersData = orders.filter((order) =>
@@ -229,10 +240,14 @@ const ProcessingOrder = () => {
         const shipmentDetails = shipmentDataMap.get(order.orderId);
         const payload = {
           status: newStatus,
-          shippingBy: { ...user, shippingTime: updateTime },
+          shippingBy: { ...user, shippingTime: updateTimeIso },
           consignment_id: shipmentDetails?.consignment_id || null,
           tracking_code: shipmentDetails?.tracking_code || null,
         };
+
+        if (typeof courierNote === "string" && courierNote.trim() !== "") {
+          payload.shippingNote = courierNote;
+        }
 
         // Send the update request for this specific order
         return axiosPublic.patch(`/order-request/${order._id}`, payload);
@@ -386,15 +401,29 @@ const ProcessingOrder = () => {
             <p className="text-sm text-brand-gray-base">
               {selectedOrders.length} selected
             </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Courier note (optional)"
+                value={bulkCourierNote}
+                onChange={(e) => setBulkCourierNote(e.target.value)}
+                className="px-3 py-2 rounded-md border border-brand-gray-light text-sm"
+              />
+              <button
+                onClick={() =>
+                  bulkUpdateOrders({
+                    newStatus: "shipped",
+                    courierNote: bulkCourierNote,
+                  })
+                }
+                className="bg-brand-teal-base hover:bg-brand-teal-300 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
+              >
+                <FiCheck />
+                Shipment
+              </button>
+            </div>
             <button
-              onClick={() => bulkUpdateOrders("shipped")}
-              className="bg-brand-teal-base hover:bg-brand-teal-300 text-white px-4 py-2 rounded-lg shadow-soft transition-colors flex items-center gap-2"
-            >
-              <FiCheck />
-              Shipment
-            </button>
-            <button
-              onClick={() => bulkUpdateOrders("cancel")}
+              onClick={() => bulkUpdateOrders({ newStatus: "cancel" })}
               className="bg-brand-orange-base hover:bg-brand-orange-light text-white px-4 py-2 rounded-lg shadow-soft-orange transition-colors flex items-center gap-2"
             >
               <FiX /> Cancel
@@ -642,9 +671,12 @@ const ProcessingOrder = () => {
                         className="border border-brand-gray-light px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal-300 focus:border-transparent"
                         defaultValue={selectedOrder?.status}
                         onChange={(e) => {
+                          const val = e.target.value;
                           updateOrderStatus({
                             id: selectedOrder?._id,
-                            newStatus: e.target.value,
+                            newStatus: val,
+                            courierNote:
+                              val === "shipped" ? modalCourierNote : undefined,
                           });
                           setShowDetailModal(false);
                         }}
@@ -781,6 +813,18 @@ const ProcessingOrder = () => {
                         {selectedOrder.user?.address},{" "}
                         {selectedOrder.user?.district}
                       </p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-brand-gray-base mb-1 block">
+                        Courier Note (optional)
+                      </label>
+                      <textarea
+                        value={modalCourierNote}
+                        onChange={(e) => setModalCourierNote(e.target.value)}
+                        placeholder="Optional note to include with courier/shipping"
+                        className="w-full p-3 rounded border border-brand-gray-light bg-white"
+                        rows={3}
+                      />
                     </div>
                     {selectedOrder.status === "delivered" &&
                       selectedOrder.deliveredBy && (

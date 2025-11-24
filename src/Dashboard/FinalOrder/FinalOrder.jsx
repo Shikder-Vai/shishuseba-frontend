@@ -710,8 +710,15 @@ const FinalOrder = () => {
                         <span className="font-medium text-brand-gray-base">
                           Shipping Time:
                         </span>{" "}
-                        {selectedOrder.shippingBy?.shippingTime ||
-                          "Not specified"}
+                        {selectedOrder.shippingBy?.shippingTime
+                          ? formatDate(selectedOrder.shippingBy?.shippingTime)
+                          : "Not specified"}
+                      </p>
+                      <p>
+                        <span className="font-medium text-brand-gray-base">
+                          Courier Note:
+                        </span>{" "}
+                        {selectedOrder.shippingNote || "Not specified"}
                       </p>
                     </div>
                   </div>
