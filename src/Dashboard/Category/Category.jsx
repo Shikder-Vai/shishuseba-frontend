@@ -1,17 +1,18 @@
 import React, { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Plus, 
-  Trash2, 
-  Edit2, 
-  Loader2, 
-  Check, 
-  AlertTriangle, 
+import {
+  Plus,
+  Trash2,
+  Edit2,
+  Loader2,
+  Check,
+  AlertTriangle,
   X,
   Tag,
   List,
   Info,
-  Languages
+  Languages,
 } from "lucide-react";
 import useCategories from "../../hooks/useCategories";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
@@ -23,13 +24,14 @@ const Category = () => {
   const [categories, loadingCategories, refetch, error] = useCategories();
   const [form, setForm] = useState({ bn: "", en: "" });
   const [editingId, setEditingId] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
   const role = useRole();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const resetForm = () => {
@@ -48,7 +50,7 @@ const Category = () => {
       cancelButtonColor: "#6c6c6c",
       confirmButtonText: "Delete Category",
       cancelButtonText: "Cancel",
-      background: "#feefe0"
+      background: "#feefe0",
     });
 
     if (isConfirmed) {
@@ -61,7 +63,7 @@ const Category = () => {
           confirmButtonColor: "#018b76",
           background: "#feefe0",
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         refetch();
       } catch {
@@ -70,7 +72,7 @@ const Category = () => {
           title: "Error",
           text: "Failed to delete category",
           confirmButtonColor: "#018b76",
-          background: "#feefe0"
+          background: "#feefe0",
         });
       }
     }
@@ -78,21 +80,21 @@ const Category = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!form.bn.trim() || !form.en.trim()) {
       return Swal.fire({
         icon: "error",
         title: "Required Fields",
         text: "Please fill in both name fields",
         confirmButtonColor: "#018b76",
-        background: "#feefe0"
+        background: "#feefe0",
       });
     }
 
     const categoryData = {
       bn: form.bn.trim(),
       en: form.en.trim(),
-      category: form.en.replace(/\s+/g, "").toLowerCase()
+      category: form.en.replace(/\s+/g, "").toLowerCase(),
     };
 
     try {
@@ -105,7 +107,7 @@ const Category = () => {
           confirmButtonColor: "#018b76",
           background: "#feefe0",
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       } else {
         await axiosPublic.post("/categories", categoryData);
@@ -116,19 +118,20 @@ const Category = () => {
           confirmButtonColor: "#018b76",
           background: "#feefe0",
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
       resetForm();
       refetch();
       setActiveTab("list");
     } catch (error) {
+      console.error(error);
       await Swal.fire({
         icon: "error",
         title: "Error",
-        text: `Failed to ${editingId ? 'update' : 'add'} category`,
+        text: `Failed to ${editingId ? "update" : "add"} category`,
         confirmButtonColor: "#018b76",
-        background: "#feefe0"
+        background: "#feefe0",
       });
     }
   };
@@ -136,7 +139,7 @@ const Category = () => {
   const handleEdit = (category) => {
     setForm({
       bn: category.bn,
-      en: category.en
+      en: category.en,
     });
     setEditingId(category._id);
     setIsFormOpen(true);
@@ -150,7 +153,7 @@ const Category = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={fadeIn}
@@ -165,10 +168,11 @@ const Category = () => {
               Category Management
             </h1>
             <p className="text-brand-gray-base">
-              Organize and manage your content categories in both English and Bangla
+              Organize and manage your content categories in both English and
+              Bangla
             </p>
           </div>
-          
+
           {(role === "admin" || role === "moderator") && (
             <button
               onClick={() => {
@@ -197,7 +201,11 @@ const Category = () => {
           {/* Tabs */}
           <div className="flex border-b border-brand-gray-light">
             <button
-              className={`px-6 py-3 font-medium flex items-center gap-2 ${activeTab === "list" ? "text-brand-teal-base border-b-2 border-brand-teal-base" : "text-brand-gray-base"}`}
+              className={`px-6 py-3 font-medium flex items-center gap-2 ${
+                activeTab === "list"
+                  ? "text-brand-teal-base border-b-2 border-brand-teal-base"
+                  : "text-brand-gray-base"
+              }`}
               onClick={() => setActiveTab("list")}
             >
               <List size={18} />
@@ -205,7 +213,11 @@ const Category = () => {
             </button>
             {(role === "admin" || role === "moderator") && (
               <button
-                className={`px-6 py-3 font-medium flex items-center gap-2 ${activeTab === "form" ? "text-brand-teal-base border-b-2 border-brand-teal-base" : "text-brand-gray-base"}`}
+                className={`px-6 py-3 font-medium flex items-center gap-2 ${
+                  activeTab === "form"
+                    ? "text-brand-teal-base border-b-2 border-brand-teal-base"
+                    : "text-brand-gray-base"
+                }`}
                 onClick={() => {
                   resetForm();
                   setActiveTab("form");
@@ -220,7 +232,8 @@ const Category = () => {
           {/* Tab Panels */}
           <div className="p-6">
             <AnimatePresence mode="wait">
-              {activeTab === "form" && (role === "admin" || role === "moderator") ? (
+              {activeTab === "form" &&
+              (role === "admin" || role === "moderator") ? (
                 <motion.div
                   key="form"
                   initial={{ opacity: 0, y: 10 }}
@@ -233,10 +246,10 @@ const Category = () => {
                       <Tag size={24} />
                       {editingId ? "Edit Category" : "Create New Category"}
                     </h2>
-                    
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-brand-gray-base flex items-center gap-2">
+                        <label className="text-sm font-medium text-brand-gray-base flex items-center gap-2">
                           <Languages size={16} />
                           English Name
                         </label>
@@ -250,9 +263,9 @@ const Category = () => {
                           required
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-brand-gray-base flex items-center gap-2">
+                        <label className="text-sm font-medium text-brand-gray-base flex items-center gap-2">
                           <Languages size={16} />
                           Bangla Name
                         </label>
@@ -266,7 +279,7 @@ const Category = () => {
                           required
                         />
                       </div>
-                      
+
                       <div className="pt-2 flex gap-3">
                         <button
                           type="submit"
@@ -275,7 +288,7 @@ const Category = () => {
                           <Check size={18} />
                           {editingId ? "Update Category" : "Add Category"}
                         </button>
-                        
+
                         {editingId && (
                           <button
                             type="button"
@@ -290,15 +303,21 @@ const Category = () => {
                         )}
                       </div>
                     </form>
-                    
+
                     <div className="mt-8 p-4 bg-brand-orange-light rounded-lg border border-brand-orange-base/20">
                       <div className="flex items-start gap-3">
-                        <Info size={18} className="text-brand-orange-base mt-0.5 flex-shrink-0" />
+                        <Info
+                          size={18}
+                          className="text-brand-orange-base mt-0.5 flex-shrink-0"
+                        />
                         <div>
-                          <h4 className="font-medium text-brand-gray-base mb-1">Category Slug</h4>
+                          <h4 className="font-medium text-brand-gray-base mb-1">
+                            Category Slug
+                          </h4>
                           <p className="text-sm text-brand-gray-base">
-                            The system will automatically generate a URL-friendly slug from the English name.
-                            For example: "Technology News" becomes "technologynews".
+                            The system will automatically generate a
+                            URL-friendly slug from the English name. For
+                            example: "Technology News" becomes "technologynews".
                           </p>
                         </div>
                       </div>
@@ -316,39 +335,59 @@ const Category = () => {
                   {/* Loading State */}
                   {loadingCategories && (
                     <div className="flex justify-center items-center py-12">
-                      <Loader2 size={32} className="animate-spin text-brand-teal-base" />
+                      <Loader2
+                        size={32}
+                        className="animate-spin text-brand-teal-base"
+                      />
                     </div>
                   )}
-                  
+
                   {/* Error State */}
                   {error && (
                     <div className="p-4 mb-6 bg-red-50 rounded-lg border border-red-200">
                       <div className="flex items-center gap-3 text-red-600">
                         <AlertTriangle size={20} />
-                        <span className="font-medium">Error loading categories</span>
+                        <span className="font-medium">
+                          Error loading categories
+                        </span>
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Category List */}
                   {!loadingCategories && (
                     <div className="overflow-hidden rounded-lg border border-brand-gray-light">
                       <table className="min-w-full divide-y divide-brand-gray-light">
                         <thead className="bg-brand-teal-base">
                           <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                            >
                               #
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                            >
                               English Name
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                            >
                               Bangla Name
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                            >
                               Slug
                             </th>
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider"
+                            >
                               Actions
                             </th>
                           </tr>
@@ -356,7 +395,10 @@ const Category = () => {
                         <tbody className="bg-white divide-y divide-brand-gray-light">
                           {categories.length > 0 ? (
                             categories.map((cat, index) => (
-                              <tr key={cat._id} className="hover:bg-brand-cream/50 transition-colors">
+                              <tr
+                                key={cat._id}
+                                className="hover:bg-brand-cream/50 transition-colors"
+                              >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-gray-base">
                                   {index + 1}
                                 </td>
@@ -373,7 +415,8 @@ const Category = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <div className="flex justify-end gap-2">
-                                    {(role === "admin" || role === "moderator") && (
+                                    {(role === "admin" ||
+                                      role === "moderator") && (
                                       <button
                                         onClick={() => handleEdit(cat)}
                                         className="text-brand-teal-base hover:text-brand-teal-500 flex items-center gap-1"
@@ -384,7 +427,9 @@ const Category = () => {
                                     )}
                                     {role === "admin" && (
                                       <button
-                                        onClick={() => handleDelete(cat._id, cat.en)}
+                                        onClick={() =>
+                                          handleDelete(cat._id, cat.en)
+                                        }
                                         className="text-red-600 hover:text-red-800 flex items-center gap-1"
                                       >
                                         <Trash2 size={16} />
@@ -397,11 +442,21 @@ const Category = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="5" className="px-6 py-12 text-center">
+                              <td
+                                colSpan="5"
+                                className="px-6 py-12 text-center"
+                              >
                                 <div className="flex flex-col items-center justify-center text-brand-gray-base">
-                                  <Tag size={48} className="text-brand-gray-light mb-4" />
-                                  <p className="font-medium">No categories found</p>
-                                  <p className="text-sm mt-1">Create your first category to get started</p>
+                                  <Tag
+                                    size={48}
+                                    className="text-brand-gray-light mb-4"
+                                  />
+                                  <p className="font-medium">
+                                    No categories found
+                                  </p>
+                                  <p className="text-sm mt-1">
+                                    Create your first category to get started
+                                  </p>
                                 </div>
                               </td>
                             </tr>
@@ -422,7 +477,7 @@ const Category = () => {
             <Info size={24} />
             Category Management Guidelines
           </h3>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -430,47 +485,59 @@ const Category = () => {
                   <Tag size={18} className="text-brand-teal-base" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-brand-gray-base">Creating Categories</h4>
+                  <h4 className="font-medium text-brand-gray-base">
+                    Creating Categories
+                  </h4>
                   <p className="text-sm text-brand-gray-base mt-1">
-                    Provide both English and Bangla names for each category to support bilingual content.
+                    Provide both English and Bangla names for each category to
+                    support bilingual content.
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="bg-brand-orange-light p-2 rounded-full">
                   <AlertTriangle size={18} className="text-brand-orange-base" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-brand-gray-base">Important Notes</h4>
+                  <h4 className="font-medium text-brand-gray-base">
+                    Important Notes
+                  </h4>
                   <p className="text-sm text-brand-gray-base mt-1">
-                    Deleting a category will not delete associated content, but may affect content organization.
+                    Deleting a category will not delete associated content, but
+                    may affect content organization.
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="bg-brand-teal-50 p-2 rounded-full">
                   <Edit2 size={18} className="text-brand-teal-base" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-brand-gray-base">Editing Categories</h4>
+                  <h4 className="font-medium text-brand-gray-base">
+                    Editing Categories
+                  </h4>
                   <p className="text-sm text-brand-gray-base mt-1">
-                    Changing a category name will update it everywhere it's used, but the slug may remain the same.
+                    Changing a category name will update it everywhere it's
+                    used, but the slug may remain the same.
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="bg-brand-teal-50 p-2 rounded-full">
                   <Languages size={18} className="text-brand-teal-base" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-brand-gray-base">Best Practices</h4>
+                  <h4 className="font-medium text-brand-gray-base">
+                    Best Practices
+                  </h4>
                   <p className="text-sm text-brand-gray-base mt-1">
-                    Keep category names concise but descriptive in both languages for better user experience.
+                    Keep category names concise but descriptive in both
+                    languages for better user experience.
                   </p>
                 </div>
               </div>
@@ -490,7 +557,9 @@ const Category = () => {
               setActiveTab(activeTab === "list" ? "form" : "list");
             }}
             className="bg-brand-orange-base text-white p-4 rounded-full shadow-lg"
-            aria-label={activeTab === "list" ? "Add category" : "View categories"}
+            aria-label={
+              activeTab === "list" ? "Add category" : "View categories"
+            }
           >
             {activeTab === "list" ? <Plus size={24} /> : <List size={24} />}
           </motion.button>
