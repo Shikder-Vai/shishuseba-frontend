@@ -61,28 +61,48 @@ const LandingPageList = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Landing Pages</h1>
         {(role === "admin" || role === "moderator") && (
-          <div className="flex gap-4">
-            <Link
-              to="/dashboard/manage-landing-page/new?template=default"
-              className="bg-brand-teal-base text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          <div className="dropdown">
+            <button
+              className="btn"
+              popoverTarget="popover-1"
+              style={{ anchorName: "--anchor-1" }}
             >
-              <Plus />
-              Create New Page (Default)
-            </Link>
-            <Link
-              to="/dashboard/manage-landing-page/new?template=template1"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              Create Landing page
+            </button>
+            <ul
+              className="dropdown menu w-52 rounded-box bg-base-100 shadow-sm"
+              popover="auto"
+              id="popover-1"
+              style={{ positionAnchor: "--anchor-1" }}
             >
-              <Plus />
-              Create New Page (Template 1)
-            </Link>
-            <Link
-              to="/dashboard/manage-landing-page/new?template=template3"
-              className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              <Plus />
-              Create New Page (Template 3)
-            </Link>
+              <li>
+                <Link
+                  to="/dashboard/manage-landing-page/new?template=default"
+                  className="  px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Plus />
+                  Template 0 (Default)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/manage-landing-page/new?template=template1"
+                  className="  px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Plus />
+                  Template 1
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/manage-landing-page/new?template=template3"
+                  className=" px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Plus />
+                  Template 3
+                </Link>
+              </li>
+            </ul>
           </div>
         )}
       </div>
