@@ -4,6 +4,7 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Loader from "../../components/Loader";
 import ManageTemplate1 from "./ManageTemplate1";
 import ManageDefaultTemplate from "./ManageDefaultTemplate";
+import ManageTemplate3 from "./ManageTemplate3";
 
 const ManageLandingPage = () => {
   const { id } = useParams();
@@ -31,18 +32,15 @@ const ManageLandingPage = () => {
     return <Loader />;
   }
 
-  if (isEditMode) {
-    if (data?.templateId === "template1") {
+  const templateId = isEditMode ? data?.templateId : template;
+
+  switch (templateId) {
+    case "template1":
       return <ManageTemplate1 id={id} />;
-    } else {
+    case "template3":
+      return <ManageTemplate3 id={id} />;
+    default:
       return <ManageDefaultTemplate id={id} />;
-    }
-  } else {
-    if (template === "template1") {
-      return <ManageTemplate1 id={id} />;
-    } else {
-      return <ManageDefaultTemplate id={id} />;
-    }
   }
 };
 

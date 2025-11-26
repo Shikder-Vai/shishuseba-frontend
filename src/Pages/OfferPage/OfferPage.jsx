@@ -1,4 +1,5 @@
 import Template1 from "./Template1";
+import Template3 from "./Template3";
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useLocation } from "react-router-dom";
@@ -143,6 +144,8 @@ const OfferPage = () => {
 
   if (landingPageData?.templateId === "template1") {
     return <Template1 landingPageData={landingPageData} />;
+  } else if (landingPageData?.templateId === "template3") {
+    return <Template3 landingPageData={landingPageData} />;
   }
 
   const {
@@ -329,3 +332,4 @@ const OfferPage = () => {
 };
 
 export default OfferPage;
+

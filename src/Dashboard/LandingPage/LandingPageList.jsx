@@ -76,6 +76,13 @@ const LandingPageList = () => {
               <Plus />
               Create New Page (Template 1)
             </Link>
+            <Link
+              to="/dashboard/manage-landing-page/new?template=template3"
+              className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus />
+              Create New Page (Template 3)
+            </Link>
           </div>
         )}
       </div>
