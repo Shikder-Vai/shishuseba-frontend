@@ -5,6 +5,7 @@ import Loader from "../../components/Loader";
 import ManageTemplate1 from "./ManageTemplate1";
 import ManageDefaultTemplate from "./ManageDefaultTemplate";
 import ManageTemplate3 from "./ManageTemplate3";
+import ManageTemplate2 from "./ManageTemplate2";
 
 const ManageLandingPage = () => {
   const { id } = useParams();
@@ -37,6 +38,8 @@ const ManageLandingPage = () => {
   switch (templateId) {
     case "template1":
       return <ManageTemplate1 id={id} />;
+    case "template2":
+      return <ManageTemplate2 id={id} />;
     case "template3":
       return <ManageTemplate3 id={id} />;
     default:

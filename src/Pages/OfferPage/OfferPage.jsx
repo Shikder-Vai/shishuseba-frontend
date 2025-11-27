@@ -1,4 +1,5 @@
 import Template1 from "./Template1";
+import Template2 from "./Template2";
 import Template3 from "./Template3";
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -35,7 +36,7 @@ const OfferPage = () => {
   });
 
   useEffect(() => {
-    if (landingPageData && landingPageData.featuredProduct) {
+    if (landingPageData && landingPageData.featuredProduct && landingPageData.featuredProduct.variants && landingPageData.featuredProduct.variants.length > 0) {
       setSelectedVariant(landingPageData.featuredProduct.variants[0]);
     }
   }, [landingPageData]);
@@ -144,6 +145,8 @@ const OfferPage = () => {
 
   if (landingPageData?.templateId === "template1") {
     return <Template1 landingPageData={landingPageData} />;
+  } else if (landingPageData?.templateId === "template2") {
+    return <Template2 landingPageData={landingPageData} />;
   } else if (landingPageData?.templateId === "template3") {
     return <Template3 landingPageData={landingPageData} />;
   }

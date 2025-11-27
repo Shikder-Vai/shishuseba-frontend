@@ -95,6 +95,15 @@ const LandingPageList = () => {
               </li>
               <li>
                 <Link
+                  to="/dashboard/manage-landing-page/new?template=template2"
+                  className="  px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Plus />
+                  Template 2
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/dashboard/manage-landing-page/new?template=template3"
                   className=" px-4 py-2 rounded-lg flex items-center gap-2"
                 >
