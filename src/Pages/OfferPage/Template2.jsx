@@ -418,7 +418,7 @@ const Template2 = ({ landingPageData }) => {
           <div className="max-w-3xl mx-auto px-4 text-center">
             {pricing.originalPrice && (
               <p className="text-sm md:text-base">
-                তেলের পূর্বের মূল্য {pricing.originalPrice} টাকা
+                পূর্বের মূল্য {pricing.originalPrice} টাকা
               </p>
             )}
             {pricing.offerPrice && (

@@ -42,26 +42,23 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    if (order) {
-      const subtotal = order.items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-      const initialShipping = subtotal >= 1000 ? "0" : "80";
-      setShippingCost(initialShipping);
-    }
-  }, [order]);
+  const subtotal =
+    order?.items?.reduce((acc, item) => acc + item.price * item.quantity, 0) ||
+    0;
 
   useEffect(() => {
-    if (order) {
-      const subtotal = order.items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-      setTotal(subtotal + parseFloat(shippingCost));
+    if (subtotal >= 1000) {
+      setShippingCost("0");
+    } else {
+      if (shippingCost === "0") {
+        setShippingCost("80");
+      }
     }
-  }, [order, shippingCost]);
+  }, [shippingCost, subtotal]);
+
+  useEffect(() => {
+    setTotal(subtotal + parseFloat(shippingCost));
+  }, [subtotal, shippingCost]);
 
   // --- CHECKOUT PAGE VIEW ---
   useEffect(() => {
@@ -137,6 +134,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
 
       const newOrder = {
         ...order,
+        subtotal: subtotal,
         orderId: uniqueId, // Add the unique ID here
         status: "pending",
         shippingCost: parseFloat(shippingCost),
@@ -475,7 +473,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
               Shipping Method
             </h4>
             <div className="space-y-3">
-              {order?.subtotal >= 1000 ? (
+              {subtotal >= 1000 ? (
                 <label className="flex items-center justify-between p-3 border border-brand-teal-base rounded-lg bg-teal-50 cursor-not-allowed">
                   <div className="flex items-center space-x-3">
                     <input
@@ -531,7 +529,7 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
           <div className="space-y-3 border-t border-gray-200 pt-4 mt-4">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">{order?.subtotal}৳</span>
+              <span className="font-medium">{subtotal}৳</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Shipping</span>
