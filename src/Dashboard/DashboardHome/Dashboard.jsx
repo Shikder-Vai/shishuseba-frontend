@@ -12,6 +12,7 @@ import {
   FiAward,
   FiCalendar,
   FiMapPin,
+  FiArchive,
 } from "react-icons/fi";
 import {
   BarChart,
@@ -38,6 +39,7 @@ import {
 } from "antd";
 import moment from "moment";
 import useOrderReports from "./../../hooks/useOrderReports";
+import useAllProducts from "./../../hooks/useAllProducts";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -77,6 +79,22 @@ const staggerContainer = {
 
 const OrderAnalyticsDashboard = () => {
   const { reports, loading, error, filters, updateFilters } = useOrderReports();
+  const [products] = useAllProducts();
+
+  const totalStockValue =
+    products?.reduce((acc, product) => {
+      if (product.variants && product.variants.length > 0) {
+        return (
+          acc +
+          product.variants.reduce((variantAcc, variant) => {
+            const stock = variant.stock_quantity || 0;
+            const price = variant.price || 0;
+            return variantAcc + stock * price;
+          }, 0)
+        );
+      }
+      return acc;
+    }, 0) || 0;
 
   const handleDateChange = (dates) => {
     updateFilters({
@@ -217,7 +235,7 @@ const OrderAnalyticsDashboard = () => {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
       >
         <motion.div
           variants={fadeIn}
@@ -279,6 +297,26 @@ const OrderAnalyticsDashboard = () => {
                 </h3>
                 <p className="text-2xl font-bold text-[#179784]">
                   {reports.salesPerformance?.orderCount?.toLocaleString() || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          variants={fadeIn}
+          className="card bg-white shadow-md hover:shadow-lg transition-shadow"
+        >
+          <div className="card-body">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-[#cceeff] text-[#0077cc]">
+                <FiArchive size={24} />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-[#6c6c6c]">
+                  Total Stock Value
+                </h3>
+                <p className="text-2xl font-bold text-[#0077cc]">
+                  ৳{totalStockValue.toLocaleString()}
                 </p>
               </div>
             </div>
