@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Checkout from "../Checkout/Checkout";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const Template2 = ({ landingPageData }) => {
   const {
@@ -25,6 +27,22 @@ const Template2 = ({ landingPageData }) => {
 
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [order, setOrder] = useState(null);
+
+  const [centerSlidePercentage, setCenterSlidePercentage] = useState(100);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setCenterSlidePercentage(33.33);
+      } else {
+        setCenterSlidePercentage(100);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // initial call
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (featuredProduct && featuredProduct.variants?.length > 0) {
@@ -126,7 +144,6 @@ const Template2 = ({ landingPageData }) => {
           {noticeBar.text}
         </div>
       )}
-
       {hero && (
         <section
           className="brand-light py-8"
@@ -188,7 +205,6 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
       {whyChooseUs && (
         <section className="py-8 bg-white">
           <div className="max-w-4xl mx-auto px-4">
@@ -227,7 +243,6 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
       {usage && (
         <section className="py-8 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 text-center">
@@ -256,32 +271,59 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
       {testimonials && testimonials.length > 0 && (
         <section className="py-8 bg-white">
           <div className="max-w-5xl mx-auto px-4">
             <h3 className="text-center text-lg md:text-xl font-bold mb-4">
               আমাদের গ্রাহকদের মতামত
             </h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              {testimonials.map((testimonial, index) => (
-                <article
-                  key={index}
-                  className="bg-gray-50 rounded-xl border border-gray-200 p-3 text-sm shadow-soft"
-                >
-                  {testimonial.image ? (
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.author}
-                      className="w-full object-cover rounded-lg mb-2"
-                    />
-                  ) : (
-                    <p className="mb-2">{testimonial.text}</p>
-                  )}
-                  <p className="font-semibold">- {testimonial.author}</p>
-                </article>
-              ))}
-            </div>
+            {testimonials.length > 3 ? (
+              <Carousel
+                centerMode={true}
+                centerSlidePercentage={centerSlidePercentage}
+                showArrows={true}
+                showStatus={false}
+                showThumbs={false}
+                infiniteLoop={true}
+              >
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="px-2 h-full">
+                    <article className="bg-gray-50 rounded-xl border border-gray-200 p-3 text-sm shadow-soft h-full">
+                      {testimonial.image ? (
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.author}
+                          className="w-full object-cover rounded-lg mb-2"
+                        />
+                      ) : (
+                        <p className="mb-2">{testimonial.text}</p>
+                      )}
+                      <p className="font-semibold">- {testimonial.author}</p>
+                    </article>
+                  </div>
+                ))}
+              </Carousel>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-4">
+                {testimonials.map((testimonial, index) => (
+                  <article
+                    key={index}
+                    className="bg-gray-50 rounded-xl border border-gray-200 p-3 text-sm shadow-soft"
+                  >
+                    {testimonial.image ? (
+                      <img
+                        src={testimonial.image}
+                        alt={testimonial.author}
+                        className="w-full object-cover rounded-lg mb-2"
+                      />
+                    ) : (
+                      <p className="mb-2">{testimonial.text}</p>
+                    )}
+                    <p className="font-semibold">- {testimonial.author}</p>
+                  </article>
+                ))}
+              </div>
+            )}
             {usage?.buttonText && (
               <div className="text-center mt-4">
                 <button
@@ -299,29 +341,54 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
+      {/* customer video section with carousel */}
       {customerVideos && customerVideos.length > 0 && (
         <section className="py-8 bg-lime-200/70">
           <div className="max-w-5xl mx-auto px-4">
             <h3 className="text-center text-lg md:text-xl font-bold mb-4">
               আমাদের সন্তুষ্ট গ্রাহকদের ভিডিও রিভিউ
             </h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              {customerVideos.map((video, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-xl shadow-soft h-40"
-                >
-                  <iframe
-                    className="w-full h-full"
-                    src={getYoutubeEmbedUrl(video.url)}
-                    title={video.title || "Customer Video"}
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              ))}
-            </div>
+            {customerVideos.length > 3 ? (
+              <Carousel
+                centerMode={true}
+                centerSlidePercentage={centerSlidePercentage}
+                showArrows={true}
+                showStatus={false}
+                showThumbs={false}
+                infiniteLoop={true}
+              >
+                {customerVideos.map((video, index) => (
+                  <div key={index} className="p-2">
+                    <div className="bg-white rounded-xl shadow-soft h-40">
+                      <iframe
+                        className="w-full h-full"
+                        src={getYoutubeEmbedUrl(video.url)}
+                        title={video.title || "Customer Video"}
+                        frameBorder="0"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+                ))}
+              </Carousel>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-4">
+                {customerVideos.map((video, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl shadow-soft h-40"
+                  >
+                    <iframe
+                      className="w-full h-full"
+                      src={getYoutubeEmbedUrl(video.url)}
+                      title={video.title || "Customer Video"}
+                      frameBorder="0"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                ))}
+              </div>
+            )}
             {usage?.buttonText && (
               <div className="text-center mt-4">
                 <button
@@ -339,7 +406,7 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
+      {/* pricing section */}
       {pricing && (
         <section
           className="brand-green text-white py-6"
@@ -383,7 +450,7 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
+      {/* labTest section */}
       {labTest && (
         <section className="py-8 bg-white">
           <div className="max-w-4xl mx-auto px-4 text-center">
@@ -407,7 +474,6 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
       {orderInstructions?.text && (
         <section className="py-6 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 text-center text-sm md:text-base">
@@ -415,8 +481,7 @@ const Template2 = ({ landingPageData }) => {
           </div>
         </section>
       )}
-
-      {/* ✅ Template1 এর মতো Checkout Section + Data pass */}
+      {/* checkout section */}
       <section id="checkout-section" className="my-12 sm:my-16 p-1">
         <div className="bg-pink-500 p-4 sm:p-5 rounded-t-2xl shadow-lg">
           <h2 className="text-lg sm:text-xl font-extrabold text-white text-center">
@@ -431,7 +496,6 @@ const Template2 = ({ landingPageData }) => {
               onVariantChange={handleVariantChange}
             />
           ) : (
-            // fallback – আগের আচরণ রাখতে চাইলে
             <Checkout
               landingPage={true}
               featuredProductId={featuredProductId}
@@ -439,7 +503,7 @@ const Template2 = ({ landingPageData }) => {
           )}
         </div>
       </section>
-
+      {/* footer section */}
       {footer?.text && (
         <footer
           className="brand-green text-white text-center text-xs py-4"
@@ -448,7 +512,23 @@ const Template2 = ({ landingPageData }) => {
             color: footer.textColor || "white",
           }}
         >
-          <p>{footer.text}</p>
+          <div className="container mx-auto text-center font-sans text-md px-6">
+            <h3 className="text-3xl sm:text-4xl font-extrabold">শিশুসেবা</h3>
+            <p className=" mt-1">আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন</p>
+            <p></p>
+            <p className="mt-2 text-base sm:text-lg">
+              যেকোনো প্রয়োজনে কল করুন:{" "}
+              <a href={`tel:${footer.text}`}>
+                <strong className=" text-lg text-rose-300 sm:text-xl  transition duration-300">
+                  {footer.text}
+                </strong>
+              </a>
+            </p>
+            <p className="text-xs  mt-2">
+              &copy; {new Date().getFullYear()} Shishuseba.com. All Rights
+              Reserved.
+            </p>
+          </div>
         </footer>
       )}
     </div>

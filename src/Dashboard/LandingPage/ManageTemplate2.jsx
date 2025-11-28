@@ -663,6 +663,28 @@ const ManageTemplate2 = ({ id }) => {
               onChange={(e) => handleInputChange(e, "footer", "text")}
               className="w-full p-2 border rounded"
             />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label>Background Color</label>
+                <input
+                  type="color"
+                  name="bgColor"
+                  value={formData.footer.bgColor}
+                  onChange={(e) => handleInputChange(e, "footer", "bgColor")}
+                  className="w-full h-10 p-1 border rounded"
+                />
+              </div>
+              <div>
+                <label>Text Color</label>
+                <input
+                  type="color"
+                  name="textColor"
+                  value={formData.footer.textColor}
+                  onChange={(e) => handleInputChange(e, "footer", "textColor")}
+                  className="w-full h-10 p-1 border rounded"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end pt-6 border-t">
