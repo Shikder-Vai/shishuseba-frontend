@@ -14,7 +14,7 @@ const Template2 = ({ landingPageData }) => {
     orderInstructions,
     footer,
     featuredProductId,
-    featuredProduct, // ✅ ধরলাম এটা আছে Template1 এর মত
+    featuredProduct,
   } = landingPageData || {};
 
   const scrollToCheckout = () => {
@@ -98,6 +98,21 @@ const Template2 = ({ landingPageData }) => {
     }));
   };
 
+  const getYoutubeEmbedUrl = (url) => {
+    if (!url) return "";
+    try {
+      const fullUrl = url.startsWith("http")
+        ? url
+        : `https://${url.replace(/^\/\//, "")}`;
+      const urlObj = new URL(fullUrl);
+      const videoId = urlObj.searchParams.get("v");
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    } catch (error) {
+      console.error("Invalid URL:", error);
+      return url;
+    }
+  };
+
   return (
     <div className="bg-gray-100 text-gray-800 antialiased">
       {noticeBar?.text && (
@@ -133,7 +148,7 @@ const Template2 = ({ landingPageData }) => {
                   <div className="aspect-video">
                     <iframe
                       className="w-full h-full"
-                      src={hero.videoUrl}
+                      src={getYoutubeEmbedUrl(hero.videoUrl)}
                       title={hero.title || "Hero Video"}
                       frameBorder="0"
                       allowFullScreen
@@ -298,8 +313,8 @@ const Template2 = ({ landingPageData }) => {
                   className="bg-white rounded-xl shadow-soft h-40"
                 >
                   <iframe
-                    className="w-full h-full rounded-xl"
-                    src={video.url}
+                    className="w-full h-full"
+                    src={getYoutubeEmbedUrl(video.url)}
                     title={video.title || "Customer Video"}
                     frameBorder="0"
                     allowFullScreen

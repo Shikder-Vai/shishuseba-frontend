@@ -212,7 +212,7 @@ const OrderAnalyticsDashboard = () => {
         </div>
       </motion.div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards Section */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -230,7 +230,7 @@ const OrderAnalyticsDashboard = () => {
               </div>
               <div className="ml-4">
                 <h3 className="text-sm font-medium text-[#6c6c6c]">
-                  Total Revenue
+                  Total Sales
                 </h3>
                 <p className="text-2xl font-bold text-[#018b76]">
                   ৳
