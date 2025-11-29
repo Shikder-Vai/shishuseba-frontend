@@ -125,7 +125,7 @@ const DashboardLayout = () => {
     <div>
       <Topbar />
       <div className="flex min-h-screen">
-        <aside className="w-64 bg-white border-r border-gray-200 px-4 fixed top-[48px] bottom-0 overflow-y-auto">
+        <aside className="w-64 fixed top-[56px] bottom-0 overflow-y-auto bg-white border-r border-gray-200 px-4">
           <button
             type="button"
             aria-label="Back to Home"
@@ -143,7 +143,7 @@ const DashboardLayout = () => {
             </ul>
           </nav>
         </aside>
-        <main className="flex-1 ml-64 px-5  mt-[48px]">
+        <main className="flex-1 ml-64 p-4 overflow-y-auto">
           <Outlet />
         </main>
       </div>

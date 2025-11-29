@@ -12,8 +12,6 @@ import {
   FiRotateCw,
 } from "react-icons/fi";
 import useOrderRequest from "../../hooks/useOrderRequest";
-import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
 import { format, parse } from "date-fns";
@@ -56,7 +54,7 @@ const CancelOrder = () => {
   const handleUpdateStatus = (orderId) => {
     mutation.mutate({ orderId, status: "pending" });
   };
-  
+
   const deleteOrders = async (orderIds) => {
     // This is a placeholder. In a real application, you would send a request
     // to your backend to delete the orders.
@@ -64,12 +62,12 @@ const CancelOrder = () => {
     // Assuming the backend supports bulk deletion with a { data: { ids } } payload
     await axiosSecure.delete("/order", { data: { ids: orderIds } });
   };
-  
+
   const handleDeleteSelected = async () => {
     if (selectedOrders.length === 0) {
       return;
     }
-  
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: `You are about to delete ${selectedOrders.length} order(s). This action cannot be undone.`,
@@ -79,13 +77,17 @@ const CancelOrder = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
-  
+
     if (result.isConfirmed) {
       try {
         await deleteOrders(selectedOrders);
         refetch();
         setSelectedOrders([]); // Clear selection
-        Swal.fire("Deleted!", "The selected orders have been deleted.", "success");
+        Swal.fire(
+          "Deleted!",
+          "The selected orders have been deleted.",
+          "success"
+        );
       } catch (error) {
         console.error("Error deleting orders:", error);
         Swal.fire("Error!", "Could not delete the orders.", "error");
@@ -286,17 +288,14 @@ const CancelOrder = () => {
         </div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="bg-white shadow-soft border border-brand-gray-light"
-      >
-        <div>
-          <Table className="min-w-full table-fixed">
-            <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
-              <Tr>
+      <div className="bg-white shadow-soft border border-brand-gray-light rounded-lg">
+        {/* Desktop Table */}
+        <div className="hidden md:block">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-teal-100">
+              <tr>
                 {role === "admin" && (
-                  <Th className="px-4 py-2" style={{ width: "50px" }}>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">
                     <input
                       type="checkbox"
                       onChange={handleSelectAll}
@@ -305,125 +304,192 @@ const CancelOrder = () => {
                         selectedOrders.length === filteredOrders.length
                       }
                     />
-                  </Th>
-                )}
-                <Th
-                  className="px-1 py-2 text-left rounded-tl-xl"
-                  style={{ width: "10px" }}
-                >
-                  SL
-                </Th>
-                <Th className="px-6 py-4 text-left text-sm">Order ID</Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                  </th>
+                )}{" "}
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Order ID
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-wrap max-w-xs">
                   Customer
-                </Th>
-                <Th className="px-6 py-4 text-left hidden md:table-cell">
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Phone
-                </Th>
-                <Th className="px-6 py-4 text-left hidden lg:table-cell">
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                   Items
-                </Th>
-                <Th className="px-6 py-4 text-left">Total</Th>
-                <Th className="px-6 py-4 text-left hidden sm:table-cell text-sm">
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                   Order Date
-                </Th>
-                <Th className="px-6 py-4 text-left">Status</Th>
-                <Th className="px-6 py-4 text-left text-sm">Canceled By</Th>
-                <Th className="px-6 py-4 text-left rounded-tr-xl">Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody className="divide-y divide-brand-gray-light">
-              {filteredOrders.map((o, i) => (
-                <Tr
-                  key={o?._id}
-                  className="hover:bg-brand-cream/30 transition-colors"
-                >
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                  Canceled By
+                </th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredOrders.map((o) => (
+                <tr key={o._id} className="hover:bg-gray-50">
                   {role === "admin" && (
-                    <Td className="px-4 py-2">
+                    <td className="px-4 py-2 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={selectedOrders.includes(o._id)}
                         onChange={() => handleSelectOrder(o._id)}
                       />
-                    </Td>
+                    </td>
                   )}
-                  <Td
-                    className="px-1 py-2 whitespace-nowrap"
-                    style={{ width: "10px" }}
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    <div className="text-xs font-medium text-gray-900">
+                      {o.orderId}
+                    </div>
+                  </td>
+                  <td
+                    className="px-4 py-2 max-w-xs text-wrap "
+                    title={`${o.user?.name}, </br> ${o.user?.address}, ${o.user?.district}`}
                   >
-                    {i + 1}
-                  </Td>
-                  <Td className="px-4 py-3">
-                    <div className="font-medium text-brand-gray-base">
-                      {o?.orderId}
+                    <div className="text-xs text-gray-900 truncate">
+                      {o.user?.name}
                     </div>
-                    <div className="text-sm text-brand-gray-base md:hidden">
-                      {o?.user?.mobile}
+                    <div className="text-xs text-gray-500 ">
+                      {o.user?.address}, {o.user?.district}
                     </div>
-                  </Td>
-                  <Td className="px-4 py-3 hidden md:table-cell">
-                    <div className="font-medium text-brand-gray-base">
-                      {o?.user?.name}
-                    </div>
-                    <div className="text-xs text-brand-gray-base">
-                      {o?.user?.address}, {o?.user?.district}
-                    </div>
-                  </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap hidden md:table-cell text-brand-gray-base">
-                    {o?.user?.mobile}
-                  </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell text-brand-gray-base">
-                    {o?.items?.length} item(s)
-                  </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap font-medium text-brand-gray-base">
-                    {o?.total} BDT
-                  </Td>
-                  <Td className="px-4 py-3 hidden sm:table-cell text-brand-gray-base">
-                    {formatDate(o?.user?.orderDate)}
-                  </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                    {o.user?.mobile}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500 hidden lg:table-cell">
+                    {o.items?.length} item(s)
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                    {o.total} BDT
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500 hidden lg:table-cell">
+                    {formatDate(o.user?.orderDate)}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         statusColors[o.status] || "bg-gray-100 text-gray-800"
                       }`}
                     >
                       {o.status}
                     </span>
-                  </Td>
-                  <Td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-brand-gray-base">
-                      <p className="font-medium">{o?.cancelBy?.name}</p>
-                      <p className="text-xs text-brand-orange-base">
-                        {formatDate(o?.cancelBy?.cancelledTime)}
-                      </p>
+                  </td>
+                  <td className="px-4 py-2 max-w-xs whitespace-nowrap truncate">
+                    <div className="text-xs text-gray-900 truncate">
+                      {o.cancelBy?.name}
                     </div>
-                  </Td>
-                  <Td className="px-4 py-3 flex items-center justify-center whitespace-nowrap">
-                    <div className="flex items-center gap-2">
+                    <div className="text-xs text-gray-500 truncate">
+                      {formatDate(o.cancelBy?.cancelledTime)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-right text-xs font-medium">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openDetailModal(o)}
-                        className="p-1.5 rounded-full bg-brand-teal-50 text-brand-teal-base hover:bg-brand-teal-100 transition-colors"
-                        aria-label="View details"
+                        className="text-indigo-600 hover:text-indigo-900"
                       >
-                        <FiEye size={16} />
+                        <FiEye />
                       </button>
                       {(role === "admin" || role === "moderator") && (
                         <button
                           onClick={() => handleUpdateStatus(o._id)}
-                          className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          className="text-blue-600 hover:text-blue-900"
                           aria-label="Move to pending"
                         >
-                          <FiRotateCw size={16} />
+                          <FiRotateCw />
                         </button>
                       )}
                     </div>
-                  </Td>
-                </Tr>
+                  </td>
+                </tr>
               ))}
-            </Tbody>
-          </Table>
+            </tbody>
+          </table>
         </div>
-      </motion.div>
+
+        {/* Mobile Card Layout */}
+        <div className="md:hidden">
+          {filteredOrders.map((o) => (
+            <div
+              key={o._id}
+              className="bg-white shadow rounded-lg p-4 mb-4 border border-gray-200"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="font-bold text-lg text-gray-900">
+                    {o.orderId}
+                  </div>
+                  <div className="text-sm text-gray-500">{o.user?.name}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-gray-900">
+                    {o.total} BDT
+                  </div>
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      statusColors[o.status] || "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {o.status}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">Phone:</span>{" "}
+                  {o.user?.mobile}
+                </div>
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">Order Date:</span>{" "}
+                  {formatDate(o.user?.orderDate)}
+                </div>
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">
+                    Canceled By:
+                  </span>{" "}
+                  {o.cancelBy?.name} at {formatDate(o.cancelBy?.cancelledTime)}
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end items-center gap-2">
+                <button
+                  onClick={() => openDetailModal(o)}
+                  className="text-indigo-600 hover:text-indigo-900"
+                >
+                  <FiEye />
+                </button>
+                {(role === "admin" || role === "moderator") && (
+                  <button
+                    onClick={() => handleUpdateStatus(o._id)}
+                    className="text-blue-600 hover:text-blue-900"
+                    aria-label="Move to pending"
+                  >
+                    <FiRotateCw />
+                  </button>
+                )}
+              </div>
+              {role === "admin" && (
+                <div className="mt-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedOrders.includes(o._id)}
+                    onChange={() => handleSelectOrder(o._id)}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Order Detail Modal */}
       <AnimatePresence>
