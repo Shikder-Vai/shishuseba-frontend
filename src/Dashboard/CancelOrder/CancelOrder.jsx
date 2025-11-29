@@ -9,6 +9,7 @@ import {
   FiCheck,
   FiTruck,
   FiX,
+  FiRotateCw,
 } from "react-icons/fi";
 import useOrderRequest from "../../hooks/useOrderRequest";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
@@ -16,17 +17,97 @@ import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Loader from "../../components/Loader";
 import SectionTitle from "../../components/SectionTitle";
 import { format, parse } from "date-fns";
+import { useRole } from "../../hooks/useRole";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 const statusColors = {
   cancel: "bg-red-100 text-red-600",
 };
 
 const CancelOrder = () => {
-  const [orders, loadingOrder] = useOrderRequest("cancel");
+  const [orders, loadingOrder, refetch] = useOrderRequest("cancel");
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [dateFilter, setDateFilter] = useState("all");
+  const [selectedOrders, setSelectedOrders] = useState([]);
+
+  const role = useRole();
+  const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ orderId, status }) => {
+      return axiosSecure.patch(`/order-request/${orderId}`, { status });
+    },
+    onSuccess: () => {
+      refetch();
+      queryClient.invalidateQueries(["orders", "pending"]);
+      Swal.fire(
+        "Updated!",
+        "Order status has been updated to pending.",
+        "success"
+      );
+    },
+  });
+
+  const handleUpdateStatus = (orderId) => {
+    mutation.mutate({ orderId, status: "pending" });
+  };
+  
+  const deleteOrders = async (orderIds) => {
+    // This is a placeholder. In a real application, you would send a request
+    // to your backend to delete the orders.
+    console.log("Deleting orders:", orderIds);
+    // Assuming the backend supports bulk deletion with a { data: { ids } } payload
+    await axiosSecure.delete("/order", { data: { ids: orderIds } });
+  };
+  
+  const handleDeleteSelected = async () => {
+    if (selectedOrders.length === 0) {
+      return;
+    }
+  
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete ${selectedOrders.length} order(s). This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await deleteOrders(selectedOrders);
+        refetch();
+        setSelectedOrders([]); // Clear selection
+        Swal.fire("Deleted!", "The selected orders have been deleted.", "success");
+      } catch (error) {
+        console.error("Error deleting orders:", error);
+        Swal.fire("Error!", "Could not delete the orders.", "error");
+      }
+    }
+  };
+
+  const handleSelectOrder = (orderId) => {
+    setSelectedOrders((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedOrders(filteredOrders.map((o) => o._id));
+    } else {
+      setSelectedOrders([]);
+    }
+  };
 
   if (loadingOrder) return <Loader />;
 
@@ -193,6 +274,17 @@ const CancelOrder = () => {
           </button>
         </div>
       </div>
+      {role === "admin" && (
+        <div className="mb-4">
+          <button
+            onClick={handleDeleteSelected}
+            disabled={selectedOrders.length === 0}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:bg-gray-400"
+          >
+            Delete Selected ({selectedOrders.length})
+          </button>
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -203,6 +295,18 @@ const CancelOrder = () => {
           <Table className="min-w-full table-fixed">
             <Thead className="bg-brand-teal-base text-white overflow-hidden sticky top-0 z-10">
               <Tr>
+                {role === "admin" && (
+                  <Th className="px-4 py-2" style={{ width: "50px" }}>
+                    <input
+                      type="checkbox"
+                      onChange={handleSelectAll}
+                      checked={
+                        filteredOrders.length > 0 &&
+                        selectedOrders.length === filteredOrders.length
+                      }
+                    />
+                  </Th>
+                )}
                 <Th
                   className="px-1 py-2 text-left rounded-tl-xl"
                   style={{ width: "10px" }}
@@ -234,6 +338,15 @@ const CancelOrder = () => {
                   key={o?._id}
                   className="hover:bg-brand-cream/30 transition-colors"
                 >
+                  {role === "admin" && (
+                    <Td className="px-4 py-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(o._id)}
+                        onChange={() => handleSelectOrder(o._id)}
+                      />
+                    </Td>
+                  )}
                   <Td
                     className="px-1 py-2 whitespace-nowrap"
                     style={{ width: "10px" }}
@@ -294,6 +407,15 @@ const CancelOrder = () => {
                       >
                         <FiEye size={16} />
                       </button>
+                      {(role === "admin" || role === "moderator") && (
+                        <button
+                          onClick={() => handleUpdateStatus(o._id)}
+                          className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          aria-label="Move to pending"
+                        >
+                          <FiRotateCw size={16} />
+                        </button>
+                      )}
                     </div>
                   </Td>
                 </Tr>
