@@ -135,20 +135,64 @@ const ProcessingOrder = () => {
     mutationFn: async ({ id, newStatus, courierNote }) => {
       const updateData = { status: newStatus };
 
-      if (newStatus === "delivered") {
-        updateData.deliveredBy = {
-          ...user,
-          deliveredTime: new Date().toISOString(),
+      if (newStatus === "shipped") {
+        // Find the order from the orders array
+        const order = orders.find((o) => o._id === id);
+        if (!order) {
+          throw new Error("Order not found");
+        }
+
+        // Prepare shipment data for Steadfast API for a single order
+        const shipment = {
+          invoice: order.orderId,
+          recipient_name: order.user?.name,
+          recipient_address: order.user?.address,
+          recipient_phone: order.user?.mobile,
+          district: order.user?.district,
+          cod_amount: order.total,
+          status: "shipping",
+          note: courierNote || "N/A",
         };
-      } else if (newStatus === "shipped") {
+
+        // Call Steadfast API
+        const steadfastRes = await axios.post(
+          "https://portal.packzy.com/api/v1/create_order/bulk-order",
+          [shipment], // Send as an array with one element
+          {
+            headers: {
+              "Api-Key": `${import.meta.env.VITE_STEADFAST_API_PUBLIC_KEY}`,
+              "Secret-Key": `${import.meta.env.VITE_STEADFAST_API_SECRET_KEY}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: false,
+          }
+        );
+
+        if (
+          steadfastRes.status !== 200 ||
+          !steadfastRes.data.data ||
+          steadfastRes.data.data.length === 0
+        ) {
+          throw new Error("Steadfast API request failed or returned no data");
+        }
+
+        const shipmentDetails = steadfastRes.data.data[0];
+
+        // Prepare update data for local backend
         updateData.shippingBy = {
           ...user,
           shippingTime: new Date().toISOString(),
         };
-        // allow optional courier note
-        if (typeof courierNote === "string" && courierNote.trim() !== "") {
+        updateData.consignment_id = shipmentDetails?.consignment_id || null;
+        updateData.tracking_code = shipmentDetails?.tracking_code || null;
+        if (typeof courierNote === "string") {
           updateData.shippingNote = courierNote;
         }
+      } else if (newStatus === "delivered") {
+        updateData.deliveredBy = {
+          ...user,
+          deliveredTime: new Date().toISOString(),
+        };
       } else if (newStatus === "approved") {
         updateData.approvedBy = {
           ...user,
@@ -177,10 +221,13 @@ const ProcessingOrder = () => {
         backdrop: `rgba(254,239,224,0.4)`,
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Error:", error);
       Swal.fire({
         title: "Error",
-        text: "Something went wrong",
+        text: error.message.includes("Steadfast")
+          ? "Failed to create shipment in Steadfast. Order was not updated."
+          : "Something went wrong",
         icon: "error",
         confirmButtonColor: "#018b76",
         background: "#ffffff",
@@ -223,7 +270,7 @@ const ProcessingOrder = () => {
         }
       );
 
-      console.log("📦 Steadfast Shipment Response:", steadfastRes.data); //this is for steadFast res checking
+      // console.log("📦 Steadfast Shipment Response:", steadfastRes.data); //this is for steadFast res checking
 
       // Check if Steadfast API was successful (status 200)
       if (steadfastRes.status !== 200) {
@@ -240,11 +287,17 @@ const ProcessingOrder = () => {
         const payload = {
           status: newStatus,
           shippingBy: { ...user, shippingTime: updateTimeIso },
-          consignment_id: shipmentDetails?.consignment_id || null,
-          tracking_code: shipmentDetails?.tracking_code || null,
+          // Explicitly clear and update tracking and consignment IDs
+          consignment_id: null,
+          tracking_code: null,
         };
 
-        if (typeof courierNote === "string" && courierNote.trim() !== "") {
+        if (shipmentDetails) {
+          payload.consignment_id = shipmentDetails.consignment_id || null;
+          payload.tracking_code = shipmentDetails.tracking_code || null;
+        }
+
+        if (typeof courierNote === "string") {
           payload.shippingNote = courierNote;
         }
 
@@ -296,6 +349,7 @@ const ProcessingOrder = () => {
 
   const openDetailModal = (order) => {
     setSelectedOrder(order);
+    setModalCourierNote(order.shippingNote || "");
     setShowDetailModal(true);
   };
 
@@ -604,7 +658,7 @@ const ProcessingOrder = () => {
                                 }
                               >
                                 <option value="processing">Processing</option>
-                                <option value="delivered">Delivered</option>
+                                <option value="shipped">Shipped</option>
                                 <option value="approved">Approved</option>
                                 <option value="pending">Pending</option>
                                 <option value="cancel">Cancel</option>
@@ -681,7 +735,7 @@ const ProcessingOrder = () => {
                         }}
                       >
                         <option value="processing">Processing</option>
-                        <option value="delivered">Delivered</option>
+                        <option value="shipped">Shipped</option>
                         <option value="approved">Approved</option>
                         <option value="pending">Pending</option>
                         <option value="cancel">Cancel</option>
