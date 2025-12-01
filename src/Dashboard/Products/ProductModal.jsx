@@ -28,8 +28,8 @@ const ProductModal = ({ onClose, productId }) => {
       if (!variants || variants.length === 0) {
         variants = [
           {
+            weight: product.weight || "Default",
             sku: product.sku || `temp-sku-${product._id}`,
-            name: "Default",
             price: product.price || 0,
             stock_quantity: product.stock_quantity || 0,
           },
@@ -54,7 +54,7 @@ const ProductModal = ({ onClose, productId }) => {
       setFormData({
         name: "",
         category: "",
-        variants: [{ sku: "", name: "", price: "", stock_quantity: "" }],
+        variants: [{ weight: "", sku: "", price: "", stock_quantity: "" }],
         description: { en: "", bn: "" },
         ingredients: [],
         uses: [],
@@ -67,7 +67,7 @@ const ProductModal = ({ onClose, productId }) => {
     }
   }, [product, isEditMode, productId]);
 
-  console.log(product);
+  // console.log(product);
   const handleImageUpload = async (file) => {
     const form = new FormData();
     form.append("image", file);
@@ -120,7 +120,7 @@ const ProductModal = ({ onClose, productId }) => {
       ...prev,
       variants: [
         ...prev.variants,
-        { sku: "", name: "", price: "", stock_quantity: "" },
+        { weight: "", sku: "", price: "", stock_quantity: "" },
       ],
     }));
   };
@@ -199,7 +199,8 @@ const ProductModal = ({ onClose, productId }) => {
           stock_quantity: parseInt(v.stock_quantity, 10),
         }))
         .filter(
-          (v) => v.sku && v.name && !isNaN(v.price) && !isNaN(v.stock_quantity)
+          (v) =>
+            v.weight && v.sku && !isNaN(v.price) && !isNaN(v.stock_quantity)
         ),
     };
     if (payload.variants.length === 0) {
@@ -332,20 +333,20 @@ const ProductModal = ({ onClose, productId }) => {
                   className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center"
                 >
                   <input
+                    value={v.weight}
+                    onChange={(e) =>
+                      handleVariantChange(i, "weight", e.target.value)
+                    }
+                    placeholder="WEIGHT"
+                    className="input input-bordered w-full"
+                    required
+                  />
+                  <input
                     value={v.sku}
                     onChange={(e) =>
                       handleVariantChange(i, "sku", e.target.value)
                     }
                     placeholder="SKU"
-                    className="input input-bordered w-full"
-                    required
-                  />
-                  <input
-                    value={v.name}
-                    onChange={(e) =>
-                      handleVariantChange(i, "name", e.target.value)
-                    }
-                    placeholder="Variant Name"
                     className="input input-bordered w-full"
                     required
                   />

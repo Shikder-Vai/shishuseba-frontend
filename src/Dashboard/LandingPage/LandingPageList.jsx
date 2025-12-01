@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Loader from "../../components/Loader";
 import Swal from "sweetalert2";
@@ -139,7 +139,7 @@ const LandingPageList = () => {
                   {(role === "admin" || role === "moderator") && (
                     <Link
                       to={`/dashboard/manage-landing-page/${page._id}`}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                      className="text-indigo-600 hover:text-indigo-900 mr-2"
                     >
                       <Edit />
                     </Link>
@@ -152,6 +152,15 @@ const LandingPageList = () => {
                       <Trash2 />
                     </button>
                   )}
+                  {
+                    <Link
+                      to={`http://localhost:5173/offer/${page._id}`}
+                      target="_blank"
+                      className="text-green-500 hover:text-green-600 ml-2"
+                    >
+                      <Eye />
+                    </Link>
+                  }
                 </td>
               </tr>
             ))}
