@@ -36,6 +36,7 @@ import LandingPageList from "../Dashboard/LandingPage/LandingPageList";
 import OfferPage from "../Pages/OfferPage/OfferPage";
 import OfferLayout from "../Layout/OfferPage/OfferLayout"; // Import the new layout
 import Inventory from "../Dashboard/Inventory/Inventory";
+import NotFound from "../Pages/NotFound/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +100,10 @@ export const router = createBrowserRouter([
         path: "/access-denied",
         element: <AccessDeniedPage />,
       },
+      {
+        path: "*",
+        element: <NotFound />,
+      }
     ],
   },
   // Offer Page Route with its own layout

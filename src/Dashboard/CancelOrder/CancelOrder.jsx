@@ -156,7 +156,7 @@ const CancelOrder = () => {
       }) || [];
 
   const formatDate = (dateString) => {
-    if (!dateString) {
+    if (!dateString || dateString === "N/A") {
       return "N/A";
     }
 
@@ -305,7 +305,7 @@ const CancelOrder = () => {
                       }
                     />
                   </th>
-                )}{" "}
+                )}
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Order ID
                 </th>

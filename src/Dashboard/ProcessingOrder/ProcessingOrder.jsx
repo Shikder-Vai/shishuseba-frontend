@@ -126,10 +126,10 @@ const ProcessingOrder = () => {
     }
   };
 
-  const formatProcessingTime = () => {
-    // Use date-fns formatting used elsewhere: 'dd MMM yyyy, h:mm aa'
-    return format(new Date(), "dd MMM yyyy, h:mm aa");
-  };
+  // const formatProcessingTime = () => {
+  //   // Use date-fns formatting used elsewhere: 'dd MMM yyyy, h:mm aa'
+  //   return format(new Date(), "dd MMM yyyy, h:mm aa");
+  // };
 
   const { mutate: updateOrderStatus } = useMutation({
     mutationFn: async ({ id, newStatus, courierNote }) => {
@@ -163,7 +163,6 @@ const ProcessingOrder = () => {
           cancelledTime: new Date().toISOString(),
         };
       }
-      console.log(updateData);
       const res = await axiosPublic.patch(`/order-request/${id}`, updateData);
       return res.data;
     },
@@ -207,7 +206,7 @@ const ProcessingOrder = () => {
         district: order?.user?.district,
         cod_amount: order?.total,
         status: "shipping",
-        note: order?.admin_note || "N/A",
+        note: courierNote || "N/A",
       }));
       // ---- SteadFast API Start ----
       // First hit Steadfast API
