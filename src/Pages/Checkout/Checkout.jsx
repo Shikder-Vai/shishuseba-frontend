@@ -18,6 +18,7 @@ import {
   Plus,
   Minus,
   Trash2,
+  ArrowDownNarrowWide,
 } from "lucide-react";
 import useScrollToTop from "../../hooks/useScrollToTop";
 import { pushBeginCheckout } from "../../services/DataLayerService";
@@ -412,15 +413,15 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
                   </p>
                   {item.variants?.length > 1 ? (
                     <div className="mt-2">
-                      <label className="text-xs md:text-sm font-medium text-gray-700">
-                        Variant
+                      <label className="text-xs md:text-sm font-bold  text-red-600">
+                        পরিমাণ সিলেক্ট করুন 👇
                       </label>
                       <select
                         value={item.variant.weight}
                         onChange={(e) =>
                           onVariantChange(item._id, e.target.value)
                         }
-                        className="mt-1 block w-full pl-3 pr-10 py-1 text-xs md:text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        className="mt-1 block w-full pl-3 pr-10 py-1 text-sm md:text-base border border-brand-teal-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-brand-cream"
                       >
                         {item.variants.map((v) => (
                           <option key={v.weight} value={v.weight}>
