@@ -154,7 +154,9 @@ const LandingPageList = () => {
                   )}
                   {
                     <Link
-                      to={`http://localhost:5173/offer/${page._id}`}
+                      to={`${import.meta.env.LANDING_PAGE_URL}/offer/${
+                        page._id
+                      }`}
                       target="_blank"
                       className="text-green-500 hover:text-green-600 ml-2"
                     >

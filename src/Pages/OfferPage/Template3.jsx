@@ -241,8 +241,21 @@ const Template3 = ({ landingPageData }) => {
         className="brand-green text-white mt-8 py-6"
         style={{ backgroundColor: "#0b5b2b" }}
       >
+        <h3 className="text-3xl sm:text-4xl font-extrabold text-brand-cream text-center">
+          শিশুসেবা
+        </h3>
+        <p className="text-indigo-200 mt-1 text-center">
+          আপনার সোনামণির জন্য আমাদের ভালোবাসা ও যত্ন
+        </p>
         <div className="max-w-3xl mx-auto text-center text-sm">
-          {footerPhoneNumbers && <p>কিনতে ফোন করুন: {footerPhoneNumbers}</p>}
+          {footerPhoneNumbers && (
+            <a href={`tel:${footerPhoneNumbers}`}>
+              যেকোনো প্রয়োজনে কল করুন:{" "}
+              <span className="text-red-400 hover:text-red-600 font-bold text-lg">
+                {footerPhoneNumbers}
+              </span>
+            </a>
+          )}
           {footerCopyright && (
             <p className="mt-2 opacity-80">{footerCopyright}</p>
           )}
