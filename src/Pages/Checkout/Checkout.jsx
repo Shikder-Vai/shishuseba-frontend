@@ -172,8 +172,20 @@ const Checkout = ({ order, onQuantityChange, onVariantChange }) => {
       }
       console.log(res?.data, "res.data");
       console.log(newOrder);
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
+      console.error("Order submission failed:", error);
+      if (error.response) {
+        console.error("Error data:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("Error request:", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error message:", error.message);
+      }
+
       Swal.fire({
         position: "center",
         icon: "error",
